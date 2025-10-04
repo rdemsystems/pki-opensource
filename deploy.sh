@@ -10,7 +10,7 @@ LOCAL_PATH="/home/rdem/git/pki-opensource/"
 REMOTE_HOST="rdem@web-01.rdem-systems.com"
 REMOTE_PATH="/var/www/rdem-systems/pki/"
 
-echo "🚀 PKIaaS Open-Source Website Deployment"
+echo "🚀 PKI Open-Source Website Deployment"
 echo "========================================"
 echo ""
 echo "📂 Source: $LOCAL_PATH"
