@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Documentation generator for PKIaaS open-source website
+Documentation generator for PKI open-source website
 Converts Markdown files to HTML with navigation and styling
 """
 
@@ -21,7 +21,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{title} - PKIaaS Documentation</title>
+    <title>{title} - PKI Documentation</title>
     <meta name="description" content="{description}">
 
     <!-- Tailwind CSS -->
@@ -91,7 +91,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
                         </svg>
-                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                        <span class="text-2xl font-bold text-primary-700">PKI</span>
                     </a>
                 </div>
                 <div class="hidden md:flex space-x-8">
@@ -157,7 +157,7 @@ def generate_navigation(docs_structure, current_path=""):
 
         nav_html.append('</div>')
 
-    return '\\n'.join(nav_html)
+    return '\n'.join(nav_html)
 
 
 def convert_markdown_to_html(md_file_path, output_html_path, docs_structure):
@@ -169,15 +169,19 @@ def convert_markdown_to_html(md_file_path, output_html_path, docs_structure):
 
     # Extract title from first H1
     title_match = re.search(r'^#\s+(.+)$', md_content, re.MULTILINE)
-    title = title_match.group(1) if title_match else "PKIaaS Documentation"
+    title = title_match.group(1) if title_match else "PKI Documentation"
 
     # Extract first paragraph for description
     desc_match = re.search(r'^(?!#)(.+)$', md_content, re.MULTILINE)
-    description = desc_match.group(1)[:150] if desc_match else "PKIaaS open-source documentation"
+    description = desc_match.group(1)[:150] if desc_match else "PKI open-source documentation"
 
     # Convert markdown to HTML
     md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc', 'tables', 'fenced_code'])
     html_content = md.convert(md_content)
+
+    # Replace .md links with .html links
+    html_content = re.sub(r'href="([^"]+)\.md"', r'href="\1.html"', html_content)
+    html_content = re.sub(r'href="([^"]+)\.md#', r'href="\1.html#', html_content)
 
     # Generate navigation
     relative_path = os.path.relpath(output_html_path, OUTPUT_PATH)
@@ -237,23 +241,23 @@ def scan_documentation():
 
 def main():
     """Main generation function"""
-    print("🔨 PKIaaS Documentation Generator")
+    print("🔨 PKI Documentation Generator")
     print("=" * 50)
 
     # Scan documentation
-    print("\\n📂 Scanning documentation...")
+    print("\n📂 Scanning documentation...")
     docs_structure, file_mapping = scan_documentation()
 
     print(f"Found {len(file_mapping)} markdown files")
 
     # Generate HTML files
-    print("\\n🔄 Converting markdown to HTML...")
+    print("\n🔄 Converting markdown to HTML...")
     for md_path, html_path in file_mapping:
         convert_markdown_to_html(md_path, html_path, docs_structure)
 
-    print(f"\\n✅ Generated {len(file_mapping)} HTML pages")
+    print(f"\n✅ Generated {len(file_mapping)} HTML pages")
     print(f"📁 Output directory: {OUTPUT_PATH}")
-    print("\\n🚀 Ready to deploy!")
+    print("\n🚀 Ready to deploy!")
 
 
 if __name__ == "__main__":
