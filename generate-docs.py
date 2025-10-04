@@ -210,6 +210,9 @@ def scan_documentation():
     file_mapping = []
 
     for root, dirs, files in os.walk(PKIAAS_DOCS_PATH):
+        # Skip security directory (private documentation)
+        dirs[:] = [d for d in dirs if d not in ['security', 'AUDIT']]
+
         for file in files:
             if file.endswith('.md'):
                 md_path = os.path.join(root, file)
