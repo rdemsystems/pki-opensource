@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitLab CI Parallelization Strategy - PKIaaS Documentation</title>
+    <meta name="description" content="Notre pipeline GitLab CI est optimisée pour un maximum de parallélisme et d'efficacité.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="gitlab-ci-parallelization-strategy">GitLab CI Parallelization Strategy</h1>
+<h2 id="pipeline-architecture">🚀 Pipeline Architecture</h2>
+<p>Notre pipeline GitLab CI est optimisée pour un maximum de parallélisme et d'efficacité.</p>
+<h3 id="stages-et-parallelisme">📊 Stages et Parallélisme</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">Pipeline Stages</span><span class="p">:</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">1. analysis    (5 jobs en parallèle)</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">2. test        (6 jobs en parallèle)</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">3. security    (5 jobs en parallèle)</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">4. build       (2 jobs en parallèle, manual)</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">5. deploy      (séquentiel, manual)</span>
+
+<span class="nt">Total</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">18 jobs parallèles + 3 jobs manuels</span>
+</code></pre></div>
+
+<h2 id="stage-1-analysis-parallel-static-analysis">🔍 Stage 1: Analysis (Parallel Static Analysis)</h2>
+<p><strong>Runners nécessaires: 5 simultanés</strong></p>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Outil</th>
+<th>Durée estimée</th>
+<th>Parallélisme</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phpstan</code></td>
+<td>PHPStan</td>
+<td>2-3 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>larastan</code></td>
+<td>Larastan (Laravel-specific)</td>
+<td>2-3 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>psalm</code></td>
+<td>Psalm</td>
+<td>3-4 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>phpmd</code></td>
+<td>PHP Mess Detector</td>
+<td>1-2 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>pint</code></td>
+<td>Laravel Pint (Style)</td>
+<td>30s</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optimisations:</strong>
+- Cache Composer partagé entre jobs
+- Artifacts JUnit pour rapports GitLab
+- Memory limit 1G pour les outils d'analyse
+- <code>allow_failure: true</code> sauf pour Pint (bloquant)</p>
+<h2 id="stage-2-test-parallel-testing">🧪 Stage 2: Test (Parallel Testing)</h2>
+<p><strong>Runners nécessaires: 6 simultanés</strong></p>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Type</th>
+<th>Tests ciblés</th>
+<th>Durée estimée</th>
+<th>Parallélisme</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unit_tests</code></td>
+<td>Unit</td>
+<td>Toutes les classes</td>
+<td>3-5 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>feature_tests</code></td>
+<td>Feature</td>
+<td>API/Web endpoints</td>
+<td>2-3 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>pki_integration_tests</code></td>
+<td>Integration</td>
+<td>@group pki-integration</td>
+<td>4-6 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>pki_core_tests</code></td>
+<td>Core</td>
+<td>@group pki-core</td>
+<td>2-3 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>crypto_tests</code></td>
+<td>Crypto</td>
+<td>@group crypto</td>
+<td>3-4 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>licensing_tests</code></td>
+<td>License</td>
+<td>@group licensing</td>
+<td>1-2 min</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optimisations:</strong>
+- Base de données SQLite en mémoire
+- Migration rapide par job
+- Coverage uniquement sur unit_tests
+- Artifacts JUnit pour tous les jobs
+- Tests groupés par domaine fonctionnel</p>
+<h2 id="stage-3-security-parallel-security-analysis">🔒 Stage 3: Security (Parallel Security Analysis)</h2>
+<p><strong>Runners nécessaires: 5 simultanés</strong></p>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Outil</th>
+<th>Focus</th>
+<th>Durée estimée</th>
+<th>Parallélisme</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dependency_check</code></td>
+<td>Composer Audit</td>
+<td>Vulnérabilités deps</td>
+<td>30s</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>semgrep_scan</code></td>
+<td>Semgrep</td>
+<td>SAST Laravel/Security</td>
+<td>2-3 min</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>secret_detection</code></td>
+<td>ripgrep</td>
+<td>Secrets hardcodés</td>
+<td>30s</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>security_headers</code></td>
+<td>grep</td>
+<td>Config sécurité</td>
+<td>30s</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>pki_security_audit</code></td>
+<td>grep</td>
+<td>PKI security patterns</td>
+<td>1 min</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Spécialisations:</strong>
+- <strong>Semgrep</strong>: 3 rulesets (auto, laravel, security-audit)
+- <strong>PKI Audit</strong>: Vérifications spécifiques crypto/PKI
+- <strong>Secret Detection</strong>: Patterns PKI (clés privées, certificats)
+- Tous en <code>allow_failure: true</code> (non-bloquants)</p>
+<h2 id="stage-4-build-manual-parallel">🏗️ Stage 4: Build (Manual Parallel)</h2>
+<p><strong>Runners nécessaires: 2 simultanés (si activé)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Type</th>
+<th>Trigger</th>
+<th>Durée estimée</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>build_docker</code></td>
+<td>Development</td>
+<td>Manual</td>
+<td>3-5 min</td>
+</tr>
+<tr>
+<td><code>build_production</code></td>
+<td>Production</td>
+<td>Manual</td>
+<td>3-5 min</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configuration:</strong>
+- Mode <code>manual</code> pendant rush-dev
+- Registry GitLab intégré
+- Tags par commit SHA
+- Dépendances: tests passés</p>
+<h2 id="stage-5-deploy-sequential-manual">📦 Stage 5: Deploy (Sequential Manual)</h2>
+<p>Jobs séquentiels manuels pour staging/production.</p>
+<h2 id="optimisations-de-performance">⚡ Optimisations de Performance</h2>
+<h3 id="cache-strategy">🔄 Cache Strategy</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">Composer Cache</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${CI_COMMIT_REF_SLUG}-composer</span>
+<span class="w">  </span><span class="nt">paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">vendor/</span><span class="p p-Indicator">]</span>
+
+<span class="nt">Partage entre jobs du même stage</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tous les jobs PHP partagent le cache Composer</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Réduction de 2-3 min par job après le premier</span>
+</code></pre></div>
+
+<h3 id="resource-allocation">🚀 Resource Allocation</h3>
+<p><strong>Recommandations GitLab Runner:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Configuration optimale pour rush-dev</span>
+<span class="l l-Scalar l-Scalar-Plain">concurrent = 12</span><span class="w">  </span><span class="c1"># Max jobs simultanés</span>
+
+<span class="p p-Indicator">[[</span><span class="nv">runners</span><span class="p p-Indicator">]]</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">name = &quot;analysis-runner&quot;</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">limit = 5</span><span class="w">      </span><span class="c1"># Stage analysis</span>
+
+<span class="p p-Indicator">[[</span><span class="nv">runners</span><span class="p p-Indicator">]]</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">name = &quot;test-runner&quot;</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">limit = 6</span><span class="w">      </span><span class="c1"># Stage test</span>
+
+<span class="p p-Indicator">[[</span><span class="nv">runners</span><span class="p p-Indicator">]]</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">name = &quot;security-runner&quot;</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">limit = 5</span><span class="w">      </span><span class="c1"># Stage security</span>
+</code></pre></div>
+
+<h3 id="performance-metrics">📈 Performance Metrics</h3>
+<p><strong>Durées parallèles vs séquentiel:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Durée totale</th>
+<th>Économie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Séquentiel</strong></td>
+<td>~25-35 min</td>
+<td>Baseline</td>
+</tr>
+<tr>
+<td><strong>Parallèle</strong></td>
+<td>~8-12 min</td>
+<td><strong>65-70%</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Détail par stage:</strong>
+- <strong>Analysis</strong>: 3-4 min (vs 10-12 min séquentiel)
+- <strong>Tests</strong>: 4-6 min (vs 15-20 min séquentiel)
+- <strong>Security</strong>: 2-3 min (vs 5-7 min séquentiel)</p>
+<h2 id="optimizations-avancees">🎯 Optimizations Avancées</h2>
+<h3 id="matrix-builds-future">🔧 Matrix Builds (Future)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Exemple pour multi-version PHP</span>
+<span class="nt">unit_tests</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">parallel</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matrix</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">PHP_VERSION</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;8.2&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;8.3&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">TEST_SUITE</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Unit&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Feature&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+
+<h3 id="dynamic-parallelism">📊 Dynamic Parallelism</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Auto-scaling basé sur la charge</span>
+<span class="nt">pki_tests</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">parallel</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matrix</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">PKI_MODULE</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;crypto&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ca&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;acme&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;openvpn&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;windows802x&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+
+<h3 id="fail-fast-strategy">🔍 Fail-Fast Strategy</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Arrêt rapide si erreurs critiques</span>
+<span class="nt">needs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pint</span><span class="w">  </span><span class="c1"># Style check (bloquant)</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unit_tests</span><span class="w">  </span><span class="c1"># Core functionality</span>
+</code></pre></div>
+
+<h2 id="monitoring-et-metriques">📋 Monitoring et Métriques</h2>
+<h3 id="kpis-a-surveiller">🎯 KPIs à surveiller</h3>
+<ul>
+<li><strong>Pipeline Duration</strong>: Objectif &lt; 12 min</li>
+<li><strong>Parallel Efficiency</strong>: Ratio jobs/runners</li>
+<li><strong>Cache Hit Rate</strong>: &gt; 80% pour Composer</li>
+<li><strong>Test Success Rate</strong>: &gt; 95%</li>
+<li><strong>Security Issues</strong>: 0 critical</li>
+</ul>
+<h3 id="gitlab-analytics">📊 GitLab Analytics</h3>
+<ul>
+<li><strong>Analytics &gt; CI/CD</strong>: Pipeline performance</li>
+<li><strong>Analytics &gt; Repository</strong>: Job duration trends</li>
+<li><strong>Environments</strong>: Deployment frequency</li>
+</ul>
+<h2 id="runner-configuration">🛠️ Runner Configuration</h2>
+<h3 id="ressources-recommandees-par-type">Ressources recommandées par type:</h3>
+<p><strong>Analysis Runners (5x):</strong>
+- CPU: 2 cores
+- RAM: 4GB
+- Disk: 20GB SSD</p>
+<p><strong>Test Runners (6x):</strong>
+- CPU: 2 cores
+- RAM: 4GB
+- Disk: 20GB SSD</p>
+<p><strong>Security Runners (5x):</strong>
+- CPU: 1 core
+- RAM: 2GB
+- Disk: 10GB SSD</p>
+<p><strong>Build Runners (2x):</strong>
+- CPU: 4 cores
+- RAM: 8GB
+- Disk: 50GB SSD</p>
+<h3 id="infrastructure-totale-recommandee">Infrastructure totale recommandée:</h3>
+<ul>
+<li><strong>16 runners</strong> pour parallélisme complet</li>
+<li><strong>40 CPU cores</strong> total</li>
+<li><strong>72GB RAM</strong> total</li>
+<li><strong>360GB disk</strong> total</li>
+</ul>
+<h2 id="troubleshooting">🚨 Troubleshooting</h2>
+<h3 id="problemes-courants">Problèmes courants:</h3>
+<p><strong>Runner Shortage:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Vérifier runners disponibles</span>
+gitlab-runner<span class="w"> </span>list
+gitlab-runner<span class="w"> </span>status
+</code></pre></div>
+
+<p><strong>Cache Issues:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Nettoyer cache corrompu</span>
+gitlab-runner<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>docker<span class="w"> </span>--cache-dir<span class="o">=</span>/tmp/cache<span class="w"> </span>unit_tests
+</code></pre></div>
+
+<p><strong>Memory Limits:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Augmenter limites pour analysis</span>
+<span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">COMPOSER_MEMORY_LIMIT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">  </span><span class="nt">PHP_MEMORY_LIMIT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2G</span>
+</code></pre></div>
+
+<hr />
+<p><strong>Status</strong>: Configuration optimisée pour rush-dev avec parallélisme maximum
+<strong>Next</strong>: Monitoring des performances et ajustements dynamiques</p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

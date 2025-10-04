@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrice des Fonctionnalités PKIaaS - Interface Web vs API - PKIaaS Documentation</title>
+    <meta name="description" content="**PKIaaS** propose **2 modes d'accès complémentaires** :">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="matrice-des-fonctionnalites-pkiaas-interface-web-vs-api">Matrice des Fonctionnalités PKIaaS - Interface Web vs API</h1>
+<h2 id="resume-executif">📋 <strong>Résumé Exécutif</strong></h2>
+<p><strong>PKIaaS</strong> propose <strong>2 modes d'accès complémentaires</strong> :
+- <strong>Interface Web</strong> : Administration intuitive pour équipes IT avec workflows guidés
+- <strong>API REST</strong> : Intégration système et automatisation DevOps/SCEP/EST/ACME</p>
+<hr />
+<h2 id="fonctionnalites-interface-web">🌐 <strong>Fonctionnalités Interface Web</strong></h2>
+<h3 id="1-gestion-des-autorites-de-certification"><strong>1. Gestion des Autorités de Certification</strong></h3>
+<h4 id="creation-et-administration-ca">🏛️ <strong>Création et Administration CA</strong></h4>
+<ul>
+<li><strong>Créer CA Racine/Intermédiaire</strong> via assistant guidé</li>
+<li>Sélection algorithmes (RSA 2048/3072/4096)</li>
+<li>Configuration validité (1-30 ans)</li>
+<li>Subject DN complet (pays, organisation, unité)</li>
+<li>Extensions personnalisées (KeyUsage, BasicConstraints)</li>
+<li><strong>Visualiser hiérarchie CA</strong> avec arbre interactif</li>
+<li><strong>Configurer politiques d'accès</strong> par CA</li>
+<li><strong>Gérer approbations manuelles</strong> avec workflows</li>
+<li><strong>Rotation CA</strong> avec migration certificats</li>
+</ul>
+<h4 id="monitoring-et-statistiques-ca">📊 <strong>Monitoring et Statistiques CA</strong></h4>
+<ul>
+<li>Dashboard avec métriques temps réel</li>
+<li>Graphiques émission/révocation certificats</li>
+<li>Alertes expiration CA</li>
+<li>Historique d'audit complet</li>
+<li>Export rapports de conformité</li>
+</ul>
+<h3 id="2-gestion-des-certificats"><strong>2. Gestion des Certificats</strong></h3>
+<h4 id="cycle-de-vie-certificats">📜 <strong>Cycle de Vie Certificats</strong></h4>
+<ul>
+<li><strong>Création certificats</strong> via formulaires guidés</li>
+<li>Templates par cas d'usage (serveur, client, email)</li>
+<li>Subject Alternative Names (SAN) multiples</li>
+<li>Profils personnalisés par équipe</li>
+<li><strong>Visualisation certificats</strong> avec détails X.509</li>
+<li><strong>Téléchargement multi-formats</strong> (PEM, DER, P7B, P12)</li>
+<li><strong>Révocation</strong> avec codes de raison</li>
+<li><strong>Renouvellement</strong> manuel ou automatique</li>
+</ul>
+<h4 id="recherche-et-filtrage">🔍 <strong>Recherche et Filtrage</strong></h4>
+<ul>
+<li>Recherche par CN, SAN, numéro série</li>
+<li>Filtres par statut, CA, date expiration</li>
+<li>Export en masse (CSV, PDF)</li>
+<li>Tableaux de bord personnalisés</li>
+</ul>
+<h3 id="3-cas-dusage-specialises"><strong>3. Cas d'Usage Spécialisés</strong></h3>
+<h4 id="openvpn">🔒 <strong>OpenVPN</strong></h4>
+<ul>
+<li><strong>Assistant génération</strong> serveur/client OpenVPN</li>
+<li><strong>Téléchargement .ovpn</strong> prêts à l'emploi</li>
+<li><strong>Configuration serveur</strong> automatique</li>
+<li><strong>Gestion utilisateurs</strong> VPN en masse</li>
+</ul>
+<h4 id="wifi-enterprise-8021x">📶 <strong>WiFi Enterprise (802.1x)</strong></h4>
+<ul>
+<li><strong>Certificats clients</strong> pour authentification WiFi</li>
+<li><strong>Profils WiFi</strong> Windows/iOS/Android</li>
+<li><strong>Export P12</strong> avec mots de passe</li>
+<li><strong>Templates GPO</strong> pour déploiement entreprise</li>
+</ul>
+<h4 id="acme-lets-encrypt">🤖 <strong>ACME (Let's Encrypt)</strong></h4>
+<ul>
+<li><strong>Comptes ACME</strong> avec gestion clés</li>
+<li><strong>Ordres</strong> et challenges interactifs</li>
+<li><strong>Monitoring</strong> renouvellements automatiques</li>
+<li><strong>Intégration</strong> avec services externes</li>
+</ul>
+<h3 id="4-approbations-et-workflows"><strong>4. Approbations et Workflows</strong></h3>
+<h4 id="systeme-dapprobation">✅ <strong>Système d'Approbation</strong></h4>
+<ul>
+<li><strong>Demandes en attente</strong> avec interface de validation</li>
+<li><strong>Approbation par lot</strong> pour efficacité</li>
+<li><strong>Notifications email</strong> aux responsables</li>
+<li><strong>Historique décisions</strong> avec justifications</li>
+<li><strong>Délégation</strong> de droits d'approbation</li>
+</ul>
+<h4 id="mes-demandes-utilisateurs">📝 <strong>Mes Demandes (Utilisateurs)</strong></h4>
+<ul>
+<li><strong>Suivi demandes</strong> personnelles</li>
+<li><strong>Statuts temps réel</strong> avec notifications</li>
+<li><strong>Annulation</strong> demandes en attente</li>
+<li><strong>Historique</strong> personnel des certificats</li>
+</ul>
+<h3 id="5-administration-et-securite"><strong>5. Administration et Sécurité</strong></h3>
+<h4 id="audit-et-conformite">🔐 <strong>Audit et Conformité</strong></h4>
+<ul>
+<li><strong>Logs détaillés</strong> toutes opérations PKI</li>
+<li><strong>Export conformité</strong> (SOX, GDPR, NIS2)</li>
+<li><strong>Alertes sécurité</strong> en temps réel</li>
+<li><strong>Rapports d'utilisation</strong> par équipe/projet</li>
+</ul>
+<h4 id="configuration-systeme">⚙️ <strong>Configuration Système</strong></h4>
+<ul>
+<li><strong>Paramètres généraux</strong> PKI</li>
+<li><strong>Intégration Entra ID</strong> avec sync utilisateurs</li>
+<li><strong>Politiques de sécurité</strong> globales</li>
+<li><strong>Gestion licences</strong> et quotas</li>
+</ul>
+<h3 id="6-securite-avancee-nouvelles-fonctionnalites"><strong>6. Sécurité Avancée (Nouvelles Fonctionnalités)</strong></h3>
+<h4 id="audit-de-securite">🛡️ <strong>Audit de Sécurité</strong></h4>
+<ul>
+<li><strong>Dashboard sécurité</strong> avec score global</li>
+<li><strong>Audit clés privées</strong> et migration automatique</li>
+<li><strong>Gestion mots de passe SCEP</strong> sécurisés</li>
+<li><strong>Tests intégrité</strong> certificats et CAs</li>
+</ul>
+<h4 id="nitrokey-hsm-optionnel">🔑 <strong>Nitrokey HSM (Optionnel)</strong></h4>
+<ul>
+<li><strong>Interface génération CA distribuée</strong> N-of-M</li>
+<li><strong>Packages déploiement</strong> Nitrokey sécurisés</li>
+<li><strong>Orchestration signature</strong> multi-parties</li>
+<li><strong>Monitoring</strong> Nitrokeys distantes</li>
+</ul>
+<hr />
+<h2 id="fonctionnalites-api-rest">🔌 <strong>Fonctionnalités API REST</strong></h2>
+<h3 id="1-protocoles-pki-standards"><strong>1. Protocoles PKI Standards</strong></h3>
+<h4 id="endpoints-protocoles">🌐 <strong>Endpoints Protocoles</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># OCSP - Validation temps réel certificats</span>
+<span class="err">POST /api/v1/ocsp</span>
+<span class="err">GET  /api/v1/ocsp/{request}</span>
+
+<span class="err"># SCEP - Enrollment Microsoft Intune</span>
+<span class="err">POST /api/v1/scep</span>
+<span class="err">GET  /api/v1/scep-info</span>
+
+<span class="err"># EST - Enrollment entreprise sécurisé</span>
+<span class="err">GET  /api/v1/est/.well-known/est</span>
+<span class="err">POST /api/v1/est/simpleenroll</span>
+
+<span class="err"># ACME - Automatisation Let&#39;s Encrypt</span>
+<span class="err">GET  /api/v1/acme/directory</span>
+<span class="err">POST /api/v1/acme/new-account</span>
+<span class="err">POST /api/v1/acme/new-order</span>
+</code></pre></div>
+
+<h4 id="distribution-crl">📋 <strong>Distribution CRL</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Certificate Revocation Lists</span>
+<span class="err">GET /api/v1/crl/{ca}           # Téléchargement CRL</span>
+<span class="err">GET /api/v1/crl/{ca}/info      # Informations CRL</span>
+<span class="err">GET /api/v1/crls               # Liste toutes CRLs</span>
+</code></pre></div>
+
+<h3 id="2-gestion-programmatique"><strong>2. Gestion Programmatique</strong></h3>
+<h4 id="certificate-authorities-api">🏛️ <strong>Certificate Authorities API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># CRUD Operations</span>
+<span class="err">GET    /api/v1/certificate-authorities</span>
+<span class="err">POST   /api/v1/certificate-authorities</span>
+<span class="err">GET    /api/v1/certificate-authorities/{id}</span>
+<span class="err">PUT    /api/v1/certificate-authorities/{id}</span>
+<span class="err">DELETE /api/v1/certificate-authorities/{id}</span>
+
+<span class="err"># Specific Operations</span>
+<span class="err">POST /api/v1/certificate-authorities/{ca}/revoke</span>
+<span class="err">GET  /api/v1/certificate-authorities/{ca}/certificate</span>
+<span class="err">GET  /api/v1/certificate-authorities/{ca}/chain</span>
+<span class="err">POST /api/v1/certificate-authorities/{ca}/generate-crl</span>
+</code></pre></div>
+
+<h4 id="certificates-api">📜 <strong>Certificates API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># CRUD Operations</span>
+<span class="err">GET    /api/v1/certificates</span>
+<span class="err">POST   /api/v1/certificates</span>
+<span class="err">GET    /api/v1/certificates/{id}</span>
+<span class="err">PUT    /api/v1/certificates/{id}</span>
+<span class="err">DELETE /api/v1/certificates/{id}</span>
+
+<span class="err"># Certificate Operations</span>
+<span class="err">POST /api/v1/certificates/{certificate}/revoke</span>
+<span class="err">GET  /api/v1/certificates/{certificate}/download/{format}</span>
+<span class="err">GET  /api/v1/certificates/{certificate}/validate</span>
+<span class="err">POST /api/v1/certificates/{certificate}/renew</span>
+</code></pre></div>
+
+<h3 id="3-integrations-specialisees"><strong>3. Intégrations Spécialisées</strong></h3>
+<h4 id="openvpn-api">🔒 <strong>OpenVPN API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Certificate Generation</span>
+<span class="err">POST /api/v1/openvpn/server-certificate</span>
+<span class="err">POST /api/v1/openvpn/client-certificate</span>
+
+<span class="err"># Configuration Files</span>
+<span class="err">GET /api/v1/openvpn/certificates/{certificate}/ovpn</span>
+<span class="err">GET /api/v1/openvpn/certificates/{certificate}/server-config</span>
+<span class="err">GET /api/v1/openvpn/certificates/{certificate}/bundle</span>
+
+<span class="err"># Infrastructure</span>
+<span class="err">POST /api/v1/openvpn/generate-dh-params</span>
+<span class="err">POST /api/v1/openvpn/generate-tls-auth</span>
+</code></pre></div>
+
+<h4 id="windows-8021x-api">📶 <strong>Windows 802.1x API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Certificate Management</span>
+<span class="err">POST /api/v1/windows-802x/client-certificate</span>
+
+<span class="err"># Export Formats</span>
+<span class="err">GET /api/v1/windows-802x/certificates/{certificate}/p12</span>
+<span class="err">GET /api/v1/windows-802x/certificates/{certificate}/wifi-profile</span>
+<span class="err">GET /api/v1/windows-802x/certificates/{certificate}/gpo-template</span>
+<span class="err">GET /api/v1/windows-802x/certificates/{certificate}/mobile-config</span>
+<span class="err">GET /api/v1/windows-802x/certificates/{certificate}/bundle</span>
+</code></pre></div>
+
+<h4 id="acme-management-api">🤖 <strong>ACME Management API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Account Management</span>
+<span class="err">GET    /api/v1/acme-management/accounts</span>
+<span class="err">POST   /api/v1/acme-management/accounts</span>
+<span class="err">GET    /api/v1/acme-management/accounts/{account}</span>
+<span class="err">DELETE /api/v1/acme-management/accounts/{account}</span>
+
+<span class="err"># Order Management</span>
+<span class="err">GET    /api/v1/acme-management/orders</span>
+<span class="err">GET    /api/v1/acme-management/orders/{order}</span>
+<span class="err">POST   /api/v1/acme-management/orders/{order}/retry</span>
+<span class="err">DELETE /api/v1/acme-management/orders/{order}</span>
+</code></pre></div>
+
+<h3 id="4-analytics-et-monitoring"><strong>4. Analytics et Monitoring</strong></h3>
+<h4 id="statistics-api">📊 <strong>Statistics API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Global Overview</span>
+<span class="err">GET /api/v1/analytics/overview</span>
+<span class="err">GET /api/v1/analytics/expiring</span>
+<span class="err">GET /api/v1/analytics/ca-usage</span>
+<span class="err">GET /api/v1/analytics/certificate-types</span>
+
+<span class="err"># Auto-Renewal Analytics</span>
+<span class="err">GET /api/v1/auto-renewal/statistics</span>
+<span class="err">GET /api/v1/auto-renewal/health</span>
+<span class="err">GET /api/v1/auto-renewal/eligible-certificates</span>
+<span class="err">GET /api/v1/auto-renewal/configuration</span>
+</code></pre></div>
+
+<h3 id="5-administration-avancee"><strong>5. Administration Avancée</strong></h3>
+<h4 id="ca-rotation-api">🔄 <strong>CA Rotation API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Rotation Management</span>
+<span class="err">GET  /api/v1/ca-rotation/recommendations</span>
+<span class="err">GET  /api/v1/ca-rotation/ca/{ca}/status</span>
+<span class="err">GET  /api/v1/ca-rotation/ca/{ca}/validate</span>
+<span class="err">POST /api/v1/ca-rotation/ca/{ca}/rotate</span>
+<span class="err">GET  /api/v1/ca-rotation/migration-plan/{oldCA}/{newCA}</span>
+</code></pre></div>
+
+<h4 id="enterprise-integration">🏢 <strong>Enterprise Integration</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Entra ID Integration</span>
+<span class="err">GET  /api/v1/entra-id/statistics</span>
+<span class="err">GET  /api/v1/entra-id/users</span>
+<span class="err">GET  /api/v1/entra-id/users/{user}</span>
+<span class="err">POST /api/v1/entra-id/sync-user</span>
+<span class="err">POST /api/v1/entra-id/bulk-sync-users</span>
+<span class="err">POST /api/v1/entra-id/provision-certificate</span>
+</code></pre></div>
+
+<h4 id="security-audit-api">🛡️ <strong>Security Audit API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Security Dashboard</span>
+<span class="err">GET  /api/v1/security/dashboard</span>
+<span class="err">GET  /api/v1/security/audit/ca/{id}</span>
+
+<span class="err"># Migration Operations</span>
+<span class="err">POST /api/v1/security/migrate/ca/{id}</span>
+<span class="err">POST /api/v1/security/migrate/batch</span>
+
+<span class="err"># SCEP Security</span>
+<span class="err">POST /api/v1/security/scep-passwords/{ca_id}</span>
+<span class="err">GET  /api/v1/security/scep-passwords/{ca_id}</span>
+
+<span class="err"># Key Rotation</span>
+<span class="err">POST /api/v1/security/ca/{id}/rotate-key</span>
+</code></pre></div>
+
+<h4 id="nitrokey-distributed-api">🔑 <strong>Nitrokey Distributed API</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># Distributed CA Generation</span>
+<span class="err">POST /api/v1/nitrokey/generate-distributed-ca</span>
+<span class="err">GET  /api/v1/nitrokey/deployment-package/{ca_id}/{nitrokey_id}</span>
+
+<span class="err"># Signing Sessions</span>
+<span class="err">POST /api/v1/nitrokey/signing-sessions</span>
+<span class="err">POST /api/v1/nitrokey/signing-sessions/{session}/contribute</span>
+<span class="err">GET  /api/v1/nitrokey/signing-sessions/{session}/status</span>
+</code></pre></div>
+
+<h3 id="6-csr-processing-api"><strong>6. CSR Processing API</strong></h3>
+<h4 id="certificate-request-processing">📝 <strong>Certificate Request Processing</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="err"># CSR Upload and Processing</span>
+<span class="err">POST /api/v1/csr/upload</span>
+<span class="err">GET  /api/v1/csr/ca/{ca}/template</span>
+
+<span class="err"># CA Management Integration</span>
+<span class="err">GET  /api/v1/ca-management/available-cas</span>
+<span class="err">GET  /api/v1/ca-management/hierarchy</span>
+<span class="err">GET  /api/v1/ca-management/purpose-categories</span>
+<span class="err">POST /api/v1/ca-management/select-best-ca</span>
+</code></pre></div>
+
+<hr />
+<h2 id="matrice-comparative-des-fonctionnalites">📊 <strong>Matrice Comparative des Fonctionnalités</strong></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Fonctionnalité</strong></th>
+<th style="text-align: center;"><strong>Interface Web</strong></th>
+<th style="text-align: center;"><strong>API REST</strong></th>
+<th><strong>Cas d'Usage Optimal</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Création CA manuelle</strong></td>
+<td style="text-align: center;">✅ Assistant guidé</td>
+<td style="text-align: center;">✅ Programmable</td>
+<td>Web: Setup initial • API: Infrastructure as Code</td>
+</tr>
+<tr>
+<td><strong>Émission certificats</strong></td>
+<td style="text-align: center;">✅ Formulaires</td>
+<td style="text-align: center;">✅ Automatisable</td>
+<td>Web: Certificats manuels • API: CI/CD, applications</td>
+</tr>
+<tr>
+<td><strong>Révocation certificats</strong></td>
+<td style="text-align: center;">✅ Interface</td>
+<td style="text-align: center;">✅ Automatisable</td>
+<td>Web: Gestion d'incident • API: Processus automatisés</td>
+</tr>
+<tr>
+<td><strong>Téléchargement certificats</strong></td>
+<td style="text-align: center;">✅ Multi-formats</td>
+<td style="text-align: center;">✅ Multi-formats</td>
+<td>Web: Usage ponctuel • API: Déploiements automatisés</td>
+</tr>
+<tr>
+<td><strong>OCSP Responder</strong></td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅ RFC 6960</td>
+<td>API: Validation temps réel par applications</td>
+</tr>
+<tr>
+<td><strong>SCEP Enrollment</strong></td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅ RFC 8894</td>
+<td>API: Microsoft Intune, appareils IoT</td>
+</tr>
+<tr>
+<td><strong>EST Enrollment</strong></td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅ RFC 7030</td>
+<td>API: Déploiements entreprise sécurisés</td>
+</tr>
+<tr>
+<td><strong>ACME Protocol</strong></td>
+<td style="text-align: center;">✅ Management UI</td>
+<td style="text-align: center;">✅ RFC 8555</td>
+<td>Web: Configuration • API: Let's Encrypt automation</td>
+</tr>
+<tr>
+<td><strong>Monitoring/Analytics</strong></td>
+<td style="text-align: center;">✅ Dashboards</td>
+<td style="text-align: center;">✅ Métriques JSON</td>
+<td>Web: Supervision humaine • API: Intégration monitoring</td>
+</tr>
+<tr>
+<td><strong>Workflows d'approbation</strong></td>
+<td style="text-align: center;">✅ Interface complète</td>
+<td style="text-align: center;">⚠️ Basique</td>
+<td>Web: Processus métier • API: Notifications seulement</td>
+</tr>
+<tr>
+<td><strong>Audit et Conformité</strong></td>
+<td style="text-align: center;">✅ Rapports visuels</td>
+<td style="text-align: center;">✅ Export données</td>
+<td>Web: Audit humain • API: Compliance automatique</td>
+</tr>
+<tr>
+<td><strong>Intégration Entra ID</strong></td>
+<td style="text-align: center;">✅ Configuration</td>
+<td style="text-align: center;">✅ Sync API</td>
+<td>Web: Setup • API: Automatisation provisioning</td>
+</tr>
+<tr>
+<td><strong>Auto-Renewal</strong></td>
+<td style="text-align: center;">✅ Configuration</td>
+<td style="text-align: center;">✅ Déclenchement</td>
+<td>Web: Paramétrage • API: Orchestration système</td>
+</tr>
+<tr>
+<td><strong>Rotation CA</strong></td>
+<td style="text-align: center;">✅ Assistants</td>
+<td style="text-align: center;">✅ Automatisable</td>
+<td>Web: Planification • API: Exécution programmée</td>
+</tr>
+<tr>
+<td><strong>Sécurité Nitrokey</strong></td>
+<td style="text-align: center;">✅ Interface admin</td>
+<td style="text-align: center;">✅ Orchestration</td>
+<td>Web: Configuration • API: Signature distribuée</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="recommandations-dusage">🎯 <strong>Recommandations d'Usage</strong></h2>
+<h3 id="utilisez-linterface-web-pour"><strong>Utilisez l'Interface Web pour :</strong></h3>
+<ul>
+<li><strong>Administration PKI</strong> par équipes IT</li>
+<li><strong>Configuration initiale</strong> et paramétrage</li>
+<li><strong>Workflows d'approbation</strong> avec intervention humaine</li>
+<li><strong>Monitoring visuel</strong> et dashboards</li>
+<li><strong>Formation</strong> et découverte des fonctionnalités</li>
+<li><strong>Audit manuel</strong> et génération de rapports</li>
+<li><strong>Gestion des utilisateurs</strong> et permissions</li>
+</ul>
+<h3 id="utilisez-lapi-rest-pour"><strong>Utilisez l'API REST pour :</strong></h3>
+<ul>
+<li><strong>Intégration applications</strong> et systèmes</li>
+<li><strong>Automatisation DevOps</strong> et CI/CD</li>
+<li><strong>Déploiement masse</strong> de certificats</li>
+<li><strong>Protocoles standards</strong> (OCSP, SCEP, EST, ACME)</li>
+<li><strong>Monitoring système</strong> et alerting</li>
+<li><strong>Scripts d'administration</strong> et tâches programmées</li>
+<li><strong>Intégrations externes</strong> (Entra ID, SIEM, etc.)</li>
+</ul>
+<hr />
+<h2 id="arguments-commerciaux-par-segment">💼 <strong>Arguments Commerciaux par Segment</strong></h2>
+<h3 id="pour-equipes-it-interface-web"><strong>Pour Équipes IT (Interface Web)</strong></h3>
+<ul>
+<li><strong>Productivité +300%</strong> : Assistants vs ligne de commande</li>
+<li><strong>Formation réduite</strong> : Interface intuitive vs expertise PKI</li>
+<li><strong>Erreurs humaines -95%</strong> : Workflows guidés et validations</li>
+<li><strong>Conformité native</strong> : Rapports automatiques NIS2/GDPR</li>
+</ul>
+<h3 id="pour-devopsdeveloppeurs-api"><strong>Pour DevOps/Développeurs (API)</strong></h3>
+<ul>
+<li><strong>Time-to-market accéléré</strong> : API complète vs développement PKI</li>
+<li><strong>Intégration universelle</strong> : Standards RFC vs solutions propriétaires</li>
+<li><strong>Scalabilité infinie</strong> : API REST vs interfaces graphiques</li>
+<li><strong>Coût TCO -70%</strong> : API unifiée vs multiples solutions PKI</li>
+</ul>
+<p><strong>🚀 Résultat : PKIaaS couvre 100% des besoins PKI entreprise avec double interface optimisée selon les profils utilisateurs !</strong></p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

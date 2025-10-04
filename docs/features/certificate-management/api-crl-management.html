@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API - CRL Management - PKIaaS Documentation</title>
+    <meta name="description" content="This section details the public API endpoints for managing and distributing Certificate Revocation Lists (CRLs). CRLs are a critical component of a Pu">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="api-crl-management">API - CRL Management</h1>
+<p>This section details the public API endpoints for managing and distributing Certificate Revocation Lists (CRLs). CRLs are a critical component of a Public Key Infrastructure (PKI) for communicating the revocation status of certificates. These endpoints are designed for public consumption by clients and relying parties to verify certificate validity.</p>
+<h2 id="key-functionalities">Key Functionalities</h2>
+<h3 id="get-certificate-revocation-list-crl">Get Certificate Revocation List (CRL)</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>GET /api/v1/crl/{ca}</code></li>
+<li><strong>Description:</strong> Retrieves the Certificate Revocation List (CRL) for a specified Certificate Authority (CA).</li>
+<li><strong>Public Access:</strong> This endpoint is public and does not require any authentication, which is standard for CRL distribution.</li>
+<li><strong>Parameters:</strong><ul>
+<li><code>ca</code> (path parameter): The ID or identifier of the Certificate Authority.</li>
+<li><code>refresh</code> (query parameter, boolean, optional): If <code>true</code>, forces a regeneration of the CRL, bypassing the cache.</li>
+</ul>
+</li>
+<li><strong>Caching:</strong> Implements a caching mechanism (default 30 minutes) to efficiently serve CRLs. The CRL is regenerated if the cache is missed, a refresh is forced, or new revocations have occurred since the last generation.</li>
+<li><strong>Headers:</strong> Sets standard HTTP headers for <code>Content-Type</code> (<code>application/pkix-crl</code>), <code>Content-Disposition</code> (for download filename), <code>Cache-Control</code>, and custom <code>X-CRL-*</code> headers providing metadata like generation time, next update, CA name, and type.</li>
+<li><strong>CORS Support:</strong> Includes <code>Access-Control-Allow-Origin: *</code> headers to allow cross-origin requests.</li>
+<li><strong>Error Handling:</strong> Returns <code>404 Not Found</code> if the CA is not active and <code>500 Internal Server Error</code> for generation failures.</li>
+</ul>
+<h3 id="get-crl-informationmetadata">Get CRL Information/Metadata</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>GET /api/v1/crl/{ca}/info</code></li>
+<li><strong>Description:</strong> Provides metadata and information about a CA's CRL without downloading the actual CRL file. This is useful for clients to check CRL status and properties.</li>
+<li><strong>Parameters:</strong><ul>
+<li><code>ca</code> (path parameter): The ID or identifier of the Certificate Authority.</li>
+</ul>
+</li>
+<li><strong>Response:</strong> Returns a JSON object containing:<ul>
+<li><code>ca_id</code>, <code>ca_name</code>, <code>ca_type</code>.</li>
+<li><code>crl_number</code>: The current CRL number.</li>
+<li><code>this_update</code>, <code>next_update</code>: Timestamps for the current and next scheduled CRL updates.</li>
+<li><code>revoked_certificates_count</code>: Number of certificates listed in the CRL.</li>
+<li><code>crl_url</code>: The URL to download the full CRL.</li>
+<li><code>validity_minutes</code>, <code>cache_minutes</code>: Configured validity and cache durations.</li>
+<li><code>distribution_points</code>: URLs for primary and alternative (force refresh) distribution points.</li>
+<li><code>formats</code>: URLs for different CRL formats (DER, PEM).</li>
+</ul>
+</li>
+</ul>
+<h3 id="list-all-available-crls">List All Available CRLs</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>GET /api/v1/crls</code></li>
+<li><strong>Description:</strong> Retrieves a list of all active Certificate Authorities, along with summary information about their respective CRLs.</li>
+<li><strong>Public Access:</strong> This endpoint is public and does not require authentication.</li>
+<li><strong>Response:</strong> Returns a JSON array, where each element provides <code>ca_id</code>, <code>ca_name</code>, <code>ca_type</code>, <code>crl_number</code>, <code>crl_url</code>, <code>last_update</code>, and <code>revoked_count</code>.</li>
+</ul>
+<h3 id="crl-service-health-check">CRL Service Health Check</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>GET /api/v1/crl/health</code></li>
+<li><strong>Description:</strong> Provides a health status check for the CRL generation and distribution service.</li>
+<li><strong>Response:</strong> Returns a JSON object with <code>status</code> (<code>healthy</code> or <code>unhealthy</code>), <code>total_cas</code>, <code>crls_generated</code>, and a <code>timestamp</code>.</li>
+</ul>
+<h2 id="inferred-specifications">Inferred Specifications</h2>
+<ul>
+<li><strong>Public and Unauthenticated Access:</strong> CRLs are designed for public distribution, allowing any relying party to retrieve them without authentication, which is a fundamental PKI requirement.</li>
+<li><strong>Efficient Distribution with Caching:</strong> The system employs caching mechanisms to ensure that CRLs are served efficiently and are regenerated only when necessary (e.g., new revocations, cache expiry, forced refresh).</li>
+<li><strong>Standard Compliance:</strong> CRLs are distributed with the <code>application/pkix-crl</code> content type, adhering to industry standards.</li>
+<li><strong>Configurable Validity and Caching:</strong> The validity period of CRLs and their caching duration are configurable, allowing administrators to balance freshness with performance.</li>
+<li><strong>Comprehensive Metadata:</strong> The <code>getCrlInfo</code> endpoint provides rich metadata about CRLs, enabling clients to make informed decisions about their usage and validity.</li>
+<li><strong>CORS Enabled:</strong> Cross-Origin Resource Sharing (CORS) is enabled for CRL endpoints, facilitating integration into web-based applications.</li>
+<li><strong>Service Health Monitoring:</strong> A dedicated health check endpoint allows for continuous monitoring of the CRL service's operational status.</li>
+<li><strong>Audit Logging:</strong> All significant events related to CRL generation and distribution are logged for audit and compliance purposes.</li>
+</ul>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

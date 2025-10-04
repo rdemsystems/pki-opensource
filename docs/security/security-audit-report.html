@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Sécurité PKIaaS - Stockage des Clés et Mots de Passe - PKIaaS Documentation</title>
+    <meta name="description" content="1. **Stockage des clés privées** : Usage de `Crypt::encryptString()` Laravel (clé unique système)">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="audit-securite-pkiaas-stockage-des-cles-et-mots-de-passe">Audit Sécurité PKIaaS - Stockage des Clés et Mots de Passe</h1>
+<h2 id="resume-executif">Résumé Exécutif</h2>
+<h3 id="vulnerabilites-critiques-identifiees">🔴 Vulnérabilités Critiques Identifiées</h3>
+<ol>
+<li><strong>Stockage des clés privées</strong> : Usage de <code>Crypt::encryptString()</code> Laravel (clé unique système)</li>
+<li><strong>Mots de passe d'approbation</strong> : Hashage correct mais pas de salt explicite personnalisé</li>
+<li><strong>Challenge passwords SCEP</strong> : Stockage en clair dans la base de données</li>
+<li><strong>Architecture Nitrokey</strong> : Design initial incompatible avec clés physiques distantes</li>
+</ol>
+<h3 id="score-de-securite-global-310">📊 Score de Sécurité Global : 3/10</h3>
+<hr />
+<h2 id="1-analyse-detaillee-des-vulnerabilites">1. Analyse Détaillée des Vulnérabilités</h2>
+<h3 id="critique-stockage-des-cles-privees">🔴 <strong>CRITIQUE - Stockage des Clés Privées</strong></h3>
+<h4 id="problemes-identifies">Problèmes Identifiés</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// app/Models/Certificate.php:79-84</span>
+<span class="x">public function getDecryptedPrivateKeyAttribute()</span>
+<span class="x">{</span>
+<span class="x">    return Crypt::decryptString($this-&gt;private_key);  // ❌ Clé unique système</span>
+<span class="x">}</span>
+
+<span class="x">public function setPrivateKeyAttribute($value)</span>
+<span class="x">{</span>
+<span class="x">    $this-&gt;attributes[&#39;private_key&#39;] = Crypt::encryptString($value);  // ❌ Pas de salt/dérivation</span>
+<span class="x">}</span>
+
+<span class="x">// app/Models/CertificateAuthority.php:104-109 - MÊME PROBLÈME</span>
+</code></pre></div>
+
+<h4 id="impact-securite">Impact Sécurité</h4>
+<ul>
+<li><strong>Une seule clé de chiffrement</strong> pour toutes les clés privées (APP_KEY)</li>
+<li><strong>Pas de dérivation de clé</strong> basée sur des éléments uniques</li>
+<li><strong>Compromission globale</strong> si APP_KEY est exposée</li>
+<li><strong>Non-conformité</strong> FIPS 140-2 (pas de HSM, pas de séparation)</li>
+</ul>
+<h4 id="recommandations">Recommandations</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Nouveau système avec dérivation de clé unique par CA/certificat</span>
+<span class="x">class SecureKeyStorage</span>
+<span class="x">{</span>
+<span class="x">    public function encryptPrivateKey(string $privateKey, string $caId, string $salt = null): string</span>
+<span class="x">    {</span>
+<span class="x">        $salt = $salt ?? random_bytes(32);</span>
+<span class="x">        $derivedKey = $this-&gt;deriveKey($caId, $salt);</span>
+
+<span class="x">        // Utiliser sodium_crypto_secretbox pour chiffrement authentifié</span>
+<span class="x">        $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);</span>
+<span class="x">        $encrypted = sodium_crypto_secretbox($privateKey, $nonce, $derivedKey);</span>
+
+<span class="x">        return base64_encode($salt . $nonce . $encrypted);</span>
+<span class="x">    }</span>
+
+<span class="x">    private function deriveKey(string $caId, string $salt): string</span>
+<span class="x">    {</span>
+<span class="x">        return sodium_crypto_pwhash(</span>
+<span class="x">            SODIUM_CRYPTO_SECRETBOX_KEYBYTES,</span>
+<span class="x">            config(&#39;app.key&#39;) . $caId,  // Base + CA unique</span>
+<span class="x">            $salt,</span>
+<span class="x">            SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,</span>
+<span class="x">            SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE</span>
+<span class="x">        );</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h3 id="moyen-challenge-passwords-scep">🟡 <strong>MOYEN - Challenge Passwords SCEP</strong></h3>
+<h4 id="probleme-identifie">Problème Identifié</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// database/migrations/2025_09_16_041048 - Ligne 19</span>
+<span class="x">$table-&gt;string(&#39;scep_challenge_password&#39;)-&gt;nullable()</span>
+<span class="x">    -&gt;comment(&#39;SCEP challenge password for enrollment&#39;);  // ❌ En clair !</span>
+</code></pre></div>
+
+<h4 id="impact">Impact</h4>
+<ul>
+<li><strong>Mots de passe en clair</strong> dans la base de données</li>
+<li><strong>Accès administrateur</strong> = compromission de tous les challenge passwords</li>
+<li><strong>Logs potentiels</strong> exposant les mots de passe</li>
+</ul>
+<h4 id="recommandation">Recommandation</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Nouveau champ avec hash + salt</span>
+<span class="x">$table-&gt;string(&#39;scep_challenge_password_hash&#39;)-&gt;nullable()</span>
+<span class="x">    -&gt;comment(&#39;Hashed SCEP challenge password with salt&#39;);</span>
+<span class="x">$table-&gt;string(&#39;scep_challenge_salt&#39;)-&gt;nullable();</span>
+
+<span class="x">// Dans le modèle</span>
+<span class="x">public function setSCEPChallengePassword(string $password): void</span>
+<span class="x">{</span>
+<span class="x">    $salt = random_bytes(32);</span>
+<span class="x">    $this-&gt;scep_challenge_salt = base64_encode($salt);</span>
+<span class="x">    $this-&gt;scep_challenge_password_hash = hash_pbkdf2(&#39;sha256&#39;, $password, $salt, 100000);</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h3 id="moyen-architecture-nitrokey-inappropriee">🟡 <strong>MOYEN - Architecture Nitrokey Inappropriée</strong></h3>
+<h4 id="problemes-de-design-initial">Problèmes de Design Initial</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// app/Services/Crypto/NitrokeyCryptoService.php (conceptuel)</span>
+<span class="x">private function retrieveShare(string $nitrokeyId, int $caId): array</span>
+<span class="x">{</span>
+<span class="x">    // ❌ Assume que Nitrokey est connectée AU SERVEUR</span>
+<span class="x">    $session = $this-&gt;pkcs11Connect($nitrokeyId);</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h4 id="contraintes-reelles">Contraintes Réelles</h4>
+<ul>
+<li><strong>Nitrokeys sur postes clients distants</strong> (pas sur serveur)</li>
+<li><strong>Accès PKCS#11 distant</strong> requis via réseau</li>
+<li><strong>Protocole sécurisé</strong> pour transmission des parts de clés</li>
+<li><strong>Interface web</strong> pour orchestrer la génération/utilisation</li>
+</ul>
+<hr />
+<h2 id="2-architecture-nitrokey-corrigee">2. Architecture Nitrokey Corrigée</h2>
+<h3 id="nouvelle-architecture-distribuee">🏗️ <strong>Nouvelle Architecture Distribuée</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="err">┌─────────────────┐</span><span class="w">    </span><span class="err">┌──────────────────┐</span><span class="w">    </span><span class="err">┌─────────────────┐</span>
+<span class="err">│</span><span class="w">   </span><span class="n">Client</span><span class="w"> </span><span class="mi">1</span><span class="w">      </span><span class="err">│</span><span class="w">    </span><span class="err">│</span><span class="w">   </span><span class="n">PKIaaS</span><span class="w"> </span><span class="n">Server</span><span class="w">  </span><span class="err">│</span><span class="w">    </span><span class="err">│</span><span class="w">   </span><span class="n">Client</span><span class="w"> </span><span class="n">N</span><span class="w">      </span><span class="err">│</span>
+<span class="err">│</span><span class="w">  </span><span class="n">Nitrokey</span><span class="w"> </span><span class="n">NK001</span><span class="w"> </span><span class="err">│◄──►│</span><span class="w">                  </span><span class="err">│◄──►│</span><span class="w">  </span><span class="n">Nitrokey</span><span class="w"> </span><span class="n">NK00N</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w">  </span><span class="n">PKCS</span><span class="c1">#11 Local  │    │  Orchestrateur   │    │  PKCS#11 Local  │</span>
+<span class="err">└─────────────────┘</span><span class="w">    </span><span class="err">│</span><span class="w">  </span><span class="n">Shamir</span><span class="w"> </span><span class="n">Reconst</span><span class="o">.</span><span class="w"> </span><span class="err">│</span><span class="w">    </span><span class="err">└─────────────────┘</span>
+<span class="w">                       </span><span class="err">└──────────────────┘</span>
+</code></pre></div>
+
+<h4 id="composants-requis">Composants Requis</h4>
+<p><strong>1. Agent Client Nitrokey</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="x">// ClientAgent installé sur chaque poste avec Nitrokey</span>
+<span class="x">class NitrokeyClientAgent</span>
+<span class="x">{</span>
+<span class="x">    private $pkcs11Session;</span>
+<span class="x">    private $serverEndpoint;</span>
+
+<span class="x">    public function participateInSigning(string $sessionId): bool</span>
+<span class="x">    {</span>
+<span class="x">        // 1. Connecter à la Nitrokey locale via OpenSC/PKCS#11</span>
+<span class="x">        $this-&gt;pkcs11Session = $this-&gt;connectLocalNitrokey();</span>
+
+<span class="x">        // 2. Demander PIN utilisateur (interface graphique)</span>
+<span class="x">        $pin = $this-&gt;promptUserForPIN();</span>
+
+<span class="x">        // 3. Déverrouiller Nitrokey avec PIN</span>
+<span class="x">        $this-&gt;authenticateWithPIN($pin);</span>
+
+<span class="x">        // 4. Récupérer la part Shamir stockée</span>
+<span class="x">        $shamirShare = $this-&gt;retrieveLocalShamirShare($sessionId);</span>
+
+<span class="x">        // 5. Chiffrer avec clé session et transmettre au serveur</span>
+<span class="x">        return $this-&gt;transmitEncryptedShare($sessionId, $shamirShare);</span>
+<span class="x">    }</span>
+
+<span class="x">    private function connectLocalNitrokey(): PKCS11Session</span>
+<span class="x">    {</span>
+<span class="x">        // Utiliser OpenSC PKCS#11 library</span>
+<span class="x">        $pkcs11 = new PKCS11(&#39;/usr/lib/opensc-pkcs11.so&#39;);</span>
+<span class="x">        return $pkcs11-&gt;openSession();</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<p><strong>2. Interface Web de Génération</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="x">// Interface pour générer les parts Shamir depuis l&#39;admin web</span>
+<span class="x">class ShamirWebInterface extends Controller</span>
+<span class="x">{</span>
+<span class="x">    public function generateDistributedCA(Request $request)</span>
+<span class="x">    {</span>
+<span class="x">        $validated = $request-&gt;validate([</span>
+<span class="x">            &#39;ca_name&#39; =&gt; &#39;required|string&#39;,</span>
+<span class="x">            &#39;threshold&#39; =&gt; &#39;required|integer|min:2&#39;,</span>
+<span class="x">            &#39;total_shares&#39; =&gt; &#39;required|integer|min:3&#39;,</span>
+<span class="x">            &#39;nitrokey_assignments&#39; =&gt; &#39;required|array&#39;  // NK001 -&gt; user@domain.com</span>
+<span class="x">        ]);</span>
+
+<span class="x">        // 1. Générer CA private key maître</span>
+<span class="x">        $masterPrivateKey = $this-&gt;generateCAMasterKey(4096);</span>
+
+<span class="x">        // 2. Appliquer Shamir Secret Sharing</span>
+<span class="x">        $shamirShares = $this-&gt;applyShamirSplitting(</span>
+<span class="x">            $masterPrivateKey,</span>
+<span class="x">            $validated[&#39;threshold&#39;],</span>
+<span class="x">            $validated[&#39;total_shares&#39;]</span>
+<span class="x">        );</span>
+
+<span class="x">        // 3. Créer &quot;deployment packages&quot; pour chaque Nitrokey</span>
+<span class="x">        $deploymentPackages = [];</span>
+<span class="x">        foreach ($shamirShares as $index =&gt; $share) {</span>
+<span class="x">            $nitrokeyId = &quot;NK&quot; . str_pad($index, 3, &#39;0&#39;, STR_PAD_LEFT);</span>
+
+<span class="x">            $deploymentPackages[$nitrokeyId] = [</span>
+<span class="x">                &#39;share_data&#39; =&gt; $this-&gt;encryptShareForDeployment($share),</span>
+<span class="x">                &#39;deployment_instructions&#39; =&gt; $this-&gt;generateDeploymentScript($nitrokeyId),</span>
+<span class="x">                &#39;assigned_user&#39; =&gt; $validated[&#39;nitrokey_assignments&#39;][$nitrokeyId],</span>
+<span class="x">                &#39;qr_code&#39; =&gt; $this-&gt;generateDeploymentQR($nitrokeyId, $share)</span>
+<span class="x">            ];</span>
+<span class="x">        }</span>
+
+<span class="x">        // 4. Effacement sécurisé de la clé maître</span>
+<span class="x">        sodium_memzero($masterPrivateKey);</span>
+
+<span class="x">        // 5. Retourner packages de déploiement</span>
+<span class="x">        return response()-&gt;json([</span>
+<span class="x">            &#39;ca_id&#39; =&gt; $caId,</span>
+<span class="x">            &#39;deployment_packages&#39; =&gt; $deploymentPackages,</span>
+<span class="x">            &#39;next_steps&#39; =&gt; &#39;Distribute packages to Nitrokey holders&#39;</span>
+<span class="x">        ]);</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<p><strong>3. Protocole de Signature Distribuée</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="x">class DistributedSigningOrchestrator</span>
+<span class="x">{</span>
+<span class="x">    public function initiateSigning(string $csr, int $caId): string</span>
+<span class="x">    {</span>
+<span class="x">        // 1. Créer session de signature temporaire</span>
+<span class="x">        $sessionId = $this-&gt;createSigningSession($caId, $csr);</span>
+
+<span class="x">        // 2. Identifier les Nitrokeys requises</span>
+<span class="x">        $requiredNitrokeys = $this-&gt;getRequiredNitrokeys($caId);</span>
+
+<span class="x">        // 3. Notifier les détenteurs de Nitrokeys</span>
+<span class="x">        foreach ($requiredNitrokeys as $nitrokey) {</span>
+<span class="x">            $this-&gt;notifyNitrokeyHolder($nitrokey, $sessionId);</span>
+<span class="x">        }</span>
+
+<span class="x">        // 4. Attendre les contributions (timeout 5 minutes)</span>
+<span class="x">        return $this-&gt;waitForSigningContributions($sessionId);</span>
+<span class="x">    }</span>
+
+<span class="x">    public function receiveNitrokeyContribution(string $sessionId, string $nitrokeyId, array $encryptedShare): bool</span>
+<span class="x">    {</span>
+<span class="x">        // 1. Valider la session active</span>
+<span class="x">        $session = $this-&gt;getSigningSession($sessionId);</span>
+<span class="x">        if (!$session || $session[&#39;status&#39;] !== &#39;waiting_contributions&#39;) {</span>
+<span class="x">            throw new InvalidSigningSessionException();</span>
+<span class="x">        }</span>
+
+<span class="x">        // 2. Vérifier autorisation de cette Nitrokey</span>
+<span class="x">        if (!in_array($nitrokeyId, $session[&#39;required_nitrokeys&#39;])) {</span>
+<span class="x">            throw new UnauthorizedNitrokeyException();</span>
+<span class="x">        }</span>
+
+<span class="x">        // 3. Déchiffrer et stocker la part</span>
+<span class="x">        $shamirShare = $this-&gt;decryptShareContribution($encryptedShare, $session[&#39;session_key&#39;]);</span>
+<span class="x">        $session[&#39;received_shares&#39;][$nitrokeyId] = $shamirShare;</span>
+
+<span class="x">        // 4. Vérifier si seuil atteint</span>
+<span class="x">        if (count($session[&#39;received_shares&#39;]) &gt;= $session[&#39;threshold&#39;]) {</span>
+<span class="x">            return $this-&gt;executeSigningWithShares($sessionId);</span>
+<span class="x">        }</span>
+
+<span class="x">        return true;  // En attente d&#39;autres contributions</span>
+<span class="x">    }</span>
+
+<span class="x">    private function executeSigningWithShares(string $sessionId): bool</span>
+<span class="x">    {</span>
+<span class="x">        $session = $this-&gt;getSigningSession($sessionId);</span>
+
+<span class="x">        // 1. Reconstituer clé privée temporairement</span>
+<span class="x">        $reconstructedPrivateKey = $this-&gt;shamirReconstruct($session[&#39;received_shares&#39;]);</span>
+
+<span class="x">        // 2. Signer le CSR</span>
+<span class="x">        $signedCertificate = $this-&gt;signCSRWithReconstructedKey(</span>
+<span class="x">            $session[&#39;csr&#39;],</span>
+<span class="x">            $reconstructedPrivateKey,</span>
+<span class="x">            $session[&#39;ca_id&#39;]</span>
+<span class="x">        );</span>
+
+<span class="x">        // 3. Effacement immédiat et sécurisé</span>
+<span class="x">        sodium_memzero($reconstructedPrivateKey);</span>
+<span class="x">        foreach ($session[&#39;received_shares&#39;] as &amp;$share) {</span>
+<span class="x">            sodium_memzero($share);</span>
+<span class="x">        }</span>
+
+<span class="x">        // 4. Nettoyage session</span>
+<span class="x">        $this-&gt;cleanupSigningSession($sessionId);</span>
+
+<span class="x">        // 5. Retourner certificat signé</span>
+<span class="x">        return $signedCertificate;</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h3 id="integration-openscpkcs11">🔧 <strong>Intégration OpenSC/PKCS#11</strong></h3>
+<h4 id="prerequis-systeme">Prérequis Système</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Installation OpenSC sur les postes clients</span>
+apt-get<span class="w"> </span>install<span class="w"> </span>opensc<span class="w"> </span>opensc-pkcs11
+<span class="c1"># ou</span>
+yum<span class="w"> </span>install<span class="w"> </span>opensc<span class="w"> </span>pcsc-lite-devel
+
+<span class="c1"># Vérification Nitrokey HSM détectée</span>
+pkcs11-tool<span class="w"> </span>--module<span class="w"> </span>/usr/lib/opensc-pkcs11.so<span class="w"> </span>--list-slots
+
+<span class="c1"># Test accès avec PIN</span>
+pkcs11-tool<span class="w"> </span>--module<span class="w"> </span>/usr/lib/opensc-pkcs11.so<span class="w"> </span>--list-objects<span class="w"> </span>--login<span class="w"> </span>--pin<span class="w"> </span><span class="m">123456</span>
+</code></pre></div>
+
+<h4 id="interface-php-pkcs11">Interface PHP PKCS#11</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Extension PHP PKCS#11 ou wrapper via CLI</span>
+<span class="x">class PKCS11Wrapper</span>
+<span class="x">{</span>
+<span class="x">    private $moduleLib;</span>
+<span class="x">    private $slotId;</span>
+
+<span class="x">    public function __construct(string $moduleLib = &#39;/usr/lib/opensc-pkcs11.so&#39;)</span>
+<span class="x">    {</span>
+<span class="x">        $this-&gt;moduleLib = $moduleLib;</span>
+<span class="x">        $this-&gt;detectNitrokey();</span>
+<span class="x">    }</span>
+
+<span class="x">    public function storeObject(array $objectData, string $pin): bool</span>
+<span class="x">    {</span>
+<span class="x">        $cmd = sprintf(</span>
+<span class="x">            &#39;pkcs11-tool --module %s --login --pin %s --write-object %s --type data --id %s --label &quot;%s&quot;&#39;,</span>
+<span class="x">            escapeshellarg($this-&gt;moduleLib),</span>
+<span class="x">            escapeshellarg($pin),</span>
+<span class="x">            escapeshellarg($objectData[&#39;data&#39;]),</span>
+<span class="x">            escapeshellarg($objectData[&#39;id&#39;]),</span>
+<span class="x">            escapeshellarg($objectData[&#39;label&#39;])</span>
+<span class="x">        );</span>
+
+<span class="x">        $result = shell_exec($cmd . &#39; 2&gt;&amp;1&#39;);</span>
+<span class="x">        return strpos($result, &#39;OK&#39;) !== false;</span>
+<span class="x">    }</span>
+
+<span class="x">    public function retrieveObject(string $objectId, string $pin): ?string</span>
+<span class="x">    {</span>
+<span class="x">        $cmd = sprintf(</span>
+<span class="x">            &#39;pkcs11-tool --module %s --login --pin %s --read-object --id %s --type data&#39;,</span>
+<span class="x">            escapeshellarg($this-&gt;moduleLib),</span>
+<span class="x">            escapeshellarg($pin),</span>
+<span class="x">            escapeshellarg($objectId)</span>
+<span class="x">        );</span>
+
+<span class="x">        return shell_exec($cmd);</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="3-plan-de-correction-prioritaire">3. Plan de Correction Prioritaire</h2>
+<h3 id="phase-1-correctifs-critiques-1-semaine">🚨 <strong>Phase 1 - Correctifs Critiques (1 semaine)</strong></h3>
+<h4 id="11-securisation-stockage-cles-privees">1.1 Sécurisation Stockage Clés Privées</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Nouveau service de stockage sécurisé</span>
+<span class="x">php artisan make:service SecureKeyStorageService</span>
+<span class="x">php artisan make:migration update_private_key_storage_with_salts</span>
+</code></pre></div>
+
+<h4 id="12-correction-challenge-passwords">1.2 Correction Challenge Passwords</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Migration correction SCEP passwords</span>
+<span class="x">php artisan make:migration secure_scep_challenge_passwords</span>
+</code></pre></div>
+
+<h3 id="phase-2-architecture-nitrokey-3-semaines">🔧 <strong>Phase 2 - Architecture Nitrokey (3 semaines)</strong></h3>
+<h4 id="21-developpement-agent-client">2.1 Développement Agent Client</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Application standalone pour postes clients</span>
+<span class="x">// Technologies : PHP CLI + GUI (php-gtk ou Electron wrapper)</span>
+</code></pre></div>
+
+<h4 id="22-interface-web-generation-shamir">2.2 Interface Web Génération Shamir</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Contrôleurs et vues pour génération distribuée</span>
+<span class="x">php artisan make:controller ShamirGenerationController</span>
+<span class="x">php artisan make:component NitrokeyDeploymentWizard</span>
+</code></pre></div>
+
+<h4 id="23-orchestrateur-signature-distribuee">2.3 Orchestrateur Signature Distribuée</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Service central pour coordination</span>
+<span class="x">php artisan make:service DistributedSigningOrchestrator</span>
+<span class="x">php artisan make:job ProcessSigningSession</span>
+</code></pre></div>
+
+<h3 id="phase-3-tests-et-documentation-1-semaine">📝 <strong>Phase 3 - Tests et Documentation (1 semaine)</strong></h3>
+<h4 id="31-tests-securite">3.1 Tests Sécurité</h4>
+<ul>
+<li>Tests unitaires nouveau stockage</li>
+<li>Tests d'intégration Nitrokey</li>
+<li>Audit de pénétration</li>
+</ul>
+<h4 id="32-documentation-operationnelle">3.2 Documentation Opérationnelle</h4>
+<ul>
+<li>Procédures déploiement Nitrokeys</li>
+<li>Guide utilisation agent client</li>
+<li>Procédures de récupération</li>
+</ul>
+<hr />
+<h2 id="4-recommandations-securisees">4. Recommandations Sécurisées</h2>
+<h3 id="stockage-des-secrets">🔐 <strong>Stockage des Secrets</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="x">// Nouveau modèle de stockage sécurisé</span>
+<span class="x">abstract class SecureStorageModel extends Model</span>
+<span class="x">{</span>
+<span class="x">    protected $secureFields = [];  // Champs à chiffrer avec salt unique</span>
+
+<span class="x">    protected static function boot()</span>
+<span class="x">    {</span>
+<span class="x">        parent::boot();</span>
+
+<span class="x">        static::saving(function ($model) {</span>
+<span class="x">            foreach ($model-&gt;secureFields as $field) {</span>
+<span class="x">                if ($model-&gt;isDirty($field)) {</span>
+<span class="x">                    $model-&gt;encryptSecureField($field);</span>
+<span class="x">                }</span>
+<span class="x">            }</span>
+<span class="x">        });</span>
+<span class="x">    }</span>
+
+<span class="x">    private function encryptSecureField(string $field): void</span>
+<span class="x">    {</span>
+<span class="x">        $value = $this-&gt;attributes[$field];</span>
+<span class="x">        if (empty($value)) return;</span>
+
+<span class="x">        $salt = random_bytes(32);</span>
+<span class="x">        $key = $this-&gt;deriveFieldKey($field, $salt);</span>
+
+<span class="x">        $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);</span>
+<span class="x">        $encrypted = sodium_crypto_secretbox($value, $nonce, $key);</span>
+
+<span class="x">        $this-&gt;attributes[$field] = base64_encode($salt . $nonce . $encrypted);</span>
+<span class="x">        $this-&gt;attributes[$field . &#39;_salt&#39;] = base64_encode($salt);</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h3 id="gestion-des-mots-de-passe">🔑 <strong>Gestion des Mots de Passe</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="x">// Service de gestion des mots de passe sécurisé</span>
+<span class="x">class SecurePasswordManager</span>
+<span class="x">{</span>
+<span class="x">    // Utiliser Argon2id avec paramètres appropriés</span>
+<span class="x">    public function hashPassword(string $password, ?string $salt = null): array</span>
+<span class="x">    {</span>
+<span class="x">        $salt = $salt ?? random_bytes(32);</span>
+
+<span class="x">        $hash = password_hash(</span>
+<span class="x">            $password . base64_encode($salt),  // Salt comme pepper</span>
+<span class="x">            PASSWORD_ARGON2ID,</span>
+<span class="x">            [</span>
+<span class="x">                &#39;memory_cost&#39; =&gt; 65536,  // 64 MB</span>
+<span class="x">                &#39;time_cost&#39; =&gt; 4,        // 4 iterations</span>
+<span class="x">                &#39;threads&#39; =&gt; 3           // 3 threads</span>
+<span class="x">            ]</span>
+<span class="x">        );</span>
+
+<span class="x">        return [</span>
+<span class="x">            &#39;hash&#39; =&gt; $hash,</span>
+<span class="x">            &#39;salt&#39; =&gt; base64_encode($salt),</span>
+<span class="x">            &#39;algorithm&#39; =&gt; &#39;argon2id&#39;</span>
+<span class="x">        ];</span>
+<span class="x">    }</span>
+
+<span class="x">    public function verifyPassword(string $password, string $hash, string $salt): bool</span>
+<span class="x">    {</span>
+<span class="x">        return password_verify($password . $salt, $hash);</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="conclusion">Conclusion</h2>
+<p><strong>Le système actuel présente des vulnérabilités critiques</strong> qui nécessitent une refonte complète de la gestion des clés privées et de l'architecture Nitrokey.</p>
+<p><strong>Priorités immédiates :</strong>
+1. ✅ Implémenter stockage sécurisé avec dérivation de clés uniques
+2. ✅ Corriger les mots de passe stockés en clair
+3. ✅ Développer architecture distribuée pour Nitrokeys distantes
+4. ✅ Intégrer OpenSC/PKCS#11 via agents clients</p>
+<p><strong>Estimation effort total :</strong> 5 semaines développement + 2 semaines tests/déploiement</p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA Management Overview - PKIaaS Documentation</title>
+    <meta name="description" content="This section details the comprehensive Certificate Authority (CA) management features of the system, covering the full lifecycle of Root and Intermedi">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="ca-management-overview">CA Management Overview</h1>
+<p>This section details the comprehensive Certificate Authority (CA) management features of the system, covering the full lifecycle of Root and Intermediate CAs.</p>
+<h2 id="key-functionalities">Key Functionalities</h2>
+<h3 id="ca-listing-and-filtering">CA Listing and Filtering</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>/ca</code></li>
+<li><strong>Description:</strong> Displays a paginated list of Certificate Authorities.</li>
+<li><strong>Filters:</strong><ul>
+<li><code>type</code>: Filter by CA type (<code>root</code> or <code>intermediate</code>).</li>
+<li><code>status</code>: Filter by CA status (<code>active</code> or <code>inactive</code>).</li>
+<li><code>search</code>: Search by CA <code>name</code> or <code>common_name</code>.</li>
+</ul>
+</li>
+<li><strong>Access Control:</strong> Non-admin users can only view CAs they have explicit access to.</li>
+</ul>
+<h3 id="ca-creation">CA Creation</h3>
+<ul>
+<li><strong>Endpoints:</strong><ul>
+<li><code>GET /ca/create</code>: Displays the CA creation form.</li>
+<li><code>POST /ca</code>: Submits data to create a new CA.</li>
+</ul>
+</li>
+<li><strong>CA Types:</strong> Supports creation of both <code>Root</code> and <code>Intermediate</code> CAs.</li>
+<li><strong>Intermediate CA Requirements:</strong><ul>
+<li>Must specify a <code>parent_ca_id</code>.</li>
+<li>If the parent CA's private key is password-protected, <code>parent_ca_password</code> is required for decryption during intermediate CA creation.</li>
+</ul>
+</li>
+<li><strong>Cryptographic Options:</strong><ul>
+<li><strong>Key Algorithms:</strong> <code>rsa-3072</code>, <code>rsa-4096</code>, <code>ecc-p256</code>, <code>ecc-p384</code>.</li>
+<li><strong>Hash Algorithms:</strong> <code>sha256</code>, <code>sha384</code>.</li>
+<li><strong>Private Key Encryption:</strong> <code>aes128</code>, <code>aes256</code>.</li>
+</ul>
+</li>
+<li><strong>Validity Period:</strong> Configurable in days, with predefined presets.</li>
+<li><strong>Initial Password:</strong> An optional <code>initial_password</code> can be set for the new CA, which implies a "very secure" trust level for its private key.</li>
+<li><strong>Audit Logging:</strong> Records CA creation and initial password setup events.</li>
+</ul>
+<h3 id="ca-details-and-statistics">CA Details and Statistics</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>/ca/{ca}</code></li>
+<li><strong>Description:</strong> Displays detailed information about a specific CA, including its parent and child CAs, and associated certificates.</li>
+<li><strong>Statistics:</strong> Provides counts for total, active, revoked, and expired certificates issued by the CA.</li>
+</ul>
+<h3 id="ca-updates">CA Updates</h3>
+<ul>
+<li><strong>Endpoints:</strong><ul>
+<li><code>GET /ca/{ca}/edit</code>: Displays the CA editing form.</li>
+<li><code>PUT/PATCH /ca/{ca}</code>: Submits data to update an existing CA.</li>
+</ul>
+</li>
+<li><strong>Updatable Fields:</strong><ul>
+<li><code>name</code></li>
+<li><code>crl_distribution_points</code> (URL)</li>
+<li><code>ocsp_url</code> (URL)</li>
+<li><code>estimated_certificate_count</code></li>
+<li><code>certificate_warning_threshold</code></li>
+</ul>
+</li>
+<li><strong>Feature Toggles:</strong><ul>
+<li><code>is_active</code>: Activate or deactivate the CA.</li>
+<li><code>requires_manual_approval</code>: Enable/disable manual approval for certificates issued by this CA.</li>
+<li><code>acme_public_enabled</code>: Enable/disable public ACME issuance for this CA.</li>
+<li><code>auto_renewal_enabled</code>: Enable/disable automatic certificate renewal.</li>
+<li><code>auto_renewal_days_before</code>: Number of days before expiration to attempt auto-renewal.</li>
+<li><code>auto_renewal_max_attempts</code>: Maximum attempts for auto-renewal.</li>
+</ul>
+</li>
+<li><strong>Audit Logging:</strong> Records CA update events.</li>
+</ul>
+<h3 id="ca-asset-downloads">CA Asset Downloads</h3>
+<ul>
+<li><strong>Download Certificate:</strong> <code>GET /ca/{ca}/download-certificate</code> - Downloads the CA's public certificate (<code>.crt</code> file).</li>
+<li><strong>Download Certificate Chain:</strong> <code>GET /ca/{ca}/download-certificate-chain</code> - Downloads the full certificate chain (<code>.crt</code> file).</li>
+<li><strong>Download CRL:</strong> <code>GET /ca/{ca}/download-crl</code> - Generates and downloads the Certificate Revocation List (<code>.pem</code> file) for the CA, listing all revoked certificates. The CRL includes a <code>Next Update</code> field set to 30 days from generation.</li>
+</ul>
+<h3 id="ca-revocation">CA Revocation</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>POST /ca/{ca}/revoke</code></li>
+<li><strong>Description:</strong> Marks a CA as inactive (<code>is_active = false</code>).</li>
+<li><strong>Precondition:</strong> An active CA cannot be deleted; it must be revoked first.</li>
+<li><strong>Audit Logging:</strong> Records CA revocation events.</li>
+</ul>
+<h3 id="ca-deletion">CA Deletion</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>DELETE /ca/{ca}</code></li>
+<li><strong>Description:</strong> Permanently deletes a CA from the system.</li>
+<li><strong>Strict Deletion Policy:</strong><ul>
+<li>The CA must be inactive (<code>is_active = false</code>).</li>
+<li>The CA must not have any active or non-soft-deleted revoked certificates. All associated certificates must be soft-deleted first.</li>
+<li>The CA must not have any child CAs.</li>
+</ul>
+</li>
+<li><strong>Audit Logging:</strong> Records CA deletion events.</li>
+</ul>
+<h2 id="inferred-specifications">Inferred Specifications</h2>
+<ul>
+<li><strong>CA Hierarchy:</strong> Supports Root and Intermediate CAs, forming a chain of trust.</li>
+<li><strong>Cryptographic Standards:</strong> Adheres to common cryptographic standards for key generation, hashing, and certificate signing.</li>
+<li><strong>Security Levels:</strong> The presence of an <code>initial_password</code> for a CA implies a mechanism for managing different trust security levels for private keys, likely detailed in <code>CA_TRUST_FLAGS_SPECIFICATION.md</code>.</li>
+<li><strong>CRL Management:</strong> CRLs are generated on demand and include a 30-day validity period for the next update.</li>
+<li><strong>Data Integrity:</strong> Strict deletion policies ensure that CAs with active or associated certificates (even revoked ones not soft-deleted) or child CAs cannot be accidentally removed, preserving the integrity of the PKI.</li>
+<li><strong>Auditing:</strong> Comprehensive audit logging provides a clear trail of all significant CA management actions.</li>
+</ul>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

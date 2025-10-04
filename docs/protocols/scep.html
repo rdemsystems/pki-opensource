@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCEP (Simple Certificate Enrollment Protocol) Integration Guide - PKIaaS Documentation</title>
+    <meta name="description" content="This guide covers the implementation and configuration of SCEP (Simple Certificate Enrollment Protocol) support in PKIaaS, including Microsoft Intune ">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="scep-simple-certificate-enrollment-protocol-integration-guide">SCEP (Simple Certificate Enrollment Protocol) Integration Guide</h1>
+<p>This guide covers the implementation and configuration of SCEP (Simple Certificate Enrollment Protocol) support in PKIaaS, including Microsoft Intune integration for device certificate enrollment.</p>
+<h2 id="overview">Overview</h2>
+<p>SCEP (RFC 8894) provides a standardized way for devices to automatically request and receive certificates. PKIaaS implements a complete SCEP server that is compatible with:</p>
+<ul>
+<li><strong>Microsoft Intune</strong> - Device management and certificate deployment</li>
+<li><strong>iOS/macOS</strong> - Native SCEP support for device enrollment</li>
+<li><strong>Android</strong> - Enterprise mobility management solutions</li>
+<li><strong>Network Equipment</strong> - Cisco, Juniper, and other network devices</li>
+<li><strong>Custom Applications</strong> - Any SCEP-compliant client</li>
+</ul>
+<h2 id="scep-protocol-overview">SCEP Protocol Overview</h2>
+<h3 id="scep-operations">SCEP Operations</h3>
+<p>PKIaaS supports all standard SCEP operations:</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Method</th>
+<th>Purpose</th>
+<th>Intune Compatible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GetCACaps</code></td>
+<td>GET</td>
+<td>Retrieve CA capabilities</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><code>GetCACert</code></td>
+<td>GET</td>
+<td>Download CA certificate</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><code>PKIOperation</code></td>
+<td>POST</td>
+<td>Certificate enrollment/renewal</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><code>GetNextCACert</code></td>
+<td>GET</td>
+<td>CA rollover support</td>
+<td>✅ Yes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scep-message-flow">SCEP Message Flow</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">sequenceDiagram</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">Device</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">SCEP</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="n">PKIaaS</span><span class="w"> </span><span class="n">SCEP</span><span class="w"> </span><span class="n">Server</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">CA</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="n">Certificate</span><span class="w"> </span><span class="n">Authority</span>
+
+<span class="w">    </span><span class="n">Device</span><span class="o">-&gt;&gt;</span><span class="n">SCEP</span><span class="o">:</span><span class="w"> </span><span class="n">GetCACaps</span>
+<span class="w">    </span><span class="n">SCEP</span><span class="o">--&gt;&gt;</span><span class="n">Device</span><span class="o">:</span><span class="w"> </span><span class="n">Capability</span><span class="w"> </span><span class="n">List</span>
+
+<span class="w">    </span><span class="n">Device</span><span class="o">-&gt;&gt;</span><span class="n">SCEP</span><span class="o">:</span><span class="w"> </span><span class="n">GetCACert</span>
+<span class="w">    </span><span class="n">SCEP</span><span class="o">--&gt;&gt;</span><span class="n">Device</span><span class="o">:</span><span class="w"> </span><span class="n">CA</span><span class="w"> </span><span class="n">Certificate</span>
+
+<span class="w">    </span><span class="n">Device</span><span class="o">-&gt;&gt;</span><span class="n">Device</span><span class="o">:</span><span class="w"> </span><span class="n">Generate</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">Pair</span>
+<span class="w">    </span><span class="n">Device</span><span class="o">-&gt;&gt;</span><span class="n">Device</span><span class="o">:</span><span class="w"> </span><span class="n">Create</span><span class="w"> </span><span class="n">PKCS</span><span class="err">#</span><span class="mi">10</span><span class="w"> </span><span class="n">CSR</span>
+
+<span class="w">    </span><span class="n">Device</span><span class="o">-&gt;&gt;</span><span class="n">SCEP</span><span class="o">:</span><span class="w"> </span><span class="n">PKIOperation</span><span class="w"> </span><span class="p">(</span><span class="n">PKCS</span><span class="err">#</span><span class="mi">7</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">CSR</span><span class="p">)</span>
+<span class="w">    </span><span class="n">SCEP</span><span class="o">-&gt;&gt;</span><span class="n">SCEP</span><span class="o">:</span><span class="w"> </span><span class="n">Verify</span><span class="w"> </span><span class="n">Challenge</span><span class="w"> </span><span class="n">Password</span>
+<span class="w">    </span><span class="n">SCEP</span><span class="o">-&gt;&gt;</span><span class="n">SCEP</span><span class="o">:</span><span class="w"> </span><span class="n">Extract</span><span class="w"> </span><span class="kr">and</span><span class="w"> </span><span class="kr">Validate</span><span class="w"> </span><span class="n">CSR</span>
+<span class="w">    </span><span class="n">SCEP</span><span class="o">-&gt;&gt;</span><span class="n">CA</span><span class="o">:</span><span class="w"> </span><span class="n">Issue</span><span class="w"> </span><span class="n">Certificate</span>
+<span class="w">    </span><span class="n">CA</span><span class="o">--&gt;&gt;</span><span class="n">SCEP</span><span class="o">:</span><span class="w"> </span><span class="n">Signed</span><span class="w"> </span><span class="n">Certificate</span>
+<span class="w">    </span><span class="n">SCEP</span><span class="o">--&gt;&gt;</span><span class="n">Device</span><span class="o">:</span><span class="w"> </span><span class="n">PKCS</span><span class="err">#</span><span class="mi">7</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">Certificate</span>
+</code></pre></div>
+
+<h2 id="configuration">Configuration</h2>
+<h3 id="scep-service-configuration">SCEP Service Configuration</h3>
+<p>Configure SCEP settings in <code>config/pki.php</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">/*</span>
+<span class="x">|--------------------------------------------------------------------------</span>
+<span class="x">| SCEP (Simple Certificate Enrollment Protocol) Settings</span>
+<span class="x">|--------------------------------------------------------------------------</span>
+<span class="x">*/</span>
+
+<span class="x">// Enable SCEP server</span>
+<span class="x">&#39;scep_enabled&#39; =&gt; env(&#39;PKI_SCEP_ENABLED&#39;, true),</span>
+
+<span class="x">// SCEP challenge password requirement</span>
+<span class="x">&#39;scep_challenge_required&#39; =&gt; env(&#39;PKI_SCEP_CHALLENGE_REQUIRED&#39;, false),</span>
+
+<span class="x">// Default SCEP certificate validity in days</span>
+<span class="x">&#39;scep_default_validity_days&#39; =&gt; env(&#39;PKI_SCEP_DEFAULT_VALIDITY_DAYS&#39;, 365),</span>
+
+<span class="x">// SCEP renewal threshold in days</span>
+<span class="x">&#39;scep_renewal_threshold_days&#39; =&gt; env(&#39;PKI_SCEP_RENEWAL_THRESHOLD_DAYS&#39;, 30),</span>
+
+<span class="x">// SCEP maximum message size in bytes</span>
+<span class="x">&#39;scep_max_message_size&#39; =&gt; env(&#39;PKI_SCEP_MAX_MESSAGE_SIZE&#39;, 1048576), // 1MB</span>
+</code></pre></div>
+
+<h3 id="environment-variables">Environment Variables</h3>
+<p>Add SCEP configuration to <code>.env</code>:</p>
+<div class="codehilite"><pre><span></span><code># SCEP Configuration (Microsoft Intune compatible)
+PKI_SCEP_ENABLED=true
+PKI_SCEP_CHALLENGE_REQUIRED=false
+PKI_SCEP_DEFAULT_VALIDITY_DAYS=365
+PKI_SCEP_RENEWAL_THRESHOLD_DAYS=30
+PKI_SCEP_MAX_MESSAGE_SIZE=1048576
+</code></pre></div>
+
+<h3 id="certificate-authority-configuration">Certificate Authority Configuration</h3>
+<p>Ensure you have an appropriate intermediate CA for SCEP certificates:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create SCEP-specific intermediate CA</span>
+php<span class="w"> </span>artisan<span class="w"> </span>pki:create-intermediate-ca<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--parent-ca-id<span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--common-name<span class="o">=</span><span class="s2">&quot;SCEP Intermediate CA&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--purpose<span class="o">=</span><span class="s2">&quot;device_certificates&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--key-size<span class="o">=</span><span class="m">4096</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--validity-days<span class="o">=</span><span class="m">3650</span>
+</code></pre></div>
+
+<h2 id="microsoft-intune-integration">Microsoft Intune Integration</h2>
+<h3 id="intune-configuration-steps">Intune Configuration Steps</h3>
+<h4 id="1-create-scep-certificate-profile">1. Create SCEP Certificate Profile</h4>
+<ol>
+<li>Navigate to <strong>Microsoft Intune admin center</strong></li>
+<li>Go to <strong>Devices</strong> → <strong>Configuration profiles</strong></li>
+<li>Click <strong>Create profile</strong></li>
+<li>Select:</li>
+<li><strong>Platform</strong>: iOS/iPadOS, Windows 10 and later, or Android</li>
+<li><strong>Profile type</strong>: SCEP certificate</li>
+</ol>
+<h4 id="2-configure-scep-settings">2. Configure SCEP Settings</h4>
+<p><strong>Basic Information:</strong>
+- <strong>Name</strong>: Company Device Certificate
+- <strong>Description</strong>: Automated certificate deployment for corporate devices</p>
+<p><strong>Configuration Settings:</strong></p>
+<div class="codehilite"><pre><span></span><code>Certificate type: User or Device
+Subject name format: Common name
+Subject alternative name:
+  - User principal name (user certificates)
+  - DNS name (device certificates)
+
+Key storage provider: Trusted Platform Module (TPM) KSP (recommended)
+Key usage: Digital signature + Key encipherment
+Key size: 2048 or 4096 bits
+Hash algorithm: SHA-256
+</code></pre></div>
+
+<p><strong>SCEP Server Settings:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="x">Root Certificate: [Select your Root CA certificate]</span>
+<span class="x">SCEP Server URLs: https://your-pkiaas-domain.com/api/v1/scep</span>
+<span class="x">Subject name: CN=</span><span class="cp">{{</span><span class="nv">UserName</span><span class="cp">}}</span><span class="x">,O=YourCompany,C=US</span>
+<span class="x">Subject alternative name: UPN=</span><span class="cp">{{</span><span class="nv">UserPrincipalName</span><span class="cp">}}</span>
+<span class="x">Certificate validity period: 1 year</span>
+<span class="x">Key usage: Digital signature + Key encipherment</span>
+</code></pre></div>
+
+<h4 id="3-assign-to-groups">3. Assign to Groups</h4>
+<ol>
+<li>In <strong>Assignments</strong>, select target groups</li>
+<li>Choose assignment type:</li>
+<li><strong>Required</strong> - Automatic deployment</li>
+<li><strong>Available for enrolled devices</strong> - On-demand installation</li>
+</ol>
+<h3 id="challenge-password-configuration">Challenge Password Configuration</h3>
+<p>For enhanced security with challenge passwords:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// In config/pki.php</span>
+<span class="x">&#39;scep_challenge_required&#39; =&gt; true,</span>
+<span class="x">&#39;scep_challenge_length&#39; =&gt; 32,</span>
+<span class="x">&#39;scep_challenge_expiry_hours&#39; =&gt; 24,</span>
+</code></pre></div>
+
+<p>Generate challenge passwords:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Generate challenge password for device enrollment</span>
+php<span class="w"> </span>artisan<span class="w"> </span>scep:generate-challenge<span class="w"> </span>--device-id<span class="o">=</span><span class="s2">&quot;WIN-12345&quot;</span><span class="w"> </span>--expires-in<span class="o">=</span><span class="s2">&quot;24h&quot;</span>
+</code></pre></div>
+
+<h2 id="scep-endpoints">SCEP Endpoints</h2>
+<h3 id="public-scep-endpoints">Public SCEP Endpoints</h3>
+<p>All SCEP endpoints are publicly accessible (no authentication required):</p>
+<div class="codehilite"><pre><span></span><code>GET  /api/v1/scep?operation=GetCACaps
+GET  /api/v1/scep?operation=GetCACert
+POST /api/v1/scep?operation=PKIOperation
+GET  /api/v1/scep?operation=GetNextCACert
+</code></pre></div>
+
+<h3 id="health-and-information-endpoints">Health and Information Endpoints</h3>
+<div class="codehilite"><pre><span></span><code>GET  /api/v1/scep-info     # Service information
+GET  /api/v1/scep/health   # Health check
+</code></pre></div>
+
+<h2 id="client-configuration-examples">Client Configuration Examples</h2>
+<h3 id="iosmacos-configuration-profile">iOS/macOS Configuration Profile</h3>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
+<span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;dict&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>PayloadContent<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;array&gt;</span>
+<span class="w">        </span><span class="nt">&lt;dict&gt;</span>
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>PayloadType<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;string&gt;</span>com.apple.security.scep<span class="nt">&lt;/string&gt;</span>
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>PayloadVersion<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;integer&gt;</span>1<span class="nt">&lt;/integer&gt;</span>
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>PayloadIdentifier<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;string&gt;</span>com.company.scep<span class="nt">&lt;/string&gt;</span>
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>PayloadUUID<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;string&gt;</span>12345678-1234-1234-1234-123456789012<span class="nt">&lt;/string&gt;</span>
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>PayloadDisplayName<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;string&gt;</span>Company<span class="w"> </span>SCEP<span class="w"> </span>Certificate<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>URL<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;string&gt;</span>https://your-pkiaas-domain.com/api/v1/scep<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>Subject<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;array&gt;</span>
+<span class="w">                </span><span class="nt">&lt;array&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;array&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;string&gt;</span>CN<span class="nt">&lt;/string&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;string&gt;</span>%DeviceName%<span class="nt">&lt;/string&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;/array&gt;</span>
+<span class="w">                </span><span class="nt">&lt;/array&gt;</span>
+<span class="w">                </span><span class="nt">&lt;array&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;array&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;string&gt;</span>O<span class="nt">&lt;/string&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;string&gt;</span>Your<span class="w"> </span>Company<span class="nt">&lt;/string&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;/array&gt;</span>
+<span class="w">                </span><span class="nt">&lt;/array&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/array&gt;</span>
+
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>Challenge<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;string&gt;</span>optional-challenge-password<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>Keysize<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;integer&gt;</span>2048<span class="nt">&lt;/integer&gt;</span>
+
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>KeyType<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;string&gt;</span>RSA<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>KeyUsage<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;integer&gt;</span>5<span class="nt">&lt;/integer&gt;</span>
+
+<span class="w">            </span><span class="nt">&lt;key&gt;</span>SubjectAltName<span class="nt">&lt;/key&gt;</span>
+<span class="w">            </span><span class="nt">&lt;dict&gt;</span>
+<span class="w">                </span><span class="nt">&lt;key&gt;</span>dNSName<span class="nt">&lt;/key&gt;</span>
+<span class="w">                </span><span class="nt">&lt;string&gt;</span>%DeviceName%.company.com<span class="nt">&lt;/string&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/dict&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/dict&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>PayloadType<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>Configuration<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>PayloadVersion<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;integer&gt;</span>1<span class="nt">&lt;/integer&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>PayloadIdentifier<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>com.company.scep.profile<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>PayloadUUID<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>87654321-4321-4321-4321-210987654321<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>PayloadDisplayName<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>Company<span class="w"> </span>Device<span class="w"> </span>Certificate<span class="w"> </span>Profile<span class="nt">&lt;/string&gt;</span>
+<span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/plist&gt;</span>
+</code></pre></div>
+
+<h3 id="windows-powershell-enrollment">Windows PowerShell Enrollment</h3>
+<div class="codehilite"><pre><span></span><code><span class="c"># Windows SCEP enrollment using certreq</span>
+<span class="nv">$scepUrl</span> <span class="p">=</span> <span class="s2">&quot;https://your-pkiaas-domain.com/api/v1/scep&quot;</span>
+<span class="nv">$challengePassword</span> <span class="p">=</span> <span class="s2">&quot;your-challenge-password&quot;</span>  <span class="c"># Optional</span>
+
+<span class="c"># Create certificate request template</span>
+<span class="nv">$template</span> <span class="p">=</span> <span class="sh">@&quot;</span>
+<span class="sh">[Version]</span>
+<span class="sh">Signature = &quot;`$Windows NT`$&quot;</span>
+
+<span class="sh">[NewRequest]</span>
+<span class="sh">Subject = &quot;CN=$env:COMPUTERNAME,O=Your Company,C=US&quot;</span>
+<span class="sh">KeySpec = 1</span>
+<span class="sh">KeyLength = 2048</span>
+<span class="sh">Exportable = TRUE</span>
+<span class="sh">MachineKeySet = TRUE</span>
+<span class="sh">SMIME = FALSE</span>
+<span class="sh">PrivateKeyArchive = FALSE</span>
+<span class="sh">UserProtected = FALSE</span>
+<span class="sh">UseExistingKeySet = FALSE</span>
+<span class="sh">ProviderName = &quot;Microsoft RSA SChannel Cryptographic Provider&quot;</span>
+<span class="sh">ProviderType = 12</span>
+<span class="sh">RequestType = PKCS10</span>
+<span class="sh">KeyUsage = 0xa0</span>
+
+<span class="sh">[EnhancedKeyUsageExtension]</span>
+<span class="sh">OID=1.3.6.1.5.5.7.3.2 ; Client Authentication</span>
+
+<span class="sh">[Extensions]</span>
+<span class="sh">2.5.29.17 = &quot;{text}DNS=$env:COMPUTERNAME.company.com&quot;</span>
+<span class="sh">&quot;@</span>
+
+<span class="c"># Save template and request certificate</span>
+<span class="nv">$template</span> <span class="p">|</span> <span class="nb">Out-File</span> <span class="n">-FilePath</span> <span class="s2">&quot;scep-request.inf&quot;</span>
+<span class="n">certreq</span> <span class="n">-new</span> <span class="n">-config</span> <span class="nv">$scepUrl</span> <span class="n">scep-request</span><span class="p">.</span><span class="n">inf</span> <span class="n">scep-request</span><span class="p">.</span><span class="n">req</span>
+</code></pre></div>
+
+<h3 id="linuxopenssl-client">Linux/OpenSSL Client</h3>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+
+<span class="nv">SCEP_URL</span><span class="o">=</span><span class="s2">&quot;https://your-pkiaas-domain.com/api/v1/scep&quot;</span>
+<span class="nv">DEVICE_NAME</span><span class="o">=</span><span class="s2">&quot;linux-client-001&quot;</span>
+<span class="nv">CHALLENGE_PASSWORD</span><span class="o">=</span><span class="s2">&quot;optional-password&quot;</span>
+
+<span class="c1"># Generate private key</span>
+openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>device.key<span class="w"> </span><span class="m">2048</span>
+
+<span class="c1"># Create certificate request</span>
+openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-key<span class="w"> </span>device.key<span class="w"> </span>-out<span class="w"> </span>device.csr<span class="w"> </span>-subj<span class="w"> </span><span class="s2">&quot;/CN=</span><span class="nv">$DEVICE_NAME</span><span class="s2">/O=Your Company/C=US&quot;</span>
+
+<span class="c1"># Get CA certificate</span>
+wget<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCEP_URL</span><span class="s2">?operation=GetCACert&quot;</span><span class="w"> </span>-O<span class="w"> </span>ca-cert.der
+
+<span class="c1"># Convert CA certificate to PEM</span>
+openssl<span class="w"> </span>x509<span class="w"> </span>-inform<span class="w"> </span>DER<span class="w"> </span>-in<span class="w"> </span>ca-cert.der<span class="w"> </span>-out<span class="w"> </span>ca-cert.pem
+
+<span class="c1"># Create SCEP request (requires SCEP client tool)</span>
+<span class="c1"># Example with sscep tool:</span>
+sscep<span class="w"> </span>enroll<span class="w"> </span>-c<span class="w"> </span>ca-cert.pem<span class="w"> </span>-k<span class="w"> </span>device.key<span class="w"> </span>-r<span class="w"> </span>device.csr<span class="w"> </span>-u<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCEP_URL</span><span class="s2">&quot;</span><span class="w"> </span>-o<span class="w"> </span>device.crt
+</code></pre></div>
+
+<h2 id="certificate-profiles-and-templates">Certificate Profiles and Templates</h2>
+<h3 id="device-certificate-profile">Device Certificate Profile</h3>
+<p>For device authentication certificates:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// Certificate profile configuration</span>
+<span class="x">&#39;device_certificate_profile&#39; =&gt; [</span>
+<span class="x">    &#39;key_usage&#39; =&gt; [&#39;digitalSignature&#39;, &#39;keyEncipherment&#39;],</span>
+<span class="x">    &#39;extended_key_usage&#39; =&gt; [&#39;clientAuth&#39;],</span>
+<span class="x">    &#39;subject_template&#39; =&gt; &#39;CN={{device_name}},OU=Devices,O={{organization}},C={{country}}&#39;,</span>
+<span class="x">    &#39;san_template&#39; =&gt; [</span>
+<span class="x">        &#39;dns&#39; =&gt; &#39;{{device_name}}.{{domain}}&#39;,</span>
+<span class="x">        &#39;email&#39; =&gt; &#39;device-{{device_name}}@{{domain}}&#39;</span>
+<span class="x">    ],</span>
+<span class="x">    &#39;validity_days&#39; =&gt; 365,</span>
+<span class="x">    &#39;auto_renewal_enabled&#39; =&gt; true,</span>
+<span class="x">    &#39;renewal_threshold_days&#39; =&gt; 30</span>
+<span class="x">]</span>
+</code></pre></div>
+
+<h3 id="user-certificate-profile">User Certificate Profile</h3>
+<p>For user authentication certificates:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// User certificate profile configuration</span>
+<span class="x">&#39;user_certificate_profile&#39; =&gt; [</span>
+<span class="x">    &#39;key_usage&#39; =&gt; [&#39;digitalSignature&#39;, &#39;keyAgreement&#39;],</span>
+<span class="x">    &#39;extended_key_usage&#39; =&gt; [&#39;clientAuth&#39;, &#39;emailProtection&#39;],</span>
+<span class="x">    &#39;subject_template&#39; =&gt; &#39;CN={{user_name}},OU={{department}},O={{organization}},C={{country}}&#39;,</span>
+<span class="x">    &#39;san_template&#39; =&gt; [</span>
+<span class="x">        &#39;email&#39; =&gt; &#39;{{user_email}}&#39;,</span>
+<span class="x">        &#39;upn&#39; =&gt; &#39;{{user_principal_name}}&#39;</span>
+<span class="x">    ],</span>
+<span class="x">    &#39;validity_days&#39; =&gt; 365,</span>
+<span class="x">    &#39;auto_renewal_enabled&#39; =&gt; true,</span>
+<span class="x">    &#39;renewal_threshold_days&#39; =&gt; 30</span>
+<span class="x">]</span>
+</code></pre></div>
+
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="challenge-password-security">Challenge Password Security</h3>
+<p>When using challenge passwords:</p>
+<ol>
+<li><strong>Generate Secure Passwords</strong> - Use cryptographically secure random generation</li>
+<li><strong>Limited Lifetime</strong> - Set reasonable expiration times (24-48 hours)</li>
+<li><strong>Single Use</strong> - Passwords should be used only once</li>
+<li><strong>Secure Distribution</strong> - Use secure channels to distribute passwords</li>
+<li><strong>Logging and Monitoring</strong> - Log all challenge password usage</li>
+</ol>
+<h3 id="scep-message-security">SCEP Message Security</h3>
+<p>SCEP messages are protected by:</p>
+<ol>
+<li><strong>PKCS#7 Encryption</strong> - Request messages are encrypted with CA public key</li>
+<li><strong>PKCS#7 Signing</strong> - Response messages are signed by CA</li>
+<li><strong>Certificate Verification</strong> - Client verifies CA certificate chain</li>
+<li><strong>Message Integrity</strong> - Hash verification prevents tampering</li>
+</ol>
+<h3 id="rate-limiting">Rate Limiting</h3>
+<p>Implement rate limiting for SCEP endpoints:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// In routes/api.php</span>
+<span class="x">Route::middleware([&#39;throttle:60,1&#39;])-&gt;group(function () {</span>
+<span class="x">    Route::match([&#39;GET&#39;, &#39;POST&#39;], &#39;scep&#39;, [ScepApiController::class, &#39;handleGet&#39;]);</span>
+<span class="x">});</span>
+</code></pre></div>
+
+<h2 id="monitoring-and-troubleshooting">Monitoring and Troubleshooting</h2>
+<h3 id="health-monitoring">Health Monitoring</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check SCEP service health</span>
+curl<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/scep/health
+
+<span class="c1"># Expected response:</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;healthy&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;message&quot;</span>:<span class="w"> </span><span class="s2">&quot;SCEP service operational&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;capabilities&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;GetCACaps&quot;</span>,<span class="w"> </span><span class="s2">&quot;GetCACert&quot;</span>,<span class="w"> </span><span class="s2">&quot;PKIOperation&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;timestamp&quot;</span>:<span class="w"> </span><span class="s2">&quot;2024-01-15T10:30:00Z&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="scep-statistics">SCEP Statistics</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Get SCEP service information</span>
+curl<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/scep-info
+
+<span class="c1"># Response includes:</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;service&quot;</span>:<span class="w"> </span><span class="s2">&quot;SCEP&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;version&quot;</span>:<span class="w"> </span><span class="s2">&quot;RFC 8894&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;capabilities&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;POSTPKIOperation&quot;</span>,<span class="w"> </span><span class="s2">&quot;Renewal&quot;</span>,<span class="w"> </span><span class="s2">&quot;SHA-256&quot;</span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;ca_certificates&quot;</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">  </span><span class="s2">&quot;active_enrollments&quot;</span>:<span class="w"> </span><span class="m">1250</span>,
+<span class="w">  </span><span class="s2">&quot;recent_enrollments_24h&quot;</span>:<span class="w"> </span><span class="m">45</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<h3 id="common-issues-and-solutions">Common Issues and Solutions</h3>
+<h4 id="certificate-enrollment-failures">Certificate Enrollment Failures</h4>
+<p><strong>Issue</strong>: <code>PENDING</code> or <code>FAILURE</code> responses
+<strong>Causes</strong>:
+- Invalid CSR format
+- Unsupported key size
+- Challenge password mismatch
+- CA not available</p>
+<p><strong>Solutions</strong>:
+1. Validate CSR format and key parameters
+2. Check challenge password configuration
+3. Verify CA status and availability
+4. Review SCEP server logs</p>
+<h4 id="intune-integration-issues">Intune Integration Issues</h4>
+<p><strong>Issue</strong>: Devices not receiving certificates
+<strong>Causes</strong>:
+- Incorrect SCEP URL in profile
+- Network connectivity issues
+- Certificate profile misconfiguration
+- Root CA not trusted on devices</p>
+<p><strong>Solutions</strong>:
+1. Verify SCEP URL accessibility from devices
+2. Check network firewall rules
+3. Validate certificate profile settings
+4. Deploy root CA certificate to devices</p>
+<h4 id="certificate-renewal-failures">Certificate Renewal Failures</h4>
+<p><strong>Issue</strong>: Existing certificates not renewing
+<strong>Causes</strong>:
+- Auto-renewal disabled
+- Certificate not eligible for renewal
+- CA certificate expired
+- SCEP service unavailable</p>
+<p><strong>Solutions</strong>:
+1. Enable auto-renewal in certificate profile
+2. Check renewal threshold configuration
+3. Verify CA certificate validity
+4. Monitor SCEP service health</p>
+<h3 id="debugging-and-logging">Debugging and Logging</h3>
+<h4 id="enable-debug-logging">Enable Debug Logging</h4>
+<div class="codehilite"><pre><span></span><code># In .env
+LOG_LEVEL=debug
+PKI_LOG_CERTIFICATE_EVENTS=true
+PKI_ENABLE_DETAILED_LOGGING=true
+</code></pre></div>
+
+<h4 id="log-analysis">Log Analysis</h4>
+<p>Monitor SCEP operations:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># SCEP enrollment events</span>
+grep<span class="w"> </span><span class="s2">&quot;scep_enrollment&quot;</span><span class="w"> </span>storage/logs/laravel.log
+
+<span class="c1"># Certificate issuance</span>
+grep<span class="w"> </span><span class="s2">&quot;certificate_issued&quot;</span><span class="w"> </span>storage/logs/laravel.log
+
+<span class="c1"># SCEP errors</span>
+grep<span class="w"> </span><span class="s2">&quot;scep_error&quot;</span><span class="w"> </span>storage/logs/laravel.log
+</code></pre></div>
+
+<h2 id="performance-optimization">Performance Optimization</h2>
+<h3 id="caching-strategy">Caching Strategy</h3>
+<p>Optimize SCEP performance with caching:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// Cache CA certificates for SCEP</span>
+<span class="x">&#39;scep_ca_cert_cache_minutes&#39; =&gt; 60,</span>
+
+<span class="x">// Cache SCEP capabilities</span>
+<span class="x">&#39;scep_capabilities_cache_minutes&#39; =&gt; 1440, // 24 hours</span>
+
+<span class="x">// Cache certificate chains</span>
+<span class="x">&#39;scep_chain_cache_minutes&#39; =&gt; 60,</span>
+</code></pre></div>
+
+<h3 id="database-optimization">Database Optimization</h3>
+<p>Optimize database queries for SCEP operations:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Index for SCEP certificate lookups</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_certificates_scep</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">certificates</span><span class="p">(</span><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;scep&#39;</span><span class="p">;</span>
+
+<span class="c1">-- Index for serial number lookups</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_certificates_serial_scep</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">certificates</span><span class="p">(</span><span class="n">serial_number</span><span class="p">,</span><span class="w"> </span><span class="k">type</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;scep&#39;</span><span class="p">;</span>
+</code></pre></div>
+
+<h3 id="load-balancing">Load Balancing</h3>
+<p>For high-availability SCEP deployments:</p>
+<ol>
+<li><strong>Stateless Design</strong> - SCEP operations are stateless</li>
+<li><strong>Database Sharing</strong> - Multiple instances can share the same database</li>
+<li><strong>Certificate Consistency</strong> - Ensure CA certificates are synchronized</li>
+<li><strong>Health Checks</strong> - Monitor each instance separately</li>
+</ol>
+<p>This comprehensive SCEP implementation provides enterprise-grade device certificate enrollment compatible with Microsoft Intune and other mobile device management solutions.</p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

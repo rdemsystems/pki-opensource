@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructions de Déploiement GitLab - Protection Branche Main - PKIaaS Documentation</title>
+    <meta name="description" content="- **GitLab privé** : `git@git.pa4.rdem-systems.com:rdem-systems/pkiaas.git`">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="instructions-de-deploiement-gitlab-protection-branche-main">Instructions de Déploiement GitLab - Protection Branche Main</h1>
+<h2 id="configuration-gitlab-realisee">🚀 Configuration GitLab réalisée</h2>
+<h3 id="repository-configure">Repository configuré :</h3>
+<ul>
+<li><strong>GitLab privé</strong> : <code>git@git.pa4.rdem-systems.com:rdem-systems/pkiaas.git</code></li>
+<li><strong>GitHub public</strong> : <code>git@github.com:rdemongeot/pkiaas.git</code></li>
+<li><strong>Synchronisation</strong> : Push automatique sur les deux remotes</li>
+</ul>
+<h3 id="fichiers-de-configuration-crees">Fichiers de configuration créés :</h3>
+<ul>
+<li><code>.gitlab-ci.yml</code> - Pipeline CI/CD complète</li>
+<li><code>.gitlab/CODEOWNERS</code> - Review automatique requise</li>
+<li><code>.gitlab/merge_request_templates/Default.md</code> - Template MR structuré</li>
+<li><code>docs/gitlab-branch-protection.md</code> - Guide complet</li>
+</ul>
+<h2 id="configuration-protection-branche-main-a-deployer-plus-tard">🛡️ Configuration Protection Branche Main (À DEPLOYER PLUS TARD)</h2>
+<h3 id="dans-gitlab-ui-settings-repository-protected-branches">Dans GitLab UI : Settings &gt; Repository &gt; Protected branches</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">Branch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span>
+<span class="nt">Allowed to push</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">No one</span>
+<span class="nt">Allowed to merge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Maintainers only</span>
+<span class="nt">Allowed to force push</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">No one</span>
+<span class="nt">Code owner approval required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Yes</span>
+</code></pre></div>
+
+<h3 id="settings-general-merge-requests">Settings &gt; General &gt; Merge requests</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">Pipelines must succeed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">✓ Enabled</span>
+<span class="nt">All discussions must be resolved</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">✓ Enabled</span>
+<span class="nt">Prevent approvals by author</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">✓ Enabled</span>
+<span class="nt">Prevent approvals by committers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">✓ Enabled</span>
+<span class="nt">Required approvals</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1 minimum</span>
+</code></pre></div>
+
+<h3 id="settings-general-merge-request-approvals">Settings &gt; General &gt; Merge request approvals</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">Merge request approval is required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">✓ Enabled</span>
+<span class="nt">Require approval from code owners</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">✓ Enabled</span>
+<span class="nt">Prevent approval by merge request author</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">✓ Enabled</span>
+</code></pre></div>
+
+<h2 id="checklist-de-deploiement-quand-ready">📋 Checklist de déploiement (quand ready)</h2>
+<h3 id="phase-1-protections-de-base">Phase 1 : Protections de base</h3>
+<ul>
+<li>[ ] Activer "Protected branches" sur main</li>
+<li>[ ] Interdire push direct : "Allowed to push: No one"</li>
+<li>[ ] Autoriser merge : "Allowed to merge: Maintainers"</li>
+<li>[ ] Désactiver force push</li>
+</ul>
+<h3 id="phase-2-quality-gates">Phase 2 : Quality gates</h3>
+<ul>
+<li>[ ] Activer "Pipelines must succeed"</li>
+<li>[ ] Activer "All discussions must be resolved"</li>
+<li>[ ] Configurer "Required approvals: 1"</li>
+</ul>
+<h3 id="phase-3-code-owners">Phase 3 : Code owners</h3>
+<ul>
+<li>[ ] Activer "Require approval from code owners"</li>
+<li>[ ] Vérifier fichier <code>.gitlab/CODEOWNERS</code> actif</li>
+<li>[ ] Tester avec une MR de test</li>
+</ul>
+<h3 id="phase-4-notifications">Phase 4 : Notifications</h3>
+<ul>
+<li>[ ] Configurer intégrations Slack/Teams (optionnel)</li>
+<li>[ ] Configurer notifications email</li>
+<li>[ ] Tester workflow complet</li>
+</ul>
+<h2 id="commandes-pour-activer-les-protections">🔧 Commandes pour activer les protections</h2>
+<h3 id="via-gitlab-cli-si-installe">Via GitLab CLI (si installé)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Installer GitLab CLI</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/glab-cli/glab/main/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>sh
+
+<span class="c1"># Se connecter</span>
+glab<span class="w"> </span>auth<span class="w"> </span>login<span class="w"> </span>--hostname<span class="w"> </span>git.pa4.rdem-systems.com
+
+<span class="c1"># Protéger la branche main</span>
+glab<span class="w"> </span>api<span class="w"> </span>projects/:id/protected_branches<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">  &quot;name&quot;: &quot;main&quot;,</span>
+<span class="s1">  &quot;push_access_level&quot;: 0,</span>
+<span class="s1">  &quot;merge_access_level&quot;: 40,</span>
+<span class="s1">  &quot;allow_force_push&quot;: false</span>
+<span class="s1">}&#39;</span>
+</code></pre></div>
+
+<h3 id="via-interface-web">Via Interface Web</h3>
+<ol>
+<li>Aller sur : <code>https://git.pa4.rdem-systems.com/rdem-systems/pkiaas</code></li>
+<li>Settings &gt; Repository &gt; Protected branches</li>
+<li>Sélectionner "main" et configurer selon checklist ci-dessus</li>
+</ol>
+<h2 id="workflow-securise-une-fois-active">🚦 Workflow sécurisé (une fois activé)</h2>
+<h3 id="developpement-normal">Développement normal</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Créer feature branch</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feature/nom-fonctionnalite
+
+<span class="c1"># 2. Développer</span>
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat: nouvelle fonctionnalité&quot;</span>
+
+<span class="c1"># 3. Pousser</span>
+git<span class="w"> </span>push<span class="w"> </span>gitlab<span class="w"> </span>feature/nom-fonctionnalite
+
+<span class="c1"># 4. Créer MR via GitLab UI</span>
+<span class="c1"># 5. Attendre approval + pipeline success</span>
+<span class="c1"># 6. Merge par maintainer</span>
+</code></pre></div>
+
+<h3 id="urgencehotfix">Urgence/Hotfix</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Créer hotfix branch</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>hotfix/fix-critique
+
+<span class="c1"># 2. Fix rapide</span>
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: correction critique&quot;</span>
+
+<span class="c1"># 3. MR prioritaire</span>
+git<span class="w"> </span>push<span class="w"> </span>gitlab<span class="w"> </span>hotfix/fix-critique
+<span class="c1"># Marquer MR comme &quot;Critical&quot; pour review express</span>
+</code></pre></div>
+
+<h2 id="surveillance-recommandee">📊 Surveillance recommandée</h2>
+<h3 id="metriques-a-monitorer">Métriques à monitorer</h3>
+<ul>
+<li>Temps de résolution des MR</li>
+<li>Taux de success pipeline</li>
+<li>Violations sécurité détectées</li>
+<li>Tentatives de push direct bloquées</li>
+</ul>
+<h3 id="outils-gitlab">Outils GitLab</h3>
+<ul>
+<li><strong>Analytics &gt; Repository</strong> : Contribution stats</li>
+<li><strong>Analytics &gt; CI/CD</strong> : Pipeline performance</li>
+<li><strong>Security &amp; Compliance</strong> : Vulnerability reports</li>
+<li><strong>Settings &gt; Integrations</strong> : Notifications</li>
+</ul>
+<h2 id="notes-importantes">⚠️ Notes importantes</h2>
+<h3 id="pendant-phase-rush-dev-actuel">Pendant phase rush-dev (ACTUEL)</h3>
+<ul>
+<li>✅ Push direct sur main autorisé</li>
+<li>✅ Pas de review obligatoire</li>
+<li>✅ Pipeline CI/CD active mais non-bloquante</li>
+<li>✅ Tests automatiques en cours</li>
+</ul>
+<h3 id="apres-rush-dev-deployer-plus-tard">Après rush-dev (DEPLOYER PLUS TARD)</h3>
+<ul>
+<li>❌ Push direct sur main bloqué</li>
+<li>✅ MR + approval obligatoires</li>
+<li>✅ Pipeline success requise pour merge</li>
+<li>✅ Code owners review automatique</li>
+</ul>
+<h2 id="emergency-override">🆘 Emergency Override</h2>
+<h3 id="en-cas-durgence-absolue-maintainers-uniquement">En cas d'urgence absolue (maintainers uniquement)</h3>
+<ol>
+<li>Temporairement désactiver protections</li>
+<li>Push direct autorisé</li>
+<li><strong>OBLIGATOIRE</strong> : Réactiver immédiatement après</li>
+<li><strong>OBLIGATOIRE</strong> : Post-mortem issue</li>
+</ol>
+<h3 id="commande-durgence">Commande d'urgence</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Désactiver temporairement (GitLab CLI)</span>
+glab<span class="w"> </span>api<span class="w"> </span>projects/:id/protected_branches/main<span class="w"> </span>-X<span class="w"> </span>DELETE
+
+<span class="c1"># Push d&#39;urgence</span>
+git<span class="w"> </span>push<span class="w"> </span>gitlab<span class="w"> </span>main
+
+<span class="c1"># Réactiver immédiatement</span>
+glab<span class="w"> </span>api<span class="w"> </span>projects/:id/protected_branches<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">  &quot;name&quot;: &quot;main&quot;,</span>
+<span class="s1">  &quot;push_access_level&quot;: 0,</span>
+<span class="s1">  &quot;merge_access_level&quot;: 40</span>
+<span class="s1">}&#39;</span>
+</code></pre></div>
+
+<h2 id="support">📞 Support</h2>
+<h3 id="contacts">Contacts</h3>
+<ul>
+<li><strong>Maintainer principal</strong> : @rdem</li>
+<li><strong>GitLab admin</strong> : RDEM Systems</li>
+<li><strong>Documentation</strong> : <code>/docs/gitlab-branch-protection.md</code></li>
+</ul>
+<h3 id="ressources">Ressources</h3>
+<ul>
+<li>Guide complet : <code>docs/gitlab-branch-protection.md</code></li>
+<li>Template MR : <code>.gitlab/merge_request_templates/Default.md</code></li>
+<li>Code owners : <code>.gitlab/CODEOWNERS</code></li>
+<li>Pipeline : <code>.gitlab-ci.yml</code></li>
+</ul>
+<hr />
+<p><strong>Status actuel</strong> : Configuration prête, déploiement différé pour phase post-rush-dev</p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

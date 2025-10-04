@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocoles d'Émission Automatique de Certificats PKIaaS - PKIaaS Documentation</title>
+    <meta name="description" content="*Documentation technique pour Claude, le dev préféré* 🤖">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="protocoles-demission-automatique-de-certificats-pkiaas">Protocoles d'Émission Automatique de Certificats PKIaaS</h1>
+<p><em>Documentation technique pour Claude, le dev préféré</em> 🤖</p>
+<h2 id="vue-densemble">🎯 <strong>Vue d'Ensemble</strong></h2>
+<p>PKIaaS supporte <strong>4 protocoles standards</strong> pour l'émission automatique de certificats, couvrant tous les cas d'usage entreprise modernes :</p>
+<div class="codehilite"><pre><span></span><code>📱 SCEP → Microsoft Intune (appareils mobiles)
+🏢 EST  → Équipements réseau enterprise
+🤖 ACME → Let&#39;s Encrypt automation
+🔍 OCSP → Validation temps réel (pas émission)
+</code></pre></div>
+
+<hr />
+<h2 id="1-scep-simple-certificate-enrollment-protocol">🔧 <strong>1. SCEP - Simple Certificate Enrollment Protocol</strong></h2>
+<h3 id="rfc-8894-deploiement-microsoft-intune"><strong>RFC 8894 - Déploiement Microsoft Intune</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="x">// Endpoint principal</span>
+<span class="x">POST /api/v1/scep</span>
+<span class="x">GET  /api/v1/scep?operation=GetCACaps</span>
+<span class="x">GET  /api/v1/scep?operation=GetCACert</span>
+
+<span class="x">// Implémentation dans ScepApiController</span>
+<span class="x">class ScepApiController extends Controller</span>
+<span class="x">{</span>
+<span class="x">    public function handlePost(Request $request, ScepService $scepService)</span>
+<span class="x">    {</span>
+<span class="x">        // Parse PKCS#7 message</span>
+<span class="x">        $operation = $request-&gt;query(&#39;operation&#39;, &#39;PKIOperation&#39;);</span>
+<span class="x">        $message = $request-&gt;getContent();</span>
+
+<span class="x">        return match($operation) {</span>
+<span class="x">            &#39;PKIOperation&#39; =&gt; $this-&gt;handlePKIOperation($message),</span>
+<span class="x">            &#39;GetCACaps&#39; =&gt; $this-&gt;getCapabilities(),</span>
+<span class="x">            &#39;GetCACert&#39; =&gt; $this-&gt;getCACertificate(),</span>
+<span class="x">            &#39;GetNextCACert&#39; =&gt; $this-&gt;getNextCACertificate(),</span>
+<span class="x">        };</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h4 id="capacites-scep-supportees"><strong>Capacités SCEP Supportées</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;capabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;POSTPKIOperation&quot;</span><span class="p">,</span><span class="w">     </span><span class="c1">// Support HTTP POST</span>
+<span class="w">        </span><span class="s2">&quot;Renewal&quot;</span><span class="p">,</span><span class="w">              </span><span class="c1">// Renouvellement certificats</span>
+<span class="w">        </span><span class="s2">&quot;SHA-1&quot;</span><span class="p">,</span><span class="w">               </span><span class="c1">// Hash SHA-1 (legacy)</span>
+<span class="w">        </span><span class="s2">&quot;SHA-256&quot;</span><span class="p">,</span><span class="w">             </span><span class="c1">// Hash SHA-256 (recommandé)</span>
+<span class="w">        </span><span class="s2">&quot;SHA-512&quot;</span><span class="p">,</span><span class="w">             </span><span class="c1">// Hash SHA-512</span>
+<span class="w">        </span><span class="s2">&quot;DES3&quot;</span><span class="p">,</span><span class="w">                </span><span class="c1">// Chiffrement 3DES</span>
+<span class="w">        </span><span class="s2">&quot;AES&quot;</span><span class="p">,</span><span class="w">                 </span><span class="c1">// Chiffrement AES</span>
+<span class="w">        </span><span class="s2">&quot;SCEPStandard&quot;</span><span class="w">         </span><span class="c1">// Conformité RFC 8894</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="challenge-password-securise"><strong>Challenge Password (Sécurisé)</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Nouveau système sécurisé avec Argon2id</span>
+<span class="x">$challengePassword = SecureChallengePassword::createSecurePassword(</span>
+<span class="x">    $caId,</span>
+<span class="x">    &#39;secure-challenge-123&#39;,</span>
+<span class="x">    now()-&gt;addDays(90) // Expiration 90 jours</span>
+<span class="x">);</span>
+
+<span class="x">// Validation lors de l&#39;enrollment</span>
+<span class="x">if (!$challengePassword-&gt;verifyPassword($submittedPassword)) {</span>
+<span class="x">    throw new InvalidChallengeException();</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h4 id="cas-dusage-scep"><strong>Cas d'Usage SCEP</strong></h4>
+<ul>
+<li>✅ <strong>Microsoft Intune</strong> : Déploiement certificats iOS/Android/Windows</li>
+<li>✅ <strong>Appareils IoT</strong> : Enrollment automatique équipements connectés</li>
+<li>✅ <strong>BYOD</strong> : Provision certificats sur appareils personnels</li>
+<li>✅ <strong>Cisco ISE</strong> : Intégration NAC (Network Access Control)</li>
+</ul>
+<hr />
+<h2 id="2-est-enrollment-over-secure-transport">🏢 <strong>2. EST - Enrollment over Secure Transport</strong></h2>
+<h3 id="rfc-7030-enterprise-enrollment-securise"><strong>RFC 7030 - Enterprise Enrollment Sécurisé</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="x">// Endpoints EST standards</span>
+<span class="x">GET  /api/v1/est/.well-known/est           // Discovery</span>
+<span class="x">GET  /api/v1/est/info                      // Service info</span>
+<span class="x">GET  /api/v1/est/cacerts                   // CA certificates</span>
+<span class="x">POST /api/v1/est/simpleenroll              // Initial enrollment</span>
+<span class="x">POST /api/v1/est/simplereenroll            // Re-enrollment</span>
+<span class="x">GET  /api/v1/est/csrattrs                  // CSR attributes</span>
+
+<span class="x">// Authentification TLS mutuelle requise</span>
+<span class="x">class EstApiController extends Controller</span>
+<span class="x">{</span>
+<span class="x">    public function __construct()</span>
+<span class="x">    {</span>
+<span class="x">        $this-&gt;middleware(&#39;auth.certificate&#39;); // Client cert required</span>
+<span class="x">    }</span>
+
+<span class="x">    public function simpleenroll(Request $request, EstService $estService)</span>
+<span class="x">    {</span>
+<span class="x">        // Vérifier certificat client TLS</span>
+<span class="x">        $clientCert = $request-&gt;getClientCertificate();</span>
+<span class="x">        if (!$this-&gt;validateClientCertificate($clientCert)) {</span>
+<span class="x">            abort(401, &#39;Invalid client certificate&#39;);</span>
+<span class="x">        }</span>
+
+<span class="x">        // Traiter CSR PKCS#10</span>
+<span class="x">        $csr = $request-&gt;getContent();</span>
+<span class="x">        return $estService-&gt;processEnrollment($csr, $clientCert);</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h4 id="authentification-est"><strong>Authentification EST</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Authentification par certificat client TLS</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://pki.domain.com/api/v1/est/simpleenroll<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--cert<span class="w"> </span>client.crt<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--key<span class="w"> </span>client.key<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--cacert<span class="w"> </span>ca.crt<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--data-binary<span class="w"> </span>@certificate.csr<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/pkcs10&quot;</span>
+</code></pre></div>
+
+<h4 id="csr-attributes-dynamiques"><strong>CSR Attributes Dynamiques</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="x">public function csrattrs(CertificateAuthority $ca): Response</span>
+<span class="x">{</span>
+<span class="x">    $attributes = [</span>
+<span class="x">        &#39;challengePassword&#39; =&gt; [&#39;required&#39; =&gt; false],</span>
+<span class="x">        &#39;unstructuredName&#39; =&gt; [&#39;required&#39; =&gt; false],</span>
+<span class="x">        &#39;subject&#39; =&gt; [</span>
+<span class="x">            &#39;CN&#39; =&gt; [&#39;required&#39; =&gt; true, &#39;maxLength&#39; =&gt; 64],</span>
+<span class="x">            &#39;O&#39;  =&gt; [&#39;required&#39; =&gt; true, &#39;value&#39; =&gt; $ca-&gt;organization],</span>
+<span class="x">            &#39;C&#39;  =&gt; [&#39;required&#39; =&gt; true, &#39;value&#39; =&gt; $ca-&gt;country]</span>
+<span class="x">        ],</span>
+<span class="x">        &#39;subjectAltName&#39; =&gt; [</span>
+<span class="x">            &#39;dNSName&#39; =&gt; [&#39;maxCount&#39; =&gt; 5],</span>
+<span class="x">            &#39;iPAddress&#39; =&gt; [&#39;maxCount&#39; =&gt; 2]</span>
+<span class="x">        ]</span>
+<span class="x">    ];</span>
+
+<span class="x">    return response($this-&gt;encodeCsrAttributes($attributes))</span>
+<span class="x">           -&gt;header(&#39;Content-Type&#39;, &#39;application/csrattrs&#39;);</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h4 id="cas-dusage-est"><strong>Cas d'Usage EST</strong></h4>
+<ul>
+<li>✅ <strong>Équipements réseau</strong> : Routeurs Cisco, switches managés</li>
+<li>✅ <strong>Serveurs</strong> : Enrollment automatique avec authentification forte</li>
+<li>✅ <strong>Applications enterprise</strong> : Provision certificats avec mTLS</li>
+<li>✅ <strong>Containers</strong> : Enrollment sécurisé dans Kubernetes</li>
+</ul>
+<hr />
+<h2 id="3-acme-automated-certificate-management-environment">🤖 <strong>3. ACME - Automated Certificate Management Environment</strong></h2>
+<h3 id="rfc-8555-lets-encrypt-compatible"><strong>RFC 8555 - Let's Encrypt Compatible</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="x">// Directory ACME complet</span>
+<span class="x">GET  /api/v1/acme/directory</span>
+<span class="x">{</span>
+<span class="x">    &quot;newNonce&quot;: &quot;https://pki.domain.com/api/v1/acme/new-nonce&quot;,</span>
+<span class="x">    &quot;newAccount&quot;: &quot;https://pki.domain.com/api/v1/acme/new-account&quot;,</span>
+<span class="x">    &quot;newOrder&quot;: &quot;https://pki.domain.com/api/v1/acme/new-order&quot;,</span>
+<span class="x">    &quot;revokeCert&quot;: &quot;https://pki.domain.com/api/v1/acme/revoke-cert&quot;,</span>
+<span class="x">    &quot;keyChange&quot;: &quot;https://pki.domain.com/api/v1/acme/key-change&quot;,</span>
+<span class="x">    &quot;meta&quot;: {</span>
+<span class="x">        &quot;termsOfService&quot;: &quot;https://pki.domain.com/terms&quot;,</span>
+<span class="x">        &quot;website&quot;: &quot;https://pkiaas.rdem-systems.com&quot;,</span>
+<span class="x">        &quot;caaIdentities&quot;: [&quot;pki.domain.com&quot;],</span>
+<span class="x">        &quot;externalAccountRequired&quot;: false</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+
+<span class="x">// Implémentation complète dans AcmeApiController</span>
+<span class="x">class AcmeApiController extends Controller</span>
+<span class="x">{</span>
+<span class="x">    public function newOrder(Request $request, AcmeService $acmeService)</span>
+<span class="x">    {</span>
+<span class="x">        $account = $this-&gt;validateJws($request); // JWT signature validation</span>
+<span class="x">        $payload = json_decode($request-&gt;getPayload(), true);</span>
+
+<span class="x">        $order = $acmeService-&gt;createOrder($account, [</span>
+<span class="x">            &#39;identifiers&#39; =&gt; $payload[&#39;identifiers&#39;], // DNS names</span>
+<span class="x">            &#39;notBefore&#39; =&gt; $payload[&#39;notBefore&#39;] ?? null,</span>
+<span class="x">            &#39;notAfter&#39; =&gt; $payload[&#39;notAfter&#39;] ?? null</span>
+<span class="x">        ]);</span>
+
+<span class="x">        return response()-&gt;json($order, 201)</span>
+<span class="x">               -&gt;header(&#39;Location&#39;, route(&#39;api.acme.order&#39;, $order[&#39;id&#39;]));</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h4 id="challenges-acme-supportes"><strong>Challenges ACME Supportés</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="x">// Types de validation supportés</span>
+<span class="x">$supportedChallenges = [</span>
+<span class="x">    &#39;http-01&#39; =&gt; [</span>
+<span class="x">        &#39;description&#39; =&gt; &#39;HTTP challenge via /.well-known/acme-challenge/&#39;,</span>
+<span class="x">        &#39;validation&#39; =&gt; &#39;http_challenge_validation&#39;</span>
+<span class="x">    ],</span>
+<span class="x">    &#39;dns-01&#39; =&gt; [</span>
+<span class="x">        &#39;description&#39; =&gt; &#39;DNS TXT record challenge&#39;,</span>
+<span class="x">        &#39;validation&#39; =&gt; &#39;dns_challenge_validation&#39;</span>
+<span class="x">    ],</span>
+<span class="x">    &#39;tls-alpn-01&#39; =&gt; [</span>
+<span class="x">        &#39;description&#39; =&gt; &#39;TLS ALPN challenge&#39;,</span>
+<span class="x">        &#39;validation&#39; =&gt; &#39;tls_alpn_challenge_validation&#39;</span>
+<span class="x">    ]</span>
+<span class="x">];</span>
+
+<span class="x">public function processChallenge(AcmeChallenge $challenge)</span>
+<span class="x">{</span>
+<span class="x">    return match($challenge-&gt;type) {</span>
+<span class="x">        &#39;http-01&#39; =&gt; $this-&gt;validateHttpChallenge($challenge),</span>
+<span class="x">        &#39;dns-01&#39; =&gt; $this-&gt;validateDnsChallenge($challenge),</span>
+<span class="x">        &#39;tls-alpn-01&#39; =&gt; $this-&gt;validateTlsAlpnChallenge($challenge),</span>
+<span class="x">    };</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h4 id="compatible-avec-clients-standards"><strong>Compatible avec Clients Standards</strong></h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Certbot (Let&#39;s Encrypt client)</span>
+certbot<span class="w"> </span>certonly<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--server<span class="w"> </span>https://pki.domain.com/api/v1/acme/directory<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--email<span class="w"> </span>admin@domain.com<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--agree-tos<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--manual<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-d<span class="w"> </span>example.com
+
+<span class="c1"># acme.sh (shell script client)</span>
+acme.sh<span class="w"> </span>--issue<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--server<span class="w"> </span>https://pki.domain.com/api/v1/acme/directory<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-d<span class="w"> </span>example.com<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--standalone
+
+<span class="c1"># Traefik (reverse proxy avec ACME)</span>
+certificatesResolvers:
+<span class="w">  </span>pkiaas:
+<span class="w">    </span>acme:
+<span class="w">      </span>caServer:<span class="w"> </span>https://pki.domain.com/api/v1/acme/directory
+<span class="w">      </span>email:<span class="w"> </span>admin@domain.com
+<span class="w">      </span>httpChallenge:
+<span class="w">        </span>entryPoint:<span class="w"> </span>web
+</code></pre></div>
+
+<h4 id="cas-dusage-acme"><strong>Cas d'Usage ACME</strong></h4>
+<ul>
+<li>✅ <strong>Automatisation DevOps</strong> : CI/CD avec renouvellement automatique</li>
+<li>✅ <strong>Reverse Proxies</strong> : Traefik, NGINX, HAProxy</li>
+<li>✅ <strong>Applications cloud</strong> : Kubernetes avec cert-manager</li>
+<li>✅ <strong>Scripts</strong> : Automation avec acme.sh, certbot</li>
+</ul>
+<hr />
+<h2 id="4-ocsp-online-certificate-status-protocol">🔍 <strong>4. OCSP - Online Certificate Status Protocol</strong></h2>
+<h3 id="rfc-6960-validation-temps-reel-support"><strong>RFC 6960 - Validation Temps Réel (Support)</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="x">// OCSP pour validation, pas émission</span>
+<span class="x">POST /api/v1/ocsp                 // OCSP Request</span>
+<span class="x">GET  /api/v1/ocsp/{request}       // OCSP via GET</span>
+
+<span class="x">// Réponse OCSP en temps réel</span>
+<span class="x">class OcspService</span>
+<span class="x">{</span>
+<span class="x">    public function checkCertificateStatus(string $serialNumber): array</span>
+<span class="x">    {</span>
+<span class="x">        $certificate = Certificate::where(&#39;serial_number&#39;, $serialNumber)-&gt;first();</span>
+
+<span class="x">        if (!$certificate) {</span>
+<span class="x">            return [&#39;status&#39; =&gt; &#39;unknown&#39;];</span>
+<span class="x">        }</span>
+
+<span class="x">        if ($certificate-&gt;is_revoked) {</span>
+<span class="x">            return [</span>
+<span class="x">                &#39;status&#39; =&gt; &#39;revoked&#39;,</span>
+<span class="x">                &#39;revocation_time&#39; =&gt; $certificate-&gt;revoked_at,</span>
+<span class="x">                &#39;revocation_reason&#39; =&gt; $certificate-&gt;revocation_reason</span>
+<span class="x">            ];</span>
+<span class="x">        }</span>
+
+<span class="x">        return [&#39;status&#39; =&gt; &#39;good&#39;];</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="comparaison-des-protocoles">📊 <strong>Comparaison des Protocoles</strong></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Protocole</strong></th>
+<th><strong>Use Case Principal</strong></th>
+<th><strong>Authentification</strong></th>
+<th><strong>Complexité</strong></th>
+<th><strong>Adoption</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SCEP</strong></td>
+<td>Mobile Device Management</td>
+<td>Challenge Password</td>
+<td>Moyenne</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>EST</strong></td>
+<td>Network Equipment</td>
+<td>mTLS Client Cert</td>
+<td>Élevée</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>ACME</strong></td>
+<td>Web Server Automation</td>
+<td>Domain Validation</td>
+<td>Faible</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>OCSP</strong></td>
+<td>Certificate Validation</td>
+<td>Aucune (lecture)</td>
+<td>Faible</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="configuration-et-usage">🚀 <strong>Configuration et Usage</strong></h2>
+<h3 id="variables-denvironnement"><strong>Variables d'Environnement</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># SCEP Configuration</span>
+<span class="nv">SCEP_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">SCEP_CHALLENGE_REQUIRED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">SCEP_MAX_CERT_VALIDITY_DAYS</span><span class="o">=</span><span class="m">365</span>
+
+<span class="c1"># EST Configuration</span>
+<span class="nv">EST_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">EST_REQUIRE_CLIENT_CERT</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">EST_MAX_CERT_VALIDITY_DAYS</span><span class="o">=</span><span class="m">730</span>
+
+<span class="c1"># ACME Configuration</span>
+<span class="nv">ACME_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">ACME_DIRECTORY_URL</span><span class="o">=</span>https://pki.domain.com/api/v1/acme/directory
+<span class="nv">ACME_TERMS_OF_SERVICE_URL</span><span class="o">=</span>https://pki.domain.com/terms
+<span class="nv">ACME_RATE_LIMIT_PER_DOMAIN</span><span class="o">=</span><span class="m">50</span>
+
+<span class="c1"># OCSP Configuration</span>
+<span class="nv">OCSP_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">OCSP_RESPONDER_URL</span><span class="o">=</span>https://pki.domain.com/api/v1/ocsp
+<span class="nv">OCSP_CACHE_TTL</span><span class="o">=</span><span class="m">3600</span>
+</code></pre></div>
+
+<h3 id="tests-de-conformite"><strong>Tests de Conformité</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Test SCEP avec OpenSCEP</span>
+openscep<span class="w"> </span>getcacert<span class="w"> </span>-u<span class="w"> </span>http://pki.domain.com/api/v1/scep
+
+<span class="c1"># Test EST avec curl</span>
+curl<span class="w"> </span>-v<span class="w"> </span>--cert<span class="w"> </span>client.crt<span class="w"> </span>--key<span class="w"> </span>client.key<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>https://pki.domain.com/api/v1/est/cacerts
+
+<span class="c1"># Test ACME avec acme.sh</span>
+acme.sh<span class="w"> </span>--issue<span class="w"> </span>--test<span class="w"> </span>-d<span class="w"> </span>test.domain.com<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--server<span class="w"> </span>https://pki.domain.com/api/v1/acme/directory
+
+<span class="c1"># Test OCSP avec OpenSSL</span>
+openssl<span class="w"> </span>ocsp<span class="w"> </span>-issuer<span class="w"> </span>ca.crt<span class="w"> </span>-cert<span class="w"> </span>test.crt<span class="w"> </span><span class="se">\</span>
+<span class="w">             </span>-url<span class="w"> </span>http://pki.domain.com/api/v1/ocsp
+</code></pre></div>
+
+<hr />
+<h2 id="recommandations-dintegration">🎯 <strong>Recommandations d'Intégration</strong></h2>
+<h3 id="scep-pour-microsoft-intune"><strong>SCEP</strong> → Pour Microsoft Intune</h3>
+<div class="codehilite"><pre><span></span><code><span class="cm">&lt;!-- Profil Intune SCEP --&gt;</span>
+<span class="nt">&lt;SyncBody&gt;</span>
+<span class="w">    </span><span class="nt">&lt;Add&gt;</span>
+<span class="w">        </span><span class="nt">&lt;CmdID&gt;</span>1<span class="nt">&lt;/CmdID&gt;</span>
+<span class="w">        </span><span class="nt">&lt;Item&gt;</span>
+<span class="w">            </span><span class="nt">&lt;Target&gt;</span>
+<span class="w">                </span><span class="nt">&lt;LocURI&gt;</span>./Vendor/MSFT/CertificateStore/Root/System<span class="nt">&lt;/LocURI&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/Target&gt;</span>
+<span class="w">            </span><span class="nt">&lt;Data&gt;</span>BASE64_CA_CERT<span class="nt">&lt;/Data&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/Item&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/Add&gt;</span>
+<span class="w">    </span><span class="nt">&lt;Add&gt;</span>
+<span class="w">        </span><span class="nt">&lt;CmdID&gt;</span>2<span class="nt">&lt;/CmdID&gt;</span>
+<span class="w">        </span><span class="nt">&lt;Item&gt;</span>
+<span class="w">            </span><span class="nt">&lt;Target&gt;</span>
+<span class="w">                </span><span class="nt">&lt;LocURI&gt;</span>./User/Vendor/MSFT/CertificateStore/Enroll/SCEP<span class="nt">&lt;/LocURI&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/Target&gt;</span>
+<span class="w">            </span><span class="nt">&lt;Data&gt;</span>
+<span class="w">                </span><span class="nt">&lt;ServerURL&gt;</span>https://pki.domain.com/api/v1/scep<span class="nt">&lt;/ServerURL&gt;</span>
+<span class="w">                </span><span class="nt">&lt;Challenge&gt;</span>secure-challenge-password<span class="nt">&lt;/Challenge&gt;</span>
+<span class="w">                </span><span class="nt">&lt;SubjectName&gt;</span>CN={{UserName}},O=Company<span class="nt">&lt;/SubjectName&gt;</span>
+<span class="w">                </span><span class="nt">&lt;KeyUsage&gt;</span>160<span class="nt">&lt;/KeyUsage&gt;</span>
+<span class="w">                </span><span class="nt">&lt;KeyLength&gt;</span>2048<span class="nt">&lt;/KeyLength&gt;</span>
+<span class="w">                </span><span class="nt">&lt;HashAlgorithm&gt;</span>SHA256<span class="nt">&lt;/HashAlgorithm&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/Data&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/Item&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/Add&gt;</span>
+<span class="nt">&lt;/SyncBody&gt;</span>
+</code></pre></div>
+
+<h3 id="est-pour-equipements-cisco"><strong>EST</strong> → Pour Équipements Cisco</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Configuration Cisco IOS-XE</span>
+crypto<span class="w"> </span>pki<span class="w"> </span>trustpoint<span class="w"> </span>EST-CA
+<span class="w"> </span>enrollment<span class="w"> </span>url<span class="w"> </span>https://pki.domain.com/api/v1/est
+<span class="w"> </span>enrollment<span class="w"> </span>retry<span class="w"> </span>count<span class="w"> </span><span class="m">3</span>
+<span class="w"> </span>enrollment<span class="w"> </span>retry<span class="w"> </span>period<span class="w"> </span><span class="m">10</span>
+<span class="w"> </span>subject-name<span class="w"> </span><span class="nv">cn</span><span class="o">=</span>router.domain.com,ou<span class="o">=</span>Network,o<span class="o">=</span>Company
+<span class="w"> </span>revocation-check<span class="w"> </span>none
+<span class="w"> </span>rsakeypair<span class="w"> </span>EST-CA<span class="w"> </span><span class="m">2048</span>
+</code></pre></div>
+
+<h3 id="acme-pour-kubernetes-cert-manager"><strong>ACME</strong> → Pour Kubernetes cert-manager</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cert-manager.io/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ClusterIssuer</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pkiaas-acme</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">acme</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://pki.domain.com/api/v1/acme/directory</span>
+<span class="w">    </span><span class="nt">email</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin@domain.com</span>
+<span class="w">    </span><span class="nt">privateKeySecretRef</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pkiaas-acme-account-key</span>
+<span class="w">    </span><span class="nt">solvers</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">http01</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">ingress</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">class</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+</code></pre></div>
+
+<hr />
+<p><strong>🤖 Salut Claude ! Cette doc couvre tous les protocoles d'émission automatique supportés par PKIaaS. Chaque protocole a son cas d'usage optimal et PKIaaS les implémente tous selon les RFCs. N'hésite pas si tu veux des détails sur l'implémentation !</strong></p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

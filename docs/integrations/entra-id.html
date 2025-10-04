@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Entra ID Integration Guide - PKIaaS Documentation</title>
+    <meta name="description" content="This guide provides comprehensive instructions for integrating PKIaaS with Microsoft Entra ID (formerly Azure Active Directory) for enterprise user ma">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="microsoft-entra-id-integration-guide">Microsoft Entra ID Integration Guide</h1>
+<p>This guide provides comprehensive instructions for integrating PKIaaS with Microsoft Entra ID (formerly Azure Active Directory) for enterprise user management and certificate provisioning.</p>
+<h2 id="overview">Overview</h2>
+<p>The Entra ID integration provides:
+- <strong>User Synchronization</strong> - Automatic user provisioning from Entra ID
+- <strong>Group-based Role Mapping</strong> - Automatic role assignment based on security groups
+- <strong>Certificate Provisioning</strong> - Automated certificate issuance for Entra ID users
+- <strong>JWT Token Validation</strong> - Bearer token authentication support
+- <strong>Device Integration</strong> - Support for device-bound certificates</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="entra-id-requirements">Entra ID Requirements</h3>
+<ul>
+<li><strong>Entra ID Tenant</strong> - Premium P1 or P2 subscription recommended</li>
+<li><strong>Application Registration</strong> - App registration with appropriate permissions</li>
+<li><strong>Security Groups</strong> - Configured groups for role mapping</li>
+<li><strong>Certificate Policies</strong> - Defined certificate policies for users</li>
+</ul>
+<h3 id="pkiaas-requirements">PKIaaS Requirements</h3>
+<ul>
+<li><strong>PKIaaS v1.0+</strong> - With Entra ID integration support</li>
+<li><strong>External Database</strong> - MariaDB or MySQL for production</li>
+<li><strong>Redis Cache</strong> - For token and session caching</li>
+<li><strong>HTTPS</strong> - Required for secure token exchange</li>
+</ul>
+<h2 id="configuration-steps">Configuration Steps</h2>
+<h3 id="1-entra-id-application-registration">1. Entra ID Application Registration</h3>
+<h4 id="create-application-registration">Create Application Registration</h4>
+<ol>
+<li>Navigate to <strong>Azure Portal</strong> → <strong>Entra ID</strong> → <strong>App registrations</strong></li>
+<li>Click <strong>New registration</strong></li>
+<li>Configure application:</li>
+<li><strong>Name</strong>: PKIaaS Integration</li>
+<li><strong>Supported account types</strong>: Accounts in this organizational directory only</li>
+<li><strong>Redirect URI</strong>: Not required for daemon application</li>
+</ol>
+<h4 id="configure-api-permissions">Configure API Permissions</h4>
+<p>Add the following Microsoft Graph permissions:</p>
+<p><strong>Application Permissions (Daemon):</strong></p>
+<div class="codehilite"><pre><span></span><code>User.Read.All          # Read user profiles
+Group.Read.All         # Read security groups
+Organization.Read.All  # Read organization information
+Directory.Read.All     # Read directory objects
+</code></pre></div>
+
+<p><strong>Delegated Permissions (Optional):</strong></p>
+<div class="codehilite"><pre><span></span><code>User.Read             # Read signed-in user profile
+profile               # View basic profile
+openid                # Sign users in
+</code></pre></div>
+
+<h4 id="generate-client-secret">Generate Client Secret</h4>
+<ol>
+<li>Navigate to <strong>Certificates &amp; secrets</strong></li>
+<li>Click <strong>New client secret</strong></li>
+<li>Configure secret:</li>
+<li><strong>Description</strong>: PKIaaS Integration Secret</li>
+<li><strong>Expires</strong>: 24 months (recommended)</li>
+<li><strong>Copy the secret value</strong> - You won't be able to see it again</li>
+</ol>
+<h4 id="note-application-details">Note Application Details</h4>
+<p>Record the following values from the <strong>Overview</strong> page:
+- <strong>Application (client) ID</strong>
+- <strong>Directory (tenant) ID</strong>
+- <strong>Client Secret</strong> (from previous step)</p>
+<h3 id="2-pkiaas-configuration">2. PKIaaS Configuration</h3>
+<h4 id="environment-configuration">Environment Configuration</h4>
+<p>Update <code>.env</code> file with Entra ID settings:</p>
+<div class="codehilite"><pre><span></span><code># Microsoft Entra ID (Azure AD) Integration
+ENTRA_TENANT_ID=your-tenant-id-here
+ENTRA_CLIENT_ID=your-client-id-here
+ENTRA_CLIENT_SECRET=your-client-secret-here
+ENTRA_AUTHORITY=https://login.microsoftonline.com/
+ENTRA_GRAPH_URL=https://graph.microsoft.com/v1.0
+
+# Certificate Configuration
+ENTRA_DEFAULT_CERT_VALIDITY_DAYS=365
+ENTRA_DEFAULT_KEY_SIZE=2048
+ENTRA_ENABLE_AUTO_RENEWAL=true
+ENTRA_ORGANIZATION_NAME=&quot;Your Organization&quot;
+ENTRA_COUNTRY_CODE=US
+ENTRA_DEFAULT_DEPARTMENT=IT
+
+# Authentication Settings
+ENTRA_AUTO_CREATE_USERS=true
+ENTRA_AUTO_ASSIGN_ROLES=true
+ENTRA_SYNC_ON_LOGIN=true
+
+# Security Settings
+ENTRA_ENABLE_CERT_BINDING=true
+ENTRA_STORE_OBJECT_IDS=true
+</code></pre></div>
+
+<h4 id="role-mapping-configuration">Role Mapping Configuration</h4>
+<p>Configure role mapping in <code>config/entra.php</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">&#39;role_mapping&#39; =&gt; [</span>
+<span class="x">    // Entra ID Group Display Name =&gt; Application Role</span>
+<span class="x">    &#39;PKI Administrators&#39; =&gt; &#39;pki-admin&#39;,</span>
+<span class="x">    &#39;Certificate Managers&#39; =&gt; &#39;certificate-manager&#39;,</span>
+<span class="x">    &#39;IT Security&#39; =&gt; &#39;security-analyst&#39;,</span>
+<span class="x">    &#39;Help Desk&#39; =&gt; &#39;operator&#39;,</span>
+<span class="x">    &#39;All Company&#39; =&gt; &#39;user&#39;,</span>
+
+<span class="x">    // Department-specific roles</span>
+<span class="x">    &#39;IT Department&#39; =&gt; &#39;it-user&#39;,</span>
+<span class="x">    &#39;HR Department&#39; =&gt; &#39;hr-user&#39;,</span>
+<span class="x">    &#39;Finance Department&#39; =&gt; &#39;finance-user&#39;,</span>
+<span class="x">    &#39;Engineering&#39; =&gt; &#39;engineering-user&#39;,</span>
+<span class="x">],</span>
+</code></pre></div>
+
+<h4 id="department-mapping">Department Mapping</h4>
+<p>Configure department mapping for certificate subject generation:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">&#39;department_mapping&#39; =&gt; [</span>
+<span class="x">    &#39;IT Department&#39; =&gt; &#39;Information Technology&#39;,</span>
+<span class="x">    &#39;HR Department&#39; =&gt; &#39;Human Resources&#39;,</span>
+<span class="x">    &#39;Finance Department&#39; =&gt; &#39;Finance&#39;,</span>
+<span class="x">    &#39;Legal Department&#39; =&gt; &#39;Legal&#39;,</span>
+<span class="x">    &#39;Engineering&#39; =&gt; &#39;Engineering&#39;,</span>
+<span class="x">    &#39;Sales&#39; =&gt; &#39;Sales&#39;,</span>
+<span class="x">    &#39;Marketing&#39; =&gt; &#39;Marketing&#39;,</span>
+<span class="x">],</span>
+</code></pre></div>
+
+<h3 id="3-database-migration">3. Database Migration</h3>
+<p>Run database migrations to add Entra ID support:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run migrations</span>
+php<span class="w"> </span>artisan<span class="w"> </span>migrate
+
+<span class="c1"># Verify migration status</span>
+php<span class="w"> </span>artisan<span class="w"> </span>migrate:status
+</code></pre></div>
+
+<h3 id="4-test-connection">4. Test Connection</h3>
+<p>Test the Entra ID integration:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Test Entra ID connectivity</span>
+php<span class="w"> </span>artisan<span class="w"> </span>entra:sync-users<span class="w"> </span>--dry-run
+
+<span class="c1"># Check health status</span>
+curl<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/entra-id/health
+</code></pre></div>
+
+<h2 id="user-synchronization">User Synchronization</h2>
+<h3 id="automatic-synchronization">Automatic Synchronization</h3>
+<p>PKIaaS automatically synchronizes users on:
+- <strong>Daily Schedule</strong> - 4:00 AM daily sync via cron
+- <strong>Login Events</strong> - Real-time sync on authentication
+- <strong>API Requests</strong> - On-demand sync via API calls</p>
+<h3 id="manual-synchronization">Manual Synchronization</h3>
+<h4 id="sync-individual-user">Sync Individual User</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Sync specific user by UPN</span>
+php<span class="w"> </span>artisan<span class="w"> </span>entra:sync-users<span class="w"> </span>--upn<span class="o">=</span>john.doe@company.com
+
+<span class="c1"># Dry run to preview changes</span>
+php<span class="w"> </span>artisan<span class="w"> </span>entra:sync-users<span class="w"> </span>--upn<span class="o">=</span>john.doe@company.com<span class="w"> </span>--dry-run
+</code></pre></div>
+
+<h4 id="bulk-synchronization">Bulk Synchronization</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Sync all users needing updates</span>
+php<span class="w"> </span>artisan<span class="w"> </span>entra:sync-users
+
+<span class="c1"># Force sync all users</span>
+php<span class="w"> </span>artisan<span class="w"> </span>entra:sync-users<span class="w"> </span>--all<span class="w"> </span>--force
+
+<span class="c1"># Batch processing with custom size</span>
+php<span class="w"> </span>artisan<span class="w"> </span>entra:sync-users<span class="w"> </span>--batch-size<span class="o">=</span><span class="m">25</span>
+</code></pre></div>
+
+<h4 id="api-based-synchronization">API-based Synchronization</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Sync single user via API</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/entra-id/sync-user<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_API_TOKEN&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;user_principal_name&quot;: &quot;john.doe@company.com&quot;}&#39;</span>
+
+<span class="c1"># Bulk sync multiple users</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/entra-id/bulk-sync-users<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_API_TOKEN&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;user_principal_names&quot;: [</span>
+<span class="s1">      &quot;john.doe@company.com&quot;,</span>
+<span class="s1">      &quot;jane.smith@company.com&quot;</span>
+<span class="s1">    ]</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="synchronization-process">Synchronization Process</h3>
+<p>The synchronization process:</p>
+<ol>
+<li><strong>Authenticate</strong> - Obtain access token from Entra ID</li>
+<li><strong>Fetch User Data</strong> - Retrieve user profile and group memberships</li>
+<li><strong>Map Roles</strong> - Assign application roles based on security groups</li>
+<li><strong>Update Database</strong> - Create or update user record</li>
+<li><strong>Sync Metadata</strong> - Store groups, department, and sync timestamp</li>
+</ol>
+<h2 id="certificate-provisioning">Certificate Provisioning</h2>
+<h3 id="automatic-provisioning">Automatic Provisioning</h3>
+<p>Configure automatic certificate provisioning for new users:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// In config/entra.php</span>
+<span class="x">&#39;auto_provision_certificates&#39; =&gt; true,</span>
+<span class="x">&#39;default_certificate_types&#39; =&gt; [&#39;client_auth&#39;, &#39;email_protection&#39;],</span>
+<span class="x">&#39;provision_on_first_login&#39; =&gt; true,</span>
+</code></pre></div>
+
+<h3 id="manual-certificate-provisioning">Manual Certificate Provisioning</h3>
+<h4 id="via-api">Via API</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Provision certificate for Entra ID user</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/entra-id/provision-certificate<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_API_TOKEN&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;user_id&quot;: 123,</span>
+<span class="s1">    &quot;certificate_type&quot;: &quot;client_auth&quot;,</span>
+<span class="s1">    &quot;validity_days&quot;: 365,</span>
+<span class="s1">    &quot;key_size&quot;: 2048</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h4 id="via-command-line">Via Command Line</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Provision certificate for user</span>
+php<span class="w"> </span>artisan<span class="w"> </span>entra:provision-certificate<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--upn<span class="o">=</span>john.doe@company.com<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--type<span class="o">=</span>client_auth<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--validity<span class="o">=</span><span class="m">365</span>
+</code></pre></div>
+
+<h3 id="certificate-profiles">Certificate Profiles</h3>
+<h4 id="client-authentication-certificate">Client Authentication Certificate</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">Subject</span><span class="o">:</span><span class="w"> </span><span class="n">CN</span><span class="o">=</span><span class="n">John</span><span class="w"> </span><span class="n">Doe</span><span class="o">,</span><span class="w"> </span><span class="n">OU</span><span class="o">=</span><span class="n">IT</span><span class="w"> </span><span class="n">Department</span><span class="o">,</span><span class="w"> </span><span class="n">O</span><span class="o">=</span><span class="n">Your</span><span class="w"> </span><span class="n">Organization</span><span class="o">,</span><span class="w"> </span><span class="n">C</span><span class="o">=</span><span class="n">US</span>
+<span class="n">Subject</span><span class="w"> </span><span class="n">Alternative</span><span class="w"> </span><span class="n">Name</span><span class="o">:</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">email</span><span class="o">:</span><span class="n">john</span><span class="o">.</span><span class="na">doe</span><span class="err">@</span><span class="n">company</span><span class="o">.</span><span class="na">com</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">otherName</span><span class="o">:</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">6.1</span><span class="o">.</span><span class="mf">4.1</span><span class="o">.</span><span class="mf">311.20</span><span class="o">.</span><span class="mf">2.3</span><span class="o">;</span><span class="n">UTF8</span><span class="o">:</span><span class="n">john</span><span class="o">.</span><span class="na">doe</span><span class="err">@</span><span class="n">company</span><span class="o">.</span><span class="na">com</span><span class="w"> </span><span class="o">(</span><span class="n">UPN</span><span class="o">)</span>
+<span class="n">Key</span><span class="w"> </span><span class="n">Usage</span><span class="o">:</span><span class="w"> </span><span class="n">Digital</span><span class="w"> </span><span class="n">Signature</span><span class="o">,</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">Agreement</span>
+<span class="n">Extended</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">Usage</span><span class="o">:</span><span class="w"> </span><span class="n">Client</span><span class="w"> </span><span class="n">Authentication</span><span class="w"> </span><span class="o">(</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">6.1</span><span class="o">.</span><span class="mf">5.5</span><span class="o">.</span><span class="mf">7.3</span><span class="o">.</span><span class="mi">2</span><span class="o">)</span>
+<span class="n">Certificate</span><span class="w"> </span><span class="n">Policies</span><span class="o">:</span><span class="w"> </span><span class="n">Your</span><span class="w"> </span><span class="n">organization</span><span class="err">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="n">certificate</span><span class="w"> </span><span class="n">policy</span><span class="w"> </span><span class="n">OID</span>
+</code></pre></div>
+
+<h4 id="email-protection-certificate">Email Protection Certificate</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">Subject</span><span class="o">:</span><span class="w"> </span><span class="n">CN</span><span class="o">=</span><span class="n">John</span><span class="w"> </span><span class="n">Doe</span><span class="o">,</span><span class="w"> </span><span class="n">OU</span><span class="o">=</span><span class="n">IT</span><span class="w"> </span><span class="n">Department</span><span class="o">,</span><span class="w"> </span><span class="n">O</span><span class="o">=</span><span class="n">Your</span><span class="w"> </span><span class="n">Organization</span><span class="o">,</span><span class="w"> </span><span class="n">C</span><span class="o">=</span><span class="n">US</span>
+<span class="n">Subject</span><span class="w"> </span><span class="n">Alternative</span><span class="w"> </span><span class="n">Name</span><span class="o">:</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="n">email</span><span class="o">:</span><span class="n">john</span><span class="o">.</span><span class="na">doe</span><span class="err">@</span><span class="n">company</span><span class="o">.</span><span class="na">com</span>
+<span class="n">Key</span><span class="w"> </span><span class="n">Usage</span><span class="o">:</span><span class="w"> </span><span class="n">Digital</span><span class="w"> </span><span class="n">Signature</span><span class="o">,</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">Encipherment</span>
+<span class="n">Extended</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">Usage</span><span class="o">:</span><span class="w"> </span><span class="n">Email</span><span class="w"> </span><span class="n">Protection</span><span class="w"> </span><span class="o">(</span><span class="mf">1.3</span><span class="o">.</span><span class="mf">6.1</span><span class="o">.</span><span class="mf">5.5</span><span class="o">.</span><span class="mf">7.3</span><span class="o">.</span><span class="mi">4</span><span class="o">)</span>
+<span class="n">Certificate</span><span class="w"> </span><span class="n">Policies</span><span class="o">:</span><span class="w"> </span><span class="n">Your</span><span class="w"> </span><span class="n">organization</span><span class="err">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">S</span><span class="o">/</span><span class="n">MIME</span><span class="w"> </span><span class="n">certificate</span><span class="w"> </span><span class="n">policy</span><span class="w"> </span><span class="n">OID</span>
+</code></pre></div>
+
+<h2 id="authentication-integration">Authentication Integration</h2>
+<h3 id="jwt-token-validation">JWT Token Validation</h3>
+<p>PKIaaS can validate Entra ID JWT tokens for authentication:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Validate Entra ID token</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/entra-id/validate-token<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;token&quot;: &quot;eyJ0eXAiOiJKV1QiLCJhbGc...&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+
+<h3 id="bearer-token-authentication">Bearer Token Authentication</h3>
+<p>Use Entra ID tokens for API authentication:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Make authenticated API call with Entra ID token</span>
+curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/certificates<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer ENTRA_ID_JWT_TOKEN&quot;</span>
+</code></pre></div>
+
+<h3 id="middleware-configuration">Middleware Configuration</h3>
+<p>Configure Entra ID authentication middleware:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// In routes/api.php</span>
+<span class="x">Route::middleware([&#39;entra-auth&#39;])-&gt;group(function () {</span>
+<span class="x">    Route::get(&#39;/certificates&#39;, [CertificateController::class, &#39;index&#39;]);</span>
+<span class="x">    Route::post(&#39;/certificates&#39;, [CertificateController::class, &#39;store&#39;]);</span>
+<span class="x">});</span>
+</code></pre></div>
+
+<h2 id="security-groups-and-roles">Security Groups and Roles</h2>
+<h3 id="security-group-setup">Security Group Setup</h3>
+<p>Create security groups in Entra ID for role-based access:</p>
+<h4 id="administrator-groups">Administrator Groups</h4>
+<ul>
+<li><strong>PKI Administrators</strong> - Full system access</li>
+<li><strong>Certificate Managers</strong> - Certificate management</li>
+<li><strong>Security Analysts</strong> - Security monitoring and audit</li>
+</ul>
+<h4 id="user-groups">User Groups</h4>
+<ul>
+<li><strong>Certificate Users</strong> - Basic certificate operations</li>
+<li><strong>Department Groups</strong> - Department-specific access</li>
+</ul>
+<h3 id="role-permissions">Role Permissions</h3>
+<h4 id="pki-administrator">PKI Administrator</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">&#39;permissions&#39; =&gt; [</span>
+<span class="x">    &#39;create-ca&#39;,</span>
+<span class="x">    &#39;manage-certificates&#39;,</span>
+<span class="x">    &#39;view-all-certificates&#39;,</span>
+<span class="x">    &#39;revoke-certificates&#39;,</span>
+<span class="x">    &#39;manage-users&#39;,</span>
+<span class="x">    &#39;view-audit-logs&#39;,</span>
+<span class="x">    &#39;manage-system-config&#39;</span>
+<span class="x">]</span>
+</code></pre></div>
+
+<h4 id="certificate-manager">Certificate Manager</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">&#39;permissions&#39; =&gt; [</span>
+<span class="x">    &#39;create-certificates&#39;,</span>
+<span class="x">    &#39;view-certificates&#39;,</span>
+<span class="x">    &#39;renew-certificates&#39;,</span>
+<span class="x">    &#39;revoke-own-certificates&#39;,</span>
+<span class="x">    &#39;manage-certificate-requests&#39;</span>
+<span class="x">]</span>
+</code></pre></div>
+
+<h4 id="security-analyst">Security Analyst</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">&#39;permissions&#39; =&gt; [</span>
+<span class="x">    &#39;view-certificates&#39;,</span>
+<span class="x">    &#39;view-audit-logs&#39;,</span>
+<span class="x">    &#39;generate-reports&#39;,</span>
+<span class="x">    &#39;monitor-security-events&#39;</span>
+<span class="x">]</span>
+</code></pre></div>
+
+<h2 id="monitoring-and-troubleshooting">Monitoring and Troubleshooting</h2>
+<h3 id="health-monitoring">Health Monitoring</h3>
+<h4 id="health-check-endpoint">Health Check Endpoint</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check Entra ID integration health</span>
+curl<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/entra-id/health
+</code></pre></div>
+
+<p>Expected response:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;health&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;healthy&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Entra ID integration operational&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;tenant_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;your-tenant-id&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-01-15T10:30:00Z&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="statistics-endpoint">Statistics Endpoint</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Get integration statistics</span>
+curl<span class="w"> </span>https://your-pkiaas-domain.com/api/v1/entra-id/statistics<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_API_TOKEN&quot;</span>
+</code></pre></div>
+
+<h3 id="common-issues-and-solutions">Common Issues and Solutions</h3>
+<h4 id="authentication-failures">Authentication Failures</h4>
+<p><strong>Issue</strong>: <code>401 Unauthorized</code> responses
+<strong>Causes</strong>:
+- Invalid client credentials
+- Expired client secret
+- Incorrect tenant ID
+- Missing API permissions</p>
+<p><strong>Solutions</strong>:
+1. Verify client ID and secret in <code>.env</code>
+2. Check token expiration and regenerate if needed
+3. Confirm tenant ID in Azure portal
+4. Grant admin consent for API permissions</p>
+<h4 id="user-synchronization-issues">User Synchronization Issues</h4>
+<p><strong>Issue</strong>: Users not syncing from Entra ID
+<strong>Causes</strong>:
+- Network connectivity issues
+- Missing Graph API permissions
+- Rate limiting
+- User not found in directory</p>
+<p><strong>Solutions</strong>:
+1. Test connectivity: <code>php artisan entra:sync-users --dry-run</code>
+2. Check application permissions in Azure portal
+3. Implement retry logic and backoff strategies
+4. Verify user exists in Entra ID</p>
+<h4 id="certificate-provisioning-failures">Certificate Provisioning Failures</h4>
+<p><strong>Issue</strong>: Certificate generation fails for Entra ID users
+<strong>Causes</strong>:
+- No suitable CA found
+- Invalid certificate profile
+- Missing user attributes
+- Department mapping issues</p>
+<p><strong>Solutions</strong>:
+1. Configure CA selection strategy in <code>config/entra.php</code>
+2. Validate certificate profiles and extensions
+3. Check user profile completeness in Entra ID
+4. Update department mapping configuration</p>
+<h3 id="logging-and-debugging">Logging and Debugging</h3>
+<h4 id="enable-debug-logging">Enable Debug Logging</h4>
+<div class="codehilite"><pre><span></span><code># In .env
+LOG_LEVEL=debug
+ENTRA_LOG_AUTH_ATTEMPTS=true
+ENTRA_LOG_SYNC_EVENTS=true
+ENTRA_LOG_CERTIFICATE_EVENTS=true
+</code></pre></div>
+
+<h4 id="log-analysis">Log Analysis</h4>
+<p>Common log entries to monitor:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Authentication events</span>
+grep<span class="w"> </span><span class="s2">&quot;entra_authentication&quot;</span><span class="w"> </span>storage/logs/laravel.log
+
+<span class="c1"># User synchronization</span>
+grep<span class="w"> </span><span class="s2">&quot;user_sync&quot;</span><span class="w"> </span>storage/logs/laravel.log
+
+<span class="c1"># Certificate provisioning</span>
+grep<span class="w"> </span><span class="s2">&quot;certificate_provision&quot;</span><span class="w"> </span>storage/logs/laravel.log
+
+<span class="c1"># API errors</span>
+grep<span class="w"> </span><span class="s2">&quot;entra_api_error&quot;</span><span class="w"> </span>storage/logs/laravel.log
+</code></pre></div>
+
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="security-recommendations">Security Recommendations</h3>
+<ol>
+<li><strong>Rotate Client Secrets</strong> - Set 24-month expiration and rotate regularly</li>
+<li><strong>Principle of Least Privilege</strong> - Grant minimal required API permissions</li>
+<li><strong>Monitor Authentication</strong> - Enable comprehensive audit logging</li>
+<li><strong>Secure Configuration</strong> - Store secrets in secure configuration management</li>
+<li><strong>Regular Reviews</strong> - Audit group memberships and role assignments</li>
+</ol>
+<h3 id="performance-optimization">Performance Optimization</h3>
+<ol>
+<li><strong>Token Caching</strong> - Cache access tokens for reuse</li>
+<li><strong>Batch Processing</strong> - Use batch API calls for bulk operations</li>
+<li><strong>Rate Limiting</strong> - Implement proper rate limiting and retry logic</li>
+<li><strong>Database Indexing</strong> - Optimize queries with appropriate indexes</li>
+<li><strong>Monitoring</strong> - Track API usage and performance metrics</li>
+</ol>
+<h3 id="operational-procedures">Operational Procedures</h3>
+<ol>
+<li><strong>Regular Synchronization</strong> - Schedule daily user synchronization</li>
+<li><strong>Certificate Lifecycle</strong> - Monitor certificate expiration and renewal</li>
+<li><strong>Health Monitoring</strong> - Implement comprehensive health checks</li>
+<li><strong>Backup Procedures</strong> - Regular backup of user mappings and certificates</li>
+<li><strong>Incident Response</strong> - Document procedures for authentication failures</li>
+</ol>
+<h2 id="migration-guide">Migration Guide</h2>
+<h3 id="from-traditional-pki">From Traditional PKI</h3>
+<p>If migrating from a traditional PKI system:</p>
+<ol>
+<li><strong>Export User Data</strong> - Export existing user certificates and mappings</li>
+<li><strong>Create Entra ID Users</strong> - Ensure all users exist in Entra ID</li>
+<li><strong>Configure Groups</strong> - Set up security groups for role mapping</li>
+<li><strong>Migrate Certificates</strong> - Import existing certificates with user bindings</li>
+<li><strong>Test Integration</strong> - Thoroughly test authentication and provisioning</li>
+</ol>
+<h3 id="from-other-identity-providers">From Other Identity Providers</h3>
+<p>When migrating from other identity providers:</p>
+<ol>
+<li><strong>User Migration</strong> - Migrate users to Entra ID</li>
+<li><strong>Group Mapping</strong> - Map existing groups to Entra ID security groups</li>
+<li><strong>Certificate Re-issuance</strong> - Provision new certificates for migrated users</li>
+<li><strong>Update Applications</strong> - Update client applications to use new endpoints</li>
+<li><strong>Gradual Cutover</strong> - Implement phased migration approach</li>
+</ol>
+<p>This comprehensive integration enables seamless enterprise user management and certificate provisioning through Microsoft Entra ID.</p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

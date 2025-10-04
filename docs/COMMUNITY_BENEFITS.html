@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PKIaaS Community Benefits - Open Source PKI Solution - PKIaaS Documentation</title>
+    <meta name="description" content="**PKIaaS** is now a **fully open-source PKI solution** under MIT License, providing enterprise-grade PKI capabilities to the entire community. With 95">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="pkiaas-community-benefits-open-source-pki-solution">PKIaaS Community Benefits - Open Source PKI Solution</h1>
+<h2 id="open-source-advantages">🌟 Open Source Advantages</h2>
+<p><strong>PKIaaS</strong> is now a <strong>fully open-source PKI solution</strong> under MIT License, providing enterprise-grade PKI capabilities to the entire community. With 95% compliance to international standards, PKIaaS transforms complex certificate management into an automated, secure, and accessible service for everyone.</p>
+<hr />
+<h2 id="community-benefits">🎯 Community Benefits</h2>
+<h3 id="1-zero-cost-maximum-value">1. <strong>Zero Cost, Maximum Value</strong></h3>
+<h4 id="complete-freedom"><strong>Complete Freedom</strong></h4>
+<ul>
+<li><strong>No licensing fees</strong> - Use, modify, and distribute freely under MIT License</li>
+<li><strong>No vendor lock-in</strong> - Full source code access and control</li>
+<li><strong>No usage limits</strong> - Deploy on as many servers as needed</li>
+<li><strong>No feature restrictions</strong> - All enterprise features available to everyone</li>
+</ul>
+<h4 id="community-driven-development"><strong>Community-Driven Development</strong></h4>
+<ul>
+<li><strong>Transparent roadmap</strong> - Community input shapes development priorities</li>
+<li><strong>Collaborative improvement</strong> - Contributions welcome from all skill levels</li>
+<li><strong>Shared knowledge</strong> - Documentation and best practices openly available</li>
+<li><strong>Security through transparency</strong> - Code review by global security experts</li>
+</ul>
+<h3 id="2-enterprise-grade-pki-for-everyone">2. <strong>Enterprise-Grade PKI for Everyone</strong></h3>
+<h4 id="professional-features"><strong>Professional Features</strong></h4>
+<ul>
+<li><strong>Multi-tenant architecture</strong> - Support multiple organizations securely</li>
+<li><strong>ACME protocol support</strong> - Let's Encrypt compatibility for automated certificates</li>
+<li><strong>Hardware Security Module (HSM)</strong> integration for maximum security</li>
+<li><strong>Certificate lifecycle management</strong> - Automated renewal and revocation</li>
+</ul>
+<h4 id="standards-compliance"><strong>Standards Compliance</strong></h4>
+<ul>
+<li><strong>RFC 5280</strong> - X.509 certificate standards compliance</li>
+<li><strong>FIPS 140-2</strong> - Cryptographic module validation</li>
+<li><strong>Common Criteria</strong> - Security evaluation standards</li>
+<li><strong>PKCS standards</strong> - Industry-standard cryptographic formats</li>
+</ul>
+<h3 id="3-deployment-flexibility">3. <strong>Deployment Flexibility</strong></h3>
+<h4 id="infrastructure-options"><strong>Infrastructure Options</strong></h4>
+<ul>
+<li><strong>Docker containerized</strong> - Deploy anywhere containers run</li>
+<li><strong>Kubernetes ready</strong> - Scale horizontally with orchestration</li>
+<li><strong>Cloud agnostic</strong> - AWS, Azure, GCP, or on-premises</li>
+<li><strong>High availability</strong> - Built-in clustering and redundancy</li>
+</ul>
+<h4 id="integration-friendly"><strong>Integration Friendly</strong></h4>
+<ul>
+<li><strong>RESTful API</strong> - Integrate with existing systems easily</li>
+<li><strong>OpenVPN support</strong> - Generate VPN certificates automatically</li>
+<li><strong>Windows 802.1x</strong> - Enterprise WiFi certificate deployment</li>
+<li><strong>LDAP/Active Directory</strong> - User directory integration</li>
+</ul>
+<h3 id="4-learning-and-development">4. <strong>Learning and Development</strong></h3>
+<h4 id="educational-value"><strong>Educational Value</strong></h4>
+<ul>
+<li><strong>Study real PKI implementation</strong> - Learn from production-ready code</li>
+<li><strong>Security best practices</strong> - Understand cryptographic implementations</li>
+<li><strong>Modern Laravel architecture</strong> - Learn advanced PHP/Laravel patterns</li>
+<li><strong>DevOps practices</strong> - CI/CD, Docker, and deployment strategies</li>
+</ul>
+<h4 id="career-development"><strong>Career Development</strong></h4>
+<ul>
+<li><strong>PKI expertise</strong> - High-demand skill in cybersecurity field</li>
+<li><strong>Open source contributions</strong> - Build your professional portfolio</li>
+<li><strong>Community recognition</strong> - Gain reputation through meaningful contributions</li>
+<li><strong>Industry connections</strong> - Network with PKI and security professionals</li>
+</ul>
+<h3 id="5-community-ecosystem">5. <strong>Community Ecosystem</strong></h3>
+<h4 id="support-and-collaboration"><strong>Support and Collaboration</strong></h4>
+<ul>
+<li><strong>GitHub discussions</strong> - Get help and share knowledge</li>
+<li><strong>Issue tracking</strong> - Report bugs and request features</li>
+<li><strong>Pull requests welcome</strong> - Contribute improvements directly</li>
+<li><strong>Documentation contributions</strong> - Help others learn and implement</li>
+</ul>
+<h4 id="professional-services-available"><strong>Professional Services Available</strong></h4>
+<ul>
+<li><strong>Custom development</strong> - Paid support for specialized features</li>
+<li><strong>Professional deployment</strong> - Expert setup and configuration services</li>
+<li><strong>Training and certification</strong> - Learn PKI best practices from experts</li>
+<li><strong>Enterprise consulting</strong> - Strategic PKI planning and implementation</li>
+</ul>
+<hr />
+<h2 id="getting-started">🚀 Getting Started</h2>
+<h3 id="for-end-users">For End Users</h3>
+<ol>
+<li><strong>Download and deploy</strong> - Free Docker containers available</li>
+<li><strong>Follow documentation</strong> - Comprehensive guides and tutorials</li>
+<li><strong>Join community</strong> - GitHub discussions and support channels</li>
+<li><strong>Share feedback</strong> - Help improve the project for everyone</li>
+</ol>
+<h3 id="for-developers">For Developers</h3>
+<ol>
+<li><strong>Fork the repository</strong> - Start contributing immediately</li>
+<li><strong>Read contribution guidelines</strong> - Understand our development process</li>
+<li><strong>Pick an issue</strong> - Find something that matches your skills</li>
+<li><strong>Submit pull requests</strong> - Share your improvements with the community</li>
+</ol>
+<h3 id="for-organizations">For Organizations</h3>
+<ol>
+<li><strong>Evaluate freely</strong> - No licenses or restrictions to start</li>
+<li><strong>Deploy in production</strong> - Battle-tested enterprise architecture</li>
+<li><strong>Customize as needed</strong> - Full source code modification rights</li>
+<li><strong>Consider professional services</strong> - Expert support when needed</li>
+</ol>
+<hr />
+<h2 id="community-and-support">📞 Community and Support</h2>
+<h3 id="open-source-community">Open Source Community</h3>
+<ul>
+<li><strong>GitHub Repository</strong>: <a href="https://github.com/rdem-systems/pkiaas">https://github.com/rdem-systems/pkiaas</a></li>
+<li><strong>Issue Tracker</strong>: Report bugs and request features</li>
+<li><strong>Discussions</strong>: Community Q&amp;A and knowledge sharing</li>
+<li><strong>Wiki</strong>: Community-maintained documentation</li>
+</ul>
+<h3 id="professional-services">Professional Services</h3>
+<ul>
+<li><strong>Email</strong>: contact@rdem-systems.com</li>
+<li><strong>Website</strong>: https://rdem-systems.com</li>
+<li><strong>Services</strong>: Custom development, training, consulting</li>
+</ul>
+<hr />
+<h2 id="license">📄 License</h2>
+<p>This project is licensed under the <strong>MIT License</strong> - see the <a href="../LICENSE">LICENSE</a> file for details.</p>
+<p>The MIT License provides maximum freedom for use, modification, and distribution, making PKIaaS truly community-owned and community-driven.</p>
+<hr />
+<p><strong>Made with ❤️ by RDEM Systems and the Open Source Community</strong></p>
+<p><em>Enterprise PKI Solutions for Everyone</em></p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

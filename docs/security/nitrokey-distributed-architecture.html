@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Nitrokey Distribuée - Clés Physiques Distantes - PKIaaS Documentation</title>
+    <meta name="description" content="- **Nitrokeys sur postes clients** (non connectées au serveur PKIaaS)">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="architecture-nitrokey-distribuee-cles-physiques-distantes">Architecture Nitrokey Distribuée - Clés Physiques Distantes</h1>
+<h2 id="vue-densemble-de-larchitecture-corrigee">Vue d'Ensemble de l'Architecture Corrigée</h2>
+<h3 id="contraintes-techniques-reelles">🎯 <strong>Contraintes Techniques Réelles</strong></h3>
+<ul>
+<li><strong>Nitrokeys sur postes clients</strong> (non connectées au serveur PKIaaS)</li>
+<li><strong>Accès PKCS#11 local</strong> via OpenSC sur chaque poste client</li>
+<li><strong>Communication sécurisée</strong> entre clients et serveur pour parties Shamir</li>
+<li><strong>Interface web</strong> pour orchestration et génération des parts</li>
+<li><strong>Génération distribuée</strong> via interface web, déploiement sur sites distants</li>
+</ul>
+<hr />
+<h2 id="1-architecture-systeme-distribuee">1. Architecture Système Distribuée</h2>
+<div class="codehilite"><pre><span></span><code><span class="w">                    </span><span class="err">┌──────────────────────────────────┐</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">          </span><span class="n">PKIaaS</span><span class="w"> </span><span class="n">Server</span><span class="w">           </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">                                  </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">┌─────────────────────────────┐</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="n">Shamir</span><span class="w"> </span><span class="n">Generator</span><span class="w"> </span><span class="n">Web</span><span class="w"> </span><span class="n">UI</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Génération</span><span class="w"> </span><span class="n">parts</span><span class="w"> </span><span class="n">CA</span><span class="w">     </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Attribution</span><span class="w"> </span><span class="n">Nitrokeys</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Packages</span><span class="w"> </span><span class="n">déploiement</span><span class="w">    </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">└─────────────────────────────┘</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">                                  </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">┌─────────────────────────────┐</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">│</span><span class="w">  </span><span class="n">Signing</span><span class="w"> </span><span class="n">Orchestrator</span><span class="w">       </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Sessions</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">signature</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Collecte</span><span class="w"> </span><span class="n">parts</span><span class="w"> </span><span class="n">Shamir</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">│</span><span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Reconstruction</span><span class="w"> </span><span class="n">clé</span><span class="w">      </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">│</span><span class="w">  </span><span class="err">└─────────────────────────────┘</span><span class="w"> </span><span class="err">│</span>
+<span class="w">                    </span><span class="err">└──────────────┬───────────────────┘</span>
+<span class="w">                                   </span><span class="err">│</span>
+<span class="w">                          </span><span class="n">HTTPS</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">WebSockets</span>
+<span class="w">                                   </span><span class="err">│</span>
+<span class="w">        </span><span class="err">┌──────────────────────────┼──────────────────────────┐</span>
+<span class="w">        </span><span class="err">│</span><span class="w">                          </span><span class="err">│</span><span class="w">                          </span><span class="err">│</span>
+<span class="w">        </span><span class="err">│</span><span class="w">                          </span><span class="err">│</span><span class="w">                          </span><span class="err">│</span>
+<span class="err">┌───────▼────────┐</span><span class="w">        </span><span class="err">┌────────▼────────┐</span><span class="w">        </span><span class="err">┌───────▼────────┐</span>
+<span class="err">│</span><span class="w">   </span><span class="n">Client</span><span class="w"> </span><span class="n">A</span><span class="w">     </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w">   </span><span class="n">Client</span><span class="w"> </span><span class="n">B</span><span class="w">      </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w">   </span><span class="n">Client</span><span class="w"> </span><span class="n">N</span><span class="w">     </span><span class="err">│</span>
+<span class="err">│</span><span class="w">                </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w">                 </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w">                </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">┌────────────┐</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">┌─────────────┐</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">┌────────────┐</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">Nitrokey</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">Nitrokey</span><span class="w">    </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">Nitrokey</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">HSM</span><span class="w"> </span><span class="n">NK001</span><span class="w">  </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">HSM</span><span class="w"> </span><span class="n">NK002</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">HSM</span><span class="w"> </span><span class="n">NK00N</span><span class="w">  </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">            </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">             </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">            </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">Part</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="n">N</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">Part</span><span class="w"> </span><span class="mi">2</span><span class="o">/</span><span class="n">N</span><span class="w">    </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="n">Part</span><span class="w"> </span><span class="n">N</span><span class="o">/</span><span class="n">N</span><span class="w">   </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">└────────────┘</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">└─────────────┘</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">└────────────┘</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w">                </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w">                 </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w">                </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">┌────────────┐</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">┌─────────────┐</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">┌────────────┐</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="n">Client</span><span class="w"> </span><span class="n">Agent</span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="n">Client</span><span class="w"> </span><span class="n">Agent</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="n">Client</span><span class="w"> </span><span class="n">Agent</span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="n">PKCS</span><span class="c1">#11     │ │        │ │PKCS#11      │ │        │ │PKCS#11     │ │</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="n">OpenSC</span><span class="w">      </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="n">OpenSC</span><span class="w">       </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="n">OpenSC</span><span class="w">      </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="err">│</span><span class="w"> </span><span class="err">└────────────┘</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">└─────────────┘</span><span class="w"> </span><span class="err">│</span><span class="w">        </span><span class="err">│</span><span class="w"> </span><span class="err">└────────────┘</span><span class="w"> </span><span class="err">│</span>
+<span class="err">└────────────────┘</span><span class="w">        </span><span class="err">└─────────────────┘</span><span class="w">        </span><span class="err">└────────────────┘</span>
+
+<span class="w">      </span><span class="n">Site</span><span class="w"> </span><span class="n">Paris</span><span class="w">              </span><span class="n">Site</span><span class="w"> </span><span class="n">Lyon</span><span class="w">                </span><span class="n">Site</span><span class="w"> </span><span class="n">Remote</span>
+</code></pre></div>
+
+<hr />
+<h2 id="2-composants-de-larchitecture">2. Composants de l'Architecture</h2>
+<h3 id="21-interface-web-de-generation-shamir">🌐 <strong>2.1 Interface Web de Génération Shamir</strong></h3>
+<h4 id="controleur-principal">Contrôleur Principal</h4>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">App\Http\Controllers</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">App\Services\ShamirSecretService</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">App\Services\NitrokeyDeploymentService</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Illuminate\Http\Request</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">NitrokeyDistributedCAController</span> <span class="k">extends</span> <span class="nx">Controller</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="nx">ShamirSecretService</span> <span class="nv">$shamirService</span><span class="p">;</span>
+    <span class="k">private</span> <span class="nx">NitrokeyDeploymentService</span> <span class="nv">$deploymentService</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span>
+        <span class="nx">ShamirSecretService</span> <span class="nv">$shamirService</span><span class="p">,</span>
+        <span class="nx">NitrokeyDeploymentService</span> <span class="nv">$deploymentService</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">shamirService</span> <span class="o">=</span> <span class="nv">$shamirService</span><span class="p">;</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">deploymentService</span> <span class="o">=</span> <span class="nv">$deploymentService</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * Interface de génération CA distribuée</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">generateDistributedCA</span><span class="p">(</span><span class="nx">Request</span> <span class="nv">$request</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$validated</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">validate</span><span class="p">([</span>
+            <span class="s1">&#39;ca_name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|string|max:255&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;organization&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|string|max:255&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;country&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|string|size:2&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;key_size&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|integer|in:2048,3072,4096&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;validity_years&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|integer|min:1|max:30&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;threshold&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|integer|min:2|max:15&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;total_shares&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|integer|min:3|max:20&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nitrokey_assignments&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|array&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nitrokey_assignments.*.nitrokey_id&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|string|regex:/^NK\d{3}$/&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nitrokey_assignments.*.holder_name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|string|max:255&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nitrokey_assignments.*.holder_email&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|email&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;nitrokey_assignments.*.location&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;required|string|max:255&#39;</span><span class="p">,</span>
+        <span class="p">]);</span>
+
+        <span class="c1">// 1. Générer CA Master Private Key</span>
+        <span class="nv">$masterKeyPair</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateCAKeyPair</span><span class="p">(</span><span class="nv">$validated</span><span class="p">[</span><span class="s1">&#39;key_size&#39;</span><span class="p">]);</span>
+
+        <span class="c1">// 2. Créer le certificat CA auto-signé</span>
+        <span class="nv">$caCertificate</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">createSelfSignedCACertificate</span><span class="p">(</span>
+            <span class="nv">$masterKeyPair</span><span class="p">,</span>
+            <span class="nv">$validated</span>
+        <span class="p">);</span>
+
+        <span class="c1">// 3. Appliquer Shamir Secret Sharing sur la clé privée</span>
+        <span class="nv">$shamirShares</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">shamirService</span><span class="o">-&gt;</span><span class="na">splitSecret</span><span class="p">(</span>
+            <span class="nv">$masterKeyPair</span><span class="p">[</span><span class="s1">&#39;private_key&#39;</span><span class="p">],</span>
+            <span class="nv">$validated</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span>
+            <span class="nv">$validated</span><span class="p">[</span><span class="s1">&#39;total_shares&#39;</span><span class="p">]</span>
+        <span class="p">);</span>
+
+        <span class="c1">// 4. Créer les packages de déploiement</span>
+        <span class="nv">$deploymentPackages</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$shamirShares</span> <span class="k">as</span> <span class="nv">$index</span> <span class="o">=&gt;</span> <span class="nv">$share</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$nitrokeyAssignment</span> <span class="o">=</span> <span class="nv">$validated</span><span class="p">[</span><span class="s1">&#39;nitrokey_assignments&#39;</span><span class="p">][</span><span class="nv">$index</span><span class="p">];</span>
+
+            <span class="nv">$deploymentPackages</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">deploymentService</span><span class="o">-&gt;</span><span class="na">createDeploymentPackage</span><span class="p">([</span>
+                <span class="s1">&#39;nitrokey_id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$nitrokeyAssignment</span><span class="p">[</span><span class="s1">&#39;nitrokey_id&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;share_data&#39;</span> <span class="o">=&gt;</span> <span class="nv">$share</span><span class="p">,</span>
+                <span class="s1">&#39;ca_metadata&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                    <span class="s1">&#39;ca_id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$caCertificate</span><span class="p">[</span><span class="s1">&#39;ca_id&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;ca_name&#39;</span> <span class="o">=&gt;</span> <span class="nv">$validated</span><span class="p">[</span><span class="s1">&#39;ca_name&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;threshold&#39;</span> <span class="o">=&gt;</span> <span class="nv">$validated</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;total_shares&#39;</span> <span class="o">=&gt;</span> <span class="nv">$validated</span><span class="p">[</span><span class="s1">&#39;total_shares&#39;</span><span class="p">],</span>
+                <span class="p">],</span>
+                <span class="s1">&#39;holder_info&#39;</span> <span class="o">=&gt;</span> <span class="nv">$nitrokeyAssignment</span>
+            <span class="p">]);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 5. Sauvegarder CA en base (SANS la clé privée maître)</span>
+        <span class="nv">$ca</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">saveCertificateAuthority</span><span class="p">(</span><span class="nv">$caCertificate</span><span class="p">,</span> <span class="nv">$validated</span><span class="p">);</span>
+
+        <span class="c1">// 6. Sauvegarder métadonnées Shamir</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">saveShamirMetadata</span><span class="p">(</span><span class="nv">$ca</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">,</span> <span class="nv">$validated</span><span class="p">,</span> <span class="nv">$deploymentPackages</span><span class="p">);</span>
+
+        <span class="c1">// 7. EFFACEMENT SÉCURISÉ de la clé maître</span>
+        <span class="nb">sodium_memzero</span><span class="p">(</span><span class="nv">$masterKeyPair</span><span class="p">[</span><span class="s1">&#39;private_key&#39;</span><span class="p">]);</span>
+        <span class="nb">unset</span><span class="p">(</span><span class="nv">$masterKeyPair</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="nx">response</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">json</span><span class="p">([</span>
+            <span class="s1">&#39;success&#39;</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>
+            <span class="s1">&#39;ca_id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$ca</span><span class="o">-&gt;</span><span class="na">id</span><span class="p">,</span>
+            <span class="s1">&#39;deployment_packages&#39;</span> <span class="o">=&gt;</span> <span class="nv">$deploymentPackages</span><span class="p">,</span>
+            <span class="s1">&#39;next_steps&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                <span class="s1">&#39;download_packages&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Télécharger les packages de déploiement&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;distribute_nitrokeys&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Distribuer physiquement les Nitrokeys&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;install_client_agents&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Installer agents clients sur postes&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;test_signing&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Tester une première signature distribuée&#39;</span>
+            <span class="p">]</span>
+        <span class="p">]);</span>
+    <span class="p">}</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * API pour télécharger package de déploiement spécifique</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">downloadDeploymentPackage</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$caId</span><span class="p">,</span> <span class="nx">string</span> <span class="nv">$nitrokeyId</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$package</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">deploymentService</span><span class="o">-&gt;</span><span class="na">getDeploymentPackage</span><span class="p">(</span><span class="nv">$caId</span><span class="p">,</span> <span class="nv">$nitrokeyId</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$package</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">abort</span><span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="s1">&#39;Package de déploiement non trouvé&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// Générer archive sécurisée</span>
+        <span class="nv">$archive</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">deploymentService</span><span class="o">-&gt;</span><span class="na">generateSecureArchive</span><span class="p">(</span><span class="nv">$package</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="nx">response</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">download</span><span class="p">(</span><span class="nv">$archive</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="nv">$archive</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">])</span>
+            <span class="o">-&gt;</span><span class="na">deleteFileAfterSend</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="service-de-generation-shamir">Service de Génération Shamir</h4>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">App\Services</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ShamirSecretService</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * Divise un secret en N parts avec seuil M</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">splitSecret</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$secret</span><span class="p">,</span> <span class="nx">int</span> <span class="nv">$threshold</span><span class="p">,</span> <span class="nx">int</span> <span class="nv">$totalShares</span><span class="p">)</span><span class="o">:</span> <span class="k">array</span>
+    <span class="p">{</span>
+        <span class="c1">// Convertir la clé privée en nombre pour Shamir</span>
+        <span class="nv">$secretNumber</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">convertSecretToNumber</span><span class="p">(</span><span class="nv">$secret</span><span class="p">);</span>
+
+        <span class="c1">// Générer polynôme aléatoire de degré (threshold - 1)</span>
+        <span class="nv">$polynomial</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generatePolynomial</span><span class="p">(</span><span class="nv">$secretNumber</span><span class="p">,</span> <span class="nv">$threshold</span><span class="p">);</span>
+
+        <span class="c1">// Générer les parts</span>
+        <span class="nv">$shares</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nv">$x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nv">$x</span> <span class="o">&lt;=</span> <span class="nv">$totalShares</span><span class="p">;</span> <span class="nv">$x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$y</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">evaluatePolynomial</span><span class="p">(</span><span class="nv">$polynomial</span><span class="p">,</span> <span class="nv">$x</span><span class="p">);</span>
+            <span class="nv">$shares</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;x&#39;</span> <span class="o">=&gt;</span> <span class="nv">$x</span><span class="p">,</span>
+                <span class="s1">&#39;y&#39;</span> <span class="o">=&gt;</span> <span class="nv">$y</span><span class="p">,</span>
+                <span class="s1">&#39;threshold&#39;</span> <span class="o">=&gt;</span> <span class="nv">$threshold</span><span class="p">,</span>
+                <span class="s1">&#39;total_shares&#39;</span> <span class="o">=&gt;</span> <span class="nv">$totalShares</span><span class="p">,</span>
+                <span class="s1">&#39;share_index&#39;</span> <span class="o">=&gt;</span> <span class="nv">$x</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="p">];</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nv">$shares</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * Reconstruit le secret à partir de M parts</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">reconstructSecret</span><span class="p">(</span><span class="k">array</span> <span class="nv">$shares</span><span class="p">,</span> <span class="nx">int</span> <span class="nv">$threshold</span><span class="p">)</span><span class="o">:</span> <span class="nx">string</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">count</span><span class="p">(</span><span class="nv">$shares</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nv">$threshold</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">\InvalidArgumentException</span><span class="p">(</span>
+                <span class="s2">&quot;Besoin d&#39;au moins </span><span class="si">{</span><span class="nv">$threshold</span><span class="si">}</span><span class="s2"> parts, seulement &quot;</span> <span class="o">.</span> <span class="nb">count</span><span class="p">(</span><span class="nv">$shares</span><span class="p">)</span> <span class="o">.</span> <span class="s2">&quot; fournies&quot;</span>
+            <span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// Prendre seulement le nombre requis de parts</span>
+        <span class="nv">$selectedShares</span> <span class="o">=</span> <span class="nb">array_slice</span><span class="p">(</span><span class="nv">$shares</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">$threshold</span><span class="p">);</span>
+
+        <span class="c1">// Appliquer interpolation de Lagrange</span>
+        <span class="nv">$secretNumber</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">lagrangeInterpolation</span><span class="p">(</span><span class="nv">$selectedShares</span><span class="p">);</span>
+
+        <span class="c1">// Reconvertir en clé privée</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">convertNumberToSecret</span><span class="p">(</span><span class="nv">$secretNumber</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">convertSecretToNumber</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$secret</span><span class="p">)</span><span class="o">:</span> <span class="nx">\GMP</span>
+    <span class="p">{</span>
+        <span class="c1">// Convertir la clé privée PEM en nombre GMP</span>
+        <span class="nv">$binaryData</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="s1">&#39;sha256&#39;</span><span class="p">,</span> <span class="nv">$secret</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">gmp_import</span><span class="p">(</span><span class="nv">$binaryData</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">convertNumberToSecret</span><span class="p">(</span><span class="nx">\GMP</span> <span class="nv">$number</span><span class="p">)</span><span class="o">:</span> <span class="nx">string</span>
+    <span class="p">{</span>
+        <span class="c1">// Cette fonction nécessite une implémentation plus sophistiquée</span>
+        <span class="c1">// pour reconvertir correctement le nombre en clé privée</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">\Exception</span><span class="p">(</span><span class="s2">&quot;Implémentation complète requise pour production&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">generatePolynomial</span><span class="p">(</span><span class="nx">\GMP</span> <span class="nv">$secret</span><span class="p">,</span> <span class="nx">int</span> <span class="nv">$threshold</span><span class="p">)</span><span class="o">:</span> <span class="k">array</span>
+    <span class="p">{</span>
+        <span class="nv">$polynomial</span> <span class="o">=</span> <span class="p">[</span><span class="nv">$secret</span><span class="p">];</span> <span class="c1">// Terme constant = secret</span>
+
+        <span class="c1">// Générer coefficients aléatoires pour les autres termes</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="nv">$threshold</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$coefficient</span> <span class="o">=</span> <span class="nb">gmp_random_bits</span><span class="p">(</span><span class="mi">256</span><span class="p">);</span>
+            <span class="nv">$polynomial</span><span class="p">[]</span> <span class="o">=</span> <span class="nv">$coefficient</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nv">$polynomial</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">evaluatePolynomial</span><span class="p">(</span><span class="k">array</span> <span class="nv">$polynomial</span><span class="p">,</span> <span class="nx">int</span> <span class="nv">$x</span><span class="p">)</span><span class="o">:</span> <span class="nx">\GMP</span>
+    <span class="p">{</span>
+        <span class="nv">$result</span> <span class="o">=</span> <span class="nb">gmp_init</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+        <span class="nv">$xPower</span> <span class="o">=</span> <span class="nb">gmp_init</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$polynomial</span> <span class="k">as</span> <span class="nv">$coefficient</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$term</span> <span class="o">=</span> <span class="nb">gmp_mul</span><span class="p">(</span><span class="nv">$coefficient</span><span class="p">,</span> <span class="nv">$xPower</span><span class="p">);</span>
+            <span class="nv">$result</span> <span class="o">=</span> <span class="nb">gmp_add</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="nv">$term</span><span class="p">);</span>
+            <span class="nv">$xPower</span> <span class="o">=</span> <span class="nb">gmp_mul</span><span class="p">(</span><span class="nv">$xPower</span><span class="p">,</span> <span class="nv">$x</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">lagrangeInterpolation</span><span class="p">(</span><span class="k">array</span> <span class="nv">$shares</span><span class="p">)</span><span class="o">:</span> <span class="nx">\GMP</span>
+    <span class="p">{</span>
+        <span class="nv">$result</span> <span class="o">=</span> <span class="nb">gmp_init</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+        <span class="k">foreach</span> <span class="p">(</span><span class="nv">$shares</span> <span class="k">as</span> <span class="nv">$i</span> <span class="o">=&gt;</span> <span class="nv">$share</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$numerator</span> <span class="o">=</span> <span class="nb">gmp_init</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="nv">$denominator</span> <span class="o">=</span> <span class="nb">gmp_init</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+            <span class="k">foreach</span> <span class="p">(</span><span class="nv">$shares</span> <span class="k">as</span> <span class="nv">$j</span> <span class="o">=&gt;</span> <span class="nv">$otherShare</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">!==</span> <span class="nv">$j</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nv">$numerator</span> <span class="o">=</span> <span class="nb">gmp_mul</span><span class="p">(</span><span class="nv">$numerator</span><span class="p">,</span> <span class="nb">gmp_neg</span><span class="p">(</span><span class="nv">$otherShare</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]));</span>
+                    <span class="nv">$denominator</span> <span class="o">=</span> <span class="nb">gmp_mul</span><span class="p">(</span><span class="nv">$denominator</span><span class="p">,</span> <span class="nb">gmp_sub</span><span class="p">(</span><span class="nv">$share</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="nv">$otherShare</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]));</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="nv">$lagrangeCoeff</span> <span class="o">=</span> <span class="nb">gmp_div</span><span class="p">(</span><span class="nv">$numerator</span><span class="p">,</span> <span class="nv">$denominator</span><span class="p">);</span>
+            <span class="nv">$term</span> <span class="o">=</span> <span class="nb">gmp_mul</span><span class="p">(</span><span class="nv">$share</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="nv">$lagrangeCoeff</span><span class="p">);</span>
+            <span class="nv">$result</span> <span class="o">=</span> <span class="nb">gmp_add</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="nv">$term</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="22-service-de-deploiement-nitrokey">💾 <strong>2.2 Service de Déploiement Nitrokey</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">App\Services</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Illuminate\Support\Facades\Storage</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">ZipArchive</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">NitrokeyDeploymentService</span>
+<span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * Créer package de déploiement pour une Nitrokey</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">createDeploymentPackage</span><span class="p">(</span><span class="k">array</span> <span class="nv">$config</span><span class="p">)</span><span class="o">:</span> <span class="k">array</span>
+    <span class="p">{</span>
+        <span class="nv">$package</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;nitrokey_id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;nitrokey_id&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;deployment_id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateDeploymentId</span><span class="p">(),</span>
+            <span class="s1">&#39;ca_metadata&#39;</span> <span class="o">=&gt;</span> <span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;ca_metadata&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;holder_info&#39;</span> <span class="o">=&gt;</span> <span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;holder_info&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;share_data&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">encryptShareForTransport</span><span class="p">(</span><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;share_data&#39;</span><span class="p">]),</span>
+            <span class="s1">&#39;deployment_scripts&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateDeploymentScripts</span><span class="p">(</span><span class="nv">$config</span><span class="p">),</span>
+            <span class="s1">&#39;verification_data&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateVerificationData</span><span class="p">(</span><span class="nv">$config</span><span class="p">),</span>
+            <span class="s1">&#39;created_at&#39;</span> <span class="o">=&gt;</span> <span class="nx">now</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">toISOString</span><span class="p">()</span>
+        <span class="p">];</span>
+
+        <span class="k">return</span> <span class="nv">$package</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * Générer archive sécurisée pour déploiement</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">generateSecureArchive</span><span class="p">(</span><span class="k">array</span> <span class="nv">$package</span><span class="p">)</span><span class="o">:</span> <span class="k">array</span>
+    <span class="p">{</span>
+        <span class="nv">$tempDir</span> <span class="o">=</span> <span class="nx">storage_path</span><span class="p">(</span><span class="s1">&#39;temp/deployments/&#39;</span> <span class="o">.</span> <span class="nv">$package</span><span class="p">[</span><span class="s1">&#39;deployment_id&#39;</span><span class="p">]);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_dir</span><span class="p">(</span><span class="nv">$tempDir</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$tempDir</span><span class="p">,</span> <span class="mo">0700</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 1. Script de déploiement principal</span>
+        <span class="nv">$deploymentScript</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateDeploymentScript</span><span class="p">(</span><span class="nv">$package</span><span class="p">);</span>
+        <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$tempDir</span> <span class="o">.</span> <span class="s1">&#39;/deploy.sh&#39;</span><span class="p">,</span> <span class="nv">$deploymentScript</span><span class="p">);</span>
+        <span class="nb">chmod</span><span class="p">(</span><span class="nv">$tempDir</span> <span class="o">.</span> <span class="s1">&#39;/deploy.sh&#39;</span><span class="p">,</span> <span class="mo">0700</span><span class="p">);</span>
+
+        <span class="c1">// 2. Agent client (binaire ou source)</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">copyClientAgent</span><span class="p">(</span><span class="nv">$tempDir</span><span class="p">);</span>
+
+        <span class="c1">// 3. Configuration chiffrée</span>
+        <span class="nv">$configFile</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateEncryptedConfig</span><span class="p">(</span><span class="nv">$package</span><span class="p">);</span>
+        <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$tempDir</span> <span class="o">.</span> <span class="s1">&#39;/config.enc&#39;</span><span class="p">,</span> <span class="nv">$configFile</span><span class="p">);</span>
+
+        <span class="c1">// 4. Instructions de déploiement</span>
+        <span class="nv">$instructions</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateDeploymentInstructions</span><span class="p">(</span><span class="nv">$package</span><span class="p">);</span>
+        <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$tempDir</span> <span class="o">.</span> <span class="s1">&#39;/INSTRUCTIONS.md&#39;</span><span class="p">,</span> <span class="nv">$instructions</span><span class="p">);</span>
+
+        <span class="c1">// 5. Code QR pour vérification</span>
+        <span class="nv">$qrCode</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateVerificationQR</span><span class="p">(</span><span class="nv">$package</span><span class="p">);</span>
+        <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$tempDir</span> <span class="o">.</span> <span class="s1">&#39;/verification.png&#39;</span><span class="p">,</span> <span class="nv">$qrCode</span><span class="p">);</span>
+
+        <span class="c1">// 6. Créer archive ZIP protégée par mot de passe</span>
+        <span class="nv">$archivePath</span> <span class="o">=</span> <span class="nv">$tempDir</span> <span class="o">.</span> <span class="s1">&#39;.zip&#39;</span><span class="p">;</span>
+        <span class="nv">$password</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">generateSecurePassword</span><span class="p">();</span>
+
+        <span class="nv">$zip</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ZipArchive</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$zip</span><span class="o">-&gt;</span><span class="na">open</span><span class="p">(</span><span class="nv">$archivePath</span><span class="p">,</span> <span class="nx">ZipArchive</span><span class="o">::</span><span class="na">CREATE</span> <span class="o">|</span> <span class="nx">ZipArchive</span><span class="o">::</span><span class="na">OVERWRITE</span><span class="p">)</span> <span class="o">===</span> <span class="k">TRUE</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$zip</span><span class="o">-&gt;</span><span class="na">setPassword</span><span class="p">(</span><span class="nv">$password</span><span class="p">);</span>
+            <span class="nv">$zip</span><span class="o">-&gt;</span><span class="na">setEncryptionName</span><span class="p">(</span><span class="s1">&#39;deploy.sh&#39;</span><span class="p">,</span> <span class="nx">ZipArchive</span><span class="o">::</span><span class="na">EM_AES_256</span><span class="p">);</span>
+            <span class="nv">$zip</span><span class="o">-&gt;</span><span class="na">addFile</span><span class="p">(</span><span class="nv">$tempDir</span> <span class="o">.</span> <span class="s1">&#39;/deploy.sh&#39;</span><span class="p">,</span> <span class="s1">&#39;deploy.sh&#39;</span><span class="p">);</span>
+
+            <span class="c1">// Ajouter autres fichiers...</span>
+            <span class="nv">$files</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;config.enc&#39;</span><span class="p">,</span> <span class="s1">&#39;INSTRUCTIONS.md&#39;</span><span class="p">,</span> <span class="s1">&#39;verification.png&#39;</span><span class="p">];</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="nv">$files</span> <span class="k">as</span> <span class="nv">$file</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nv">$zip</span><span class="o">-&gt;</span><span class="na">setEncryptionName</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span> <span class="nx">ZipArchive</span><span class="o">::</span><span class="na">EM_AES_256</span><span class="p">);</span>
+                <span class="nv">$zip</span><span class="o">-&gt;</span><span class="na">addFile</span><span class="p">(</span><span class="nv">$tempDir</span> <span class="o">.</span> <span class="s1">&#39;/&#39;</span> <span class="o">.</span> <span class="nv">$file</span><span class="p">,</span> <span class="nv">$file</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="nv">$zip</span><span class="o">-&gt;</span><span class="na">close</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 7. Nettoyer répertoire temporaire</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">cleanupTempDirectory</span><span class="p">(</span><span class="nv">$tempDir</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s1">&#39;path&#39;</span> <span class="o">=&gt;</span> <span class="nv">$archivePath</span><span class="p">,</span>
+            <span class="s1">&#39;filename&#39;</span> <span class="o">=&gt;</span> <span class="s2">&quot;nitrokey-</span><span class="si">{</span><span class="nv">$package</span><span class="p">[</span><span class="s1">&#39;nitrokey_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">-deployment.zip&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;password&#39;</span> <span class="o">=&gt;</span> <span class="nv">$password</span><span class="p">,</span>
+            <span class="s1">&#39;holder_email&#39;</span> <span class="o">=&gt;</span> <span class="nv">$package</span><span class="p">[</span><span class="s1">&#39;holder_info&#39;</span><span class="p">][</span><span class="s1">&#39;holder_email&#39;</span><span class="p">]</span>
+        <span class="p">];</span>
+    <span class="p">}</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * Générer script de déploiement spécifique à la Nitrokey</span>
+<span class="sd">     */</span>
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">generateDeploymentScript</span><span class="p">(</span><span class="k">array</span> <span class="nv">$package</span><span class="p">)</span><span class="o">:</span> <span class="nx">string</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="s">&lt;&lt;&lt;</span><span class="dl">BASH</span>
+<span class="s">#!/bin/bash</span>
+<span class="s"># Script de déploiement Nitrokey {$package[&#39;nitrokey_id&#39;]}</span>
+<span class="s"># CA: {$package[&#39;ca_metadata&#39;][&#39;ca_name&#39;]}</span>
+<span class="s"># Responsable: {$package[&#39;holder_info&#39;][&#39;holder_name&#39;]}</span>
+
+<span class="s">set -e</span>
+
+<span class="s">NITROKEY_ID=&quot;{$package[&#39;nitrokey_id&#39;]}&quot;</span>
+<span class="s">CA_ID=&quot;{$package[&#39;ca_metadata&#39;][&#39;ca_id&#39;]}&quot;</span>
+
+<span class="s">echo &quot;=== Déploiement Nitrokey HSM \$NITROKEY_ID ===&quot;</span>
+
+<span class="s"># Vérifier prérequis</span>
+<span class="s">check_prerequisites() {</span>
+<span class="s">    echo &quot;Vérification des prérequis...&quot;</span>
+
+<span class="s">    # OpenSC installé</span>
+<span class="s">    if ! command -v pkcs11-tool &amp;&gt; /dev/null; then</span>
+<span class="s">        echo &quot;ERREUR: OpenSC non installé. Installer avec:&quot;</span>
+<span class="s">        echo &quot;  Ubuntu/Debian: apt-get install opensc&quot;</span>
+<span class="s">        echo &quot;  RHEL/CentOS: yum install opensc&quot;</span>
+<span class="s">        exit 1</span>
+<span class="s">    fi</span>
+
+<span class="s">    # Nitrokey détectée</span>
+<span class="s">    if ! pkcs11-tool --module /usr/lib/opensc-pkcs11.so --list-slots | grep -q &quot;Nitrokey&quot;; then</span>
+<span class="s">        echo &quot;ERREUR: Nitrokey HSM non détectée&quot;</span>
+<span class="s">        echo &quot;Vérifier que la Nitrokey est connectée et initialisée&quot;</span>
+<span class="s">        exit 1</span>
+<span class="s">    fi</span>
+
+<span class="s">    echo &quot;✓ Prérequis validés&quot;</span>
+<span class="s">}</span>
+
+<span class="s"># Déployer la part Shamir</span>
+<span class="s">deploy_shamir_share() {</span>
+<span class="s">    echo &quot;Déploiement de la part Shamir...&quot;</span>
+
+<span class="s">    # Demander PIN utilisateur</span>
+<span class="s">    echo -n &quot;PIN utilisateur Nitrokey: &quot;</span>
+<span class="s">    read -s USER_PIN</span>
+<span class="s">    echo</span>
+
+<span class="s">    # Décrypter configuration</span>
+<span class="s">    openssl enc -aes-256-cbc -d -in config.enc -out config.json -k &quot;\$USER_PIN&quot;</span>
+
+<span class="s">    if [ \$? -ne 0 ]; then</span>
+<span class="s">        echo &quot;ERREUR: PIN incorrect ou configuration corrompue&quot;</span>
+<span class="s">        exit 1</span>
+<span class="s">    fi</span>
+
+<span class="s">    # Stocker données sur Nitrokey via PKCS#11</span>
+<span class="s">    pkcs11-tool --module /usr/lib/opensc-pkcs11.so \\</span>
+<span class="s">        --login --pin &quot;\$USER_PIN&quot; \\</span>
+<span class="s">        --write-object config.json \\</span>
+<span class="s">        --type data \\</span>
+<span class="s">        --id &quot;CA\$CA_ID&quot; \\</span>
+<span class="s">        --label &quot;ShamirShare-\$NITROKEY_ID&quot;</span>
+
+<span class="s">    if [ \$? -eq 0 ]; then</span>
+<span class="s">        echo &quot;✓ Part Shamir déployée avec succès&quot;</span>
+<span class="s">        rm -f config.json  # Nettoyage</span>
+<span class="s">    else</span>
+<span class="s">        echo &quot;ERREUR: Échec du déploiement&quot;</span>
+<span class="s">        exit 1</span>
+<span class="s">    fi</span>
+<span class="s">}</span>
+
+<span class="s"># Installation agent client</span>
+<span class="s">install_client_agent() {</span>
+<span class="s">    echo &quot;Installation de l&#39;agent client...&quot;</span>
+
+<span class="s">    # Copier binaire agent</span>
+<span class="s">    sudo cp nitrokey-client-agent /usr/local/bin/</span>
+<span class="s">    sudo chmod +x /usr/local/bin/nitrokey-client-agent</span>
+
+<span class="s">    # Créer service systemd</span>
+<span class="s">    sudo tee /etc/systemd/system/nitrokey-agent.service &gt; /dev/null &lt;&lt;EOF</span>
+<span class="s">[Unit]</span>
+<span class="s">Description=Nitrokey PKI Client Agent</span>
+<span class="s">After=network.target</span>
+
+<span class="s">[Service]</span>
+<span class="s">Type=simple</span>
+<span class="s">User=\$USER</span>
+<span class="s">ExecStart=/usr/local/bin/nitrokey-client-agent --config /home/\$USER/.nitrokey/config.json</span>
+<span class="s">Restart=on-failure</span>
+
+<span class="s">[Install]</span>
+<span class="s">WantedBy=multi-user.target</span>
+<span class="s">EOF</span>
+
+<span class="s">    sudo systemctl daemon-reload</span>
+<span class="s">    sudo systemctl enable nitrokey-agent</span>
+
+<span class="s">    echo &quot;✓ Agent client installé&quot;</span>
+<span class="s">}</span>
+
+<span class="s"># Exécution principale</span>
+<span class="s">main() {</span>
+<span class="s">    check_prerequisites</span>
+<span class="s">    deploy_shamir_share</span>
+<span class="s">    install_client_agent</span>
+
+<span class="s">    echo</span>
+<span class="s">    echo &quot;=== Déploiement terminé ===&quot;</span>
+<span class="s">    echo &quot;Nitrokey \$NITROKEY_ID prête pour signature distribuée&quot;</span>
+<span class="s">    echo &quot;Agent client: sudo systemctl start nitrokey-agent&quot;</span>
+<span class="s">}</span>
+
+<span class="s">main</span>
+<span class="dl">BASH</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="23-agent-client-nitrokey">🖥️ <strong>2.3 Agent Client Nitrokey</strong></h3>
+<h4 id="application-client-standalone">Application Client Standalone</h4>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?php</span>
+<span class="c1">// /usr/local/bin/nitrokey-client-agent (PHP CLI app)</span>
+
+<span class="k">namespace</span> <span class="nx">NitrokeyAgent</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ClientAgent</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="nv">$config</span><span class="p">;</span>
+    <span class="k">private</span> <span class="nv">$pkcs11Module</span> <span class="o">=</span> <span class="s1">&#39;/usr/lib/opensc-pkcs11.so&#39;</span><span class="p">;</span>
+    <span class="k">private</span> <span class="nv">$serverEndpoint</span><span class="p">;</span>
+    <span class="k">private</span> <span class="nv">$nitrokeyId</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$configPath</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">config</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$configPath</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">serverEndpoint</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">config</span><span class="p">[</span><span class="s1">&#39;server_endpoint&#39;</span><span class="p">];</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">nitrokeyId</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">config</span><span class="p">[</span><span class="s1">&#39;nitrokey_id&#39;</span><span class="p">];</span>
+    <span class="p">}</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * Démarrer agent en mode daemon</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">startDaemon</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
+    <span class="p">{</span>
+        <span class="k">echo</span> <span class="s2">&quot;Démarrage Nitrokey Agent </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">nitrokeyId</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+
+        <span class="c1">// Vérifier Nitrokey disponible</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">checkNitrokeyAvailable</span><span class="p">())</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">\Exception</span><span class="p">(</span><span class="s2">&quot;Nitrokey HSM non disponible&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// WebSocket ou polling pour écouter demandes serveur</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">listenForSigningRequests</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="sd">/**</span>
+<span class="sd">     * Participer à une session de signature</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">participateInSigning</span><span class="p">(</span><span class="k">array</span> <span class="nv">$signingSession</span><span class="p">)</span><span class="o">:</span> <span class="nx">bool</span>
+    <span class="p">{</span>
+        <span class="k">echo</span> <span class="s2">&quot;Participation à signature session: </span><span class="si">{</span><span class="nv">$signingSession</span><span class="p">[</span><span class="s1">&#39;session_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="c1">// 1. Vérifier autorisation</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">isAuthorizedForSigning</span><span class="p">(</span><span class="nv">$signingSession</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nx">\Exception</span><span class="p">(</span><span class="s2">&quot;Non autorisé pour cette session&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="c1">// 2. Demander PIN utilisateur</span>
+            <span class="nv">$pin</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">promptUserForPIN</span><span class="p">(</span><span class="nv">$signingSession</span><span class="p">);</span>
+
+            <span class="c1">// 3. Connecter à Nitrokey avec PIN</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">authenticateWithNitrokey</span><span class="p">(</span><span class="nv">$pin</span><span class="p">);</span>
+
+            <span class="c1">// 4. Récupérer part Shamir</span>
+            <span class="nv">$shamirShare</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">retrieveShamirShare</span><span class="p">(</span><span class="nv">$signingSession</span><span class="p">[</span><span class="s1">&#39;ca_id&#39;</span><span class="p">]);</span>
+
+            <span class="c1">// 5. Chiffrer et transmettre au serveur</span>
+            <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">transmitShamirShare</span><span class="p">(</span><span class="nv">$signingSession</span><span class="p">,</span> <span class="nv">$shamirShare</span><span class="p">);</span>
+
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">\Exception</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">echo</span> <span class="s2">&quot;Erreur participation signature: &quot;</span> <span class="o">.</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">()</span> <span class="o">.</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+            <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">checkNitrokeyAvailable</span><span class="p">()</span><span class="o">:</span> <span class="nx">bool</span>
+    <span class="p">{</span>
+        <span class="nv">$cmd</span> <span class="o">=</span> <span class="s2">&quot;pkcs11-tool --module </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pkcs11Module</span><span class="si">}</span><span class="s2"> --list-slots&quot;</span><span class="p">;</span>
+        <span class="nv">$output</span> <span class="o">=</span> <span class="nb">shell_exec</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="nb">strpos</span><span class="p">(</span><span class="nv">$output</span><span class="p">,</span> <span class="s1">&#39;Nitrokey&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="k">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">promptUserForPIN</span><span class="p">(</span><span class="k">array</span> <span class="nv">$session</span><span class="p">)</span><span class="o">:</span> <span class="nx">string</span>
+    <span class="p">{</span>
+        <span class="c1">// Interface graphique ou console</span>
+        <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Demande de signature PKI ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="s2">&quot;CA: </span><span class="si">{</span><span class="nv">$session</span><span class="p">[</span><span class="s1">&#39;ca_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="s2">&quot;Demandeur: </span><span class="si">{</span><span class="nv">$session</span><span class="p">[</span><span class="s1">&#39;requester&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="s2">&quot;Domaine: </span><span class="si">{</span><span class="nv">$session</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="s2">&quot;===================================</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+
+        <span class="k">echo</span> <span class="o">-</span><span class="nx">n</span> <span class="s2">&quot;PIN Nitrokey pour autoriser signature: &quot;</span><span class="p">;</span>
+        <span class="nb">system</span><span class="p">(</span><span class="s1">&#39;stty -echo&#39;</span><span class="p">);</span>
+        <span class="nv">$pin</span> <span class="o">=</span> <span class="nb">trim</span><span class="p">(</span><span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">));</span>
+        <span class="nb">system</span><span class="p">(</span><span class="s1">&#39;stty echo&#39;</span><span class="p">);</span>
+        <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="nv">$pin</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">authenticateWithNitrokey</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$pin</span><span class="p">)</span><span class="o">:</span> <span class="nx">void</span>
+    <span class="p">{</span>
+        <span class="c1">// Test authentification</span>
+        <span class="nv">$cmd</span> <span class="o">=</span> <span class="s2">&quot;pkcs11-tool --module </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pkcs11Module</span><span class="si">}</span><span class="s2"> --login --pin &quot;</span> <span class="o">.</span> <span class="nb">escapeshellarg</span><span class="p">(</span><span class="nv">$pin</span><span class="p">)</span> <span class="o">.</span> <span class="s2">&quot; --list-objects&quot;</span><span class="p">;</span>
+        <span class="nv">$output</span> <span class="o">=</span> <span class="nb">shell_exec</span><span class="p">(</span><span class="nv">$cmd</span> <span class="o">.</span> <span class="s1">&#39; 2&gt;&amp;1&#39;</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">strpos</span><span class="p">(</span><span class="nv">$output</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="k">false</span> <span class="o">||</span> <span class="nb">strpos</span><span class="p">(</span><span class="nv">$output</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">\Exception</span><span class="p">(</span><span class="s2">&quot;Authentification Nitrokey échouée&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">retrieveShamirShare</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$caId</span><span class="p">)</span><span class="o">:</span> <span class="k">array</span>
+    <span class="p">{</span>
+        <span class="nv">$objectLabel</span> <span class="o">=</span> <span class="s2">&quot;ShamirShare-</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">nitrokeyId</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">;</span>
+        <span class="nv">$objectId</span> <span class="o">=</span> <span class="s2">&quot;CA</span><span class="si">{</span><span class="nv">$caId</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">;</span>
+
+        <span class="nv">$cmd</span> <span class="o">=</span> <span class="s2">&quot;pkcs11-tool --module </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">pkcs11Module</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">.</span>
+               <span class="s2">&quot;--login --pin </span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getStoredPin</span><span class="p">()</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">.</span>
+               <span class="s2">&quot;--read-object --id </span><span class="si">{</span><span class="nv">$objectId</span><span class="si">}</span><span class="s2"> --type data&quot;</span><span class="p">;</span>
+
+        <span class="nv">$shamirData</span> <span class="o">=</span> <span class="nb">shell_exec</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$shamirData</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">\Exception</span><span class="p">(</span><span class="s2">&quot;Part Shamir non trouvée sur Nitrokey&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$shamirData</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">transmitShamirShare</span><span class="p">(</span><span class="k">array</span> <span class="nv">$session</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$shamirShare</span><span class="p">)</span><span class="o">:</span> <span class="nx">bool</span>
+    <span class="p">{</span>
+        <span class="c1">// Chiffrer avec clé session</span>
+        <span class="nv">$encryptedShare</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">encryptShareForTransmission</span><span class="p">(</span><span class="nv">$shamirShare</span><span class="p">,</span> <span class="nv">$session</span><span class="p">[</span><span class="s1">&#39;session_key&#39;</span><span class="p">]);</span>
+
+        <span class="c1">// HTTP POST vers serveur</span>
+        <span class="nv">$curl</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+        <span class="nb">curl_setopt_array</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="p">[</span>
+            <span class="nx">CURLOPT_URL</span> <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">serverEndpoint</span><span class="si">}</span><span class="s2">/api/signing-sessions/</span><span class="si">{</span><span class="nv">$session</span><span class="p">[</span><span class="s1">&#39;session_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/contribute&quot;</span><span class="p">,</span>
+            <span class="nx">CURLOPT_POST</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>
+            <span class="nx">CURLOPT_POSTFIELDS</span> <span class="o">=&gt;</span> <span class="nb">json_encode</span><span class="p">([</span>
+                <span class="s1">&#39;nitrokey_id&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">nitrokeyId</span><span class="p">,</span>
+                <span class="s1">&#39;encrypted_share&#39;</span> <span class="o">=&gt;</span> <span class="nv">$encryptedShare</span><span class="p">,</span>
+                <span class="s1">&#39;signature&#39;</span> <span class="o">=&gt;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">signContribution</span><span class="p">(</span><span class="nv">$encryptedShare</span><span class="p">)</span>
+            <span class="p">]),</span>
+            <span class="nx">CURLOPT_HTTPHEADER</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                <span class="s1">&#39;Content-Type: application/json&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Authorization: Bearer &#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">config</span><span class="p">[</span><span class="s1">&#39;api_token&#39;</span><span class="p">]</span>
+            <span class="p">],</span>
+            <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>
+        <span class="p">]);</span>
+
+        <span class="nv">$response</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+        <span class="nv">$httpCode</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLINFO_HTTP_CODE</span><span class="p">);</span>
+        <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$curl</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="nv">$httpCode</span> <span class="o">===</span> <span class="mi">200</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">function</span> <span class="nf">listenForSigningRequests</span><span class="p">()</span><span class="o">:</span> <span class="nx">void</span>
+    <span class="p">{</span>
+        <span class="c1">// Implémentation WebSocket ou polling HTTP</span>
+        <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$requests</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">checkForSigningRequests</span><span class="p">();</span>
+
+            <span class="k">foreach</span> <span class="p">(</span><span class="nv">$requests</span> <span class="k">as</span> <span class="nv">$request</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">participateInSigning</span><span class="p">(</span><span class="nv">$request</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="nb">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span> <span class="c1">// Polling every 5 seconds</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Point d&#39;entrée CLI</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$argc</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">&quot;Usage: nitrokey-client-agent --config /path/to/config.json</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+    <span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nv">$configPath</span> <span class="o">=</span> <span class="k">null</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="nv">$argc</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$argv</span><span class="p">[</span><span class="nv">$i</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;--config&#39;</span> <span class="o">&amp;&amp;</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$argv</span><span class="p">[</span><span class="nv">$i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span> <span class="p">{</span>
+        <span class="nv">$configPath</span> <span class="o">=</span> <span class="nv">$argv</span><span class="p">[</span><span class="nv">$i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$configPath</span> <span class="o">||</span> <span class="o">!</span><span class="nb">file_exists</span><span class="p">(</span><span class="nv">$configPath</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">&quot;Fichier de configuration non trouvé: </span><span class="si">$configPath</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+    <span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">try</span> <span class="p">{</span>
+    <span class="nv">$agent</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ClientAgent</span><span class="p">(</span><span class="nv">$configPath</span><span class="p">);</span>
+    <span class="nv">$agent</span><span class="o">-&gt;</span><span class="na">startDaemon</span><span class="p">();</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">\Exception</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">&quot;Erreur agent: &quot;</span> <span class="o">.</span> <span class="nv">$e</span><span class="o">-&gt;</span><span class="na">getMessage</span><span class="p">()</span> <span class="o">.</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+    <span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="3-protocole-de-signature-distribuee">3. Protocole de Signature Distribuée</h2>
+<h3 id="sequence-complete-de-signature">🔄 <strong>Séquence Complète de Signature</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="n">sequenceDiagram</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">Admin</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Administrateur</span><span class="w"> </span><span class="n">PKI</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">Server</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">PKIaaS</span><span class="w"> </span><span class="n">Server</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">Client1</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Client</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="p">(</span><span class="n">NK001</span><span class="p">)</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">Client2</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Client</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="p">(</span><span class="n">NK002</span><span class="p">)</span>
+<span class="w">    </span><span class="n">participant</span><span class="w"> </span><span class="n">Client3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Client</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="p">(</span><span class="n">NK00N</span><span class="p">)</span>
+
+<span class="w">    </span><span class="n">Admin</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Demande</span><span class="w"> </span><span class="n">signature</span><span class="w"> </span><span class="n">CSR</span>
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Créer</span><span class="w"> </span><span class="n">session</span><span class="w"> </span><span class="n">signature</span><span class="w"> </span><span class="n">temporaire</span>
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Client1</span><span class="p">:</span><span class="w"> </span><span class="n">Notification</span><span class="w"> </span><span class="n">signature</span><span class="w"> </span><span class="n">requise</span>
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Client2</span><span class="p">:</span><span class="w"> </span><span class="n">Notification</span><span class="w"> </span><span class="n">signature</span><span class="w"> </span><span class="n">requise</span>
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Client3</span><span class="p">:</span><span class="w"> </span><span class="n">Notification</span><span class="w"> </span><span class="n">signature</span><span class="w"> </span><span class="n">requise</span>
+
+<span class="w">    </span><span class="n">Client1</span><span class="o">-&gt;&gt;</span><span class="n">Client1</span><span class="p">:</span><span class="w"> </span><span class="n">Demander</span><span class="w"> </span><span class="n">PIN</span><span class="w"> </span><span class="n">utilisateur</span>
+<span class="w">    </span><span class="n">Client1</span><span class="o">-&gt;&gt;</span><span class="n">Client1</span><span class="p">:</span><span class="w"> </span><span class="n">Authentifier</span><span class="w"> </span><span class="n">Nitrokey</span>
+<span class="w">    </span><span class="n">Client1</span><span class="o">-&gt;&gt;</span><span class="n">Client1</span><span class="p">:</span><span class="w"> </span><span class="n">Récupérer</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="n">Shamir</span>
+<span class="w">    </span><span class="n">Client1</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Transmettre</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="n">chiffrée</span>
+
+<span class="w">    </span><span class="n">Client2</span><span class="o">-&gt;&gt;</span><span class="n">Client2</span><span class="p">:</span><span class="w"> </span><span class="n">Demander</span><span class="w"> </span><span class="n">PIN</span><span class="w"> </span><span class="n">utilisateur</span>
+<span class="w">    </span><span class="n">Client2</span><span class="o">-&gt;&gt;</span><span class="n">Client2</span><span class="p">:</span><span class="w"> </span><span class="n">Authentifier</span><span class="w"> </span><span class="n">Nitrokey</span>
+<span class="w">    </span><span class="n">Client2</span><span class="o">-&gt;&gt;</span><span class="n">Client2</span><span class="p">:</span><span class="w"> </span><span class="n">Récupérer</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="n">Shamir</span>
+<span class="w">    </span><span class="n">Client2</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Transmettre</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="n">chiffrée</span>
+
+<span class="w">    </span><span class="n">Client3</span><span class="o">-&gt;&gt;</span><span class="n">Client3</span><span class="p">:</span><span class="w"> </span><span class="n">Demander</span><span class="w"> </span><span class="n">PIN</span><span class="w"> </span><span class="n">utilisateur</span>
+<span class="w">    </span><span class="n">Client3</span><span class="o">-&gt;&gt;</span><span class="n">Client3</span><span class="p">:</span><span class="w"> </span><span class="n">Authentifier</span><span class="w"> </span><span class="n">Nitrokey</span>
+<span class="w">    </span><span class="n">Client3</span><span class="o">-&gt;&gt;</span><span class="n">Client3</span><span class="p">:</span><span class="w"> </span><span class="n">Récupérer</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="n">Shamir</span>
+<span class="w">    </span><span class="n">Client3</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Transmettre</span><span class="w"> </span><span class="n">part</span><span class="w"> </span><span class="n">chiffrée</span>
+
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Vérifier</span><span class="w"> </span><span class="n">seuil</span><span class="w"> </span><span class="n">atteint</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Reconstituer</span><span class="w"> </span><span class="n">clé</span><span class="w"> </span><span class="n">privée</span>
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Signer</span><span class="w"> </span><span class="n">certificat</span>
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Server</span><span class="p">:</span><span class="w"> </span><span class="n">Effacer</span><span class="w"> </span><span class="n">clé</span><span class="w"> </span><span class="n">reconstruite</span>
+<span class="w">    </span><span class="n">Server</span><span class="o">-&gt;&gt;</span><span class="n">Admin</span><span class="p">:</span><span class="w"> </span><span class="n">Retourner</span><span class="w"> </span><span class="n">certificat</span><span class="w"> </span><span class="n">signé</span>
+</code></pre></div>
+
+<hr />
+<h2 id="4-securite-de-larchitecture">4. Sécurité de l'Architecture</h2>
+<h3 id="mesures-de-securite-implementees">🔐 <strong>Mesures de Sécurité Implémentées</strong></h3>
+<h4 id="41-transport-des-parts-shamir">4.1 Transport des Parts Shamir</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">class SecureShareTransport</span>
+<span class="x">{</span>
+<span class="x">    public function encryptShareForTransmission(array $share, string $sessionKey): string</span>
+<span class="x">    {</span>
+<span class="x">        // Utilisation ChaCha20-Poly1305 pour transport</span>
+<span class="x">        $nonce = random_bytes(SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES);</span>
+<span class="x">        $additionalData = hash(&#39;sha256&#39;, json_encode([</span>
+<span class="x">            &#39;timestamp&#39; =&gt; time(),</span>
+<span class="x">            &#39;nitrokey_id&#39; =&gt; $this-&gt;nitrokeyId,</span>
+<span class="x">            &#39;session_id&#39; =&gt; $this-&gt;currentSessionId</span>
+<span class="x">        ]));</span>
+
+<span class="x">        $encrypted = sodium_crypto_aead_chacha20poly1305_encrypt(</span>
+<span class="x">            json_encode($share),</span>
+<span class="x">            $additionalData,</span>
+<span class="x">            $nonce,</span>
+<span class="x">            $sessionKey</span>
+<span class="x">        );</span>
+
+<span class="x">        return base64_encode($nonce . $encrypted);</span>
+<span class="x">    }</span>
+
+<span class="x">    public function validateShareContribution(string $encryptedShare, string $signature): bool</span>
+<span class="x">    {</span>
+<span class="x">        // Vérifier signature avec certificat Nitrokey</span>
+<span class="x">        $nitrokeyCert = $this-&gt;getNitrokeyCertificate($this-&gt;nitrokeyId);</span>
+<span class="x">        return openssl_verify($encryptedShare, base64_decode($signature), $nitrokeyCert, OPENSSL_ALGO_SHA256);</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h4 id="42-gestion-des-sessions-temporaires">4.2 Gestion des Sessions Temporaires</h4>
+<div class="codehilite"><pre><span></span><code><span class="x">class SigningSessionManager</span>
+<span class="x">{</span>
+<span class="x">    private $sessionTTL = 300; // 5 minutes</span>
+
+<span class="x">    public function createSigningSession(string $caId, string $csr): string</span>
+<span class="x">    {</span>
+<span class="x">        $sessionId = bin2hex(random_bytes(16));</span>
+<span class="x">        $sessionKey = random_bytes(32);</span>
+
+<span class="x">        // Stocker en Redis avec expiration automatique</span>
+<span class="x">        Redis::setex(&quot;signing_session:{$sessionId}&quot;, $this-&gt;sessionTTL, json_encode([</span>
+<span class="x">            &#39;ca_id&#39; =&gt; $caId,</span>
+<span class="x">            &#39;csr&#39; =&gt; $csr,</span>
+<span class="x">            &#39;session_key&#39; =&gt; base64_encode($sessionKey),</span>
+<span class="x">            &#39;required_nitrokeys&#39; =&gt; $this-&gt;getRequiredNitrokeys($caId),</span>
+<span class="x">            &#39;received_shares&#39; =&gt; [],</span>
+<span class="x">            &#39;status&#39; =&gt; &#39;waiting_contributions&#39;,</span>
+<span class="x">            &#39;created_at&#39; =&gt; time(),</span>
+<span class="x">            &#39;expires_at&#39; =&gt; time() + $this-&gt;sessionTTL</span>
+<span class="x">        ]));</span>
+
+<span class="x">        return $sessionId;</span>
+<span class="x">    }</span>
+
+<span class="x">    public function cleanupExpiredSessions(): void</span>
+<span class="x">    {</span>
+<span class="x">        // Automatic cleanup par expiration Redis</span>
+<span class="x">        // + nettoyage explicite des données sensibles</span>
+<span class="x">        $expiredSessions = Redis::keys(&#39;signing_session:*&#39;);</span>
+
+<span class="x">        foreach ($expiredSessions as $sessionKey) {</span>
+<span class="x">            $sessionData = Redis::get($sessionKey);</span>
+<span class="x">            if ($sessionData) {</span>
+<span class="x">                $session = json_decode($sessionData, true);</span>
+<span class="x">                if ($session[&#39;expires_at&#39;] &lt; time()) {</span>
+<span class="x">                    // Effacement sécurisé des parts reçues</span>
+<span class="x">                    if (isset($session[&#39;received_shares&#39;])) {</span>
+<span class="x">                        foreach ($session[&#39;received_shares&#39;] as &amp;$share) {</span>
+<span class="x">                            sodium_memzero($share);</span>
+<span class="x">                        }</span>
+<span class="x">                    }</span>
+<span class="x">                    Redis::del($sessionKey);</span>
+<span class="x">                }</span>
+<span class="x">            }</span>
+<span class="x">        }</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="5-configuration-et-deploiement">5. Configuration et Déploiement</h2>
+<h3 id="configuration-env-mise-a-jour">⚙️ <strong>Configuration .env Mise à Jour</strong></h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Nitrokey HSM Configuration</span>
+<span class="nv">NITROKEY_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">NITROKEY_THRESHOLD</span><span class="o">=</span><span class="m">3</span>
+<span class="nv">NITROKEY_TOTAL_SHARES</span><span class="o">=</span><span class="m">5</span>
+<span class="nv">NITROKEY_MODE</span><span class="o">=</span>distributed
+
+<span class="c1"># PKCS#11 Library Paths</span>
+<span class="nv">NITROKEY_PKCS11_MODULE</span><span class="o">=</span>/usr/lib/opensc-pkcs11.so
+<span class="nv">NITROKEY_PKCS11_SLOTS_AUTO_DETECT</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="c1"># Distributed Signing Configuration</span>
+<span class="nv">SIGNING_SESSION_TTL</span><span class="o">=</span><span class="m">300</span>
+<span class="nv">SIGNING_WEBSOCKET_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">SIGNING_WEBSOCKET_PORT</span><span class="o">=</span><span class="m">8080</span>
+
+<span class="c1"># Client Agent Configuration</span>
+<span class="nv">CLIENT_AGENT_ENDPOINT</span><span class="o">=</span>wss://pkiaas.domain.com:8080/ws/nitrokey
+<span class="nv">CLIENT_AGENT_HEARTBEAT_INTERVAL</span><span class="o">=</span><span class="m">30</span>
+<span class="nv">CLIENT_AGENT_RECONNECT_ATTEMPTS</span><span class="o">=</span><span class="m">5</span>
+</code></pre></div>
+
+<p>Cette architecture corrigée respecte les contraintes réelles des Nitrokeys distantes et utilise OpenSC/PKCS#11 pour l'accès local aux HSM, tout en maintenant un niveau de sécurité élevé pour la communication distribuée.</p>
+<p><function_calls>
+<invoke name="TodoWrite">
+<parameter name="todos">[{"content": "Analyser architecture Nitrokey avec cl\u00e9s physiques distantes", "status": "completed", "activeForm": "Analyzing architecture Nitrokey avec cl\u00e9s physiques distantes"}, {"content": "\u00c9valuer int\u00e9gration OpenSC/PKCS#11 pour acc\u00e8s distant", "status": "completed", "activeForm": "Evaluating int\u00e9gration OpenSC/PKCS#11 pour acc\u00e8s distant"}, {"content": "Concevoir interface web g\u00e9n\u00e9ration parts Shamir", "status": "completed", "activeForm": "Designing interface web g\u00e9n\u00e9ration parts Shamir"}, {"content": "Impl\u00e9menter syst\u00e8me de challenges N-of-M", "status": "in_progress", "activeForm": "Implementing syst\u00e8me de challenges N-of-M"}, {"content": "Corriger vuln\u00e9rabilit\u00e9s stockage cl\u00e9s priv\u00e9es", "status": "pending", "activeForm": "Correcting vuln\u00e9rabilit\u00e9s stockage cl\u00e9s priv\u00e9es"}]</p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

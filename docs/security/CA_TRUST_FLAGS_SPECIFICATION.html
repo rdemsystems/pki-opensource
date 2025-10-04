@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏷️ CA Trust Flags System - Specification - PKIaaS Documentation</title>
+    <meta name="description" content="**Date**: 2025-10-02">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKIaaS</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>\n<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>\n<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>\n<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>\n<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>\n<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>\n<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>\n<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>\n<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>\n<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>\n<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">security</h4>\n<a href="/docs/security/nitrokey-implementation-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Implementation Analysis</a>\n<a href="/docs/security/nitrokey-distributed-architecture.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Distributed Architecture</a>\n<a href="/docs/security/security-audit-report.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audit Report</a>\n<a href="/docs/security/nitrokey-hsm-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Nitrokey Hsm Analysis</a>\n<a href="/docs/security/CA_TRUST_FLAGS_SPECIFICATION.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Trust Flags Specification</a>\n<a href="/docs/security/fips-140-2-analysis.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Fips 140 2 Analysis</a>\n<a href="/docs/security/CA_PASSWORD_WORKFLOW_SPEC.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Password Workflow Spec</a>\n<a href="/docs/security/implementation-summary.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Implementation Summary</a>\n<a href="/docs/security/opensource-release-review.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Opensource Release Review</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>\n<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>\n<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>\n<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>\n<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>\n<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>\n<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>\n<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>\n<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>\n<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>\n<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>\n<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>\n<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>\n<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>\n<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>\n<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>\n<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>\n<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>\n<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>\n<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>\n<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>\n<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>\n<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>\n<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>\n<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>\n<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>\n</div>\n<div class="mb-4">\n<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>\n<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>\n</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="ca-trust-flags-system-specification">🏷️ CA Trust Flags System - Specification</h1>
+<p><strong>Date</strong>: 2025-10-02
+<strong>Status</strong>: 🚧 <strong>IN DEVELOPMENT</strong>
+<strong>Version</strong>: 1.0</p>
+<hr />
+<h2 id="overview">📋 Overview</h2>
+<p>System of cumulative trust flags for Certificate Authorities (CAs) to provide visual security and operational indicators in the PKI system.</p>
+<p><strong>Design Philosophy:</strong>
+- <strong>Cumulative flags</strong> within categories (not exclusive enum)
+- <strong>Auto-detection</strong> where possible (minimize manual tagging)
+- <strong>Visual badges</strong> for dashboard quick assessment
+- <strong>Audit trail</strong> for flag changes</p>
+<hr />
+<h2 id="category-security-level-mutually-exclusive">🔐 Category: Security Level (Mutually Exclusive)</h2>
+<p>Only <strong>ONE</strong> security flag per CA at any time.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Badge</th>
+<th>Color</th>
+<th>Description</th>
+<th>Auto-Detection Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>very_secure</code></td>
+<td>🟢 VERY SECURE</td>
+<td>Green</td>
+<td>Has always been <code>internal</code> and has never been without a password.</td>
+<td><code>trust_origin == 'internal'</code> AND <code>NEVER_WITHOUT_PASSWORD</code></td>
+</tr>
+<tr>
+<td><code>secure</code></td>
+<td>🟡 SECURE</td>
+<td>Yellow</td>
+<td>Is <code>internal</code> but was once without a password, OR has been <code>imported</code>/<code>exported</code> but has never been without a password.</td>
+<td>(<code>trust_origin == 'internal'</code> AND <code>WAS_WITHOUT_PASSWORD</code>) OR (<code>trust_origin != 'internal'</code> AND <code>NEVER_WITHOUT_PASSWORD</code>)</td>
+</tr>
+<tr>
+<td><code>normal</code></td>
+<td>🟠 NORMAL</td>
+<td>Orange</td>
+<td>Has been <code>imported</code>/<code>exported</code> and was once without a password.</td>
+<td><code>trust_origin != 'internal'</code> AND <code>WAS_WITHOUT_PASSWORD</code></td>
+</tr>
+<tr>
+<td><code>compromised</code></td>
+<td>🔴 COMPROMISED</td>
+<td>Red</td>
+<td>Key compromised - revocation required</td>
+<td>Manual flag OR security incident detection</td>
+</tr>
+</tbody>
+</table>
+<p><strong>State Transitions:</strong>
+- A CA's security level is dynamically calculated based on its origin and password history.
+- The <code>compromised</code> state is a manual override and is irreversible.
+- <code>NEVER_WITHOUT_PASSWORD</code>: The CA was created with password protection and has never had it removed.
+- <code>WAS_WITHOUT_PASSWORD</code>: The CA was created without password protection or has had it removed at some point.</p>
+<p><strong>Core Principle: Trust is a One-Way Street</strong>
+⚠️ A Certificate Authority's security level can <strong>NEVER</strong> be upgraded. It is dynamically calculated based on its history (origin and password status). Once a CA has been in a less secure state (e.g., exported, or without a password), it can never regain a higher trust level, even if conditions change (e.g., a password is added). This prevents rewriting history and ensures a reliable trust assessment.</p>
+<hr />
+<h2 id="category-origin-mutually-exclusive">📦 Category: Origin (Mutually Exclusive)</h2>
+<p>Only <strong>ONE</strong> origin flag per CA at any time.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Badge</th>
+<th>Color</th>
+<th>Description</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>internal</code></td>
+<td>🏠 INTERNAL</td>
+<td>Blue</td>
+<td>Generated internally by PKIaaS</td>
+<td>Default on CA creation</td>
+</tr>
+<tr>
+<td><code>imported</code></td>
+<td>📥 IMPORTED</td>
+<td>Purple</td>
+<td>Imported from external system</td>
+<td>Import of external CA cert + key</td>
+</tr>
+<tr>
+<td><code>exported</code></td>
+<td>📤 EXPORTED</td>
+<td>Orange</td>
+<td>Private key exported externally</td>
+<td>Download of private key (PKCS#12, PEM)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>State Transitions:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span><span class="n">Creation</span><span class="p">]</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">internal</span>
+<span class="n">internal</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">export</span><span class="w"> </span><span class="n">private</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">exported</span>
+<span class="p">[</span><span class="n">Import</span><span class="w"> </span><span class="n">CA</span><span class="p">]</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">imported</span>
+</code></pre></div>
+
+<p><strong>Notes:</strong>
+- Once <code>exported</code>, stays <code>exported</code> forever (key left the system)
+- <code>imported</code> means we don't know full key history (trust lower)
+- Can't go back to <code>internal</code> once <code>exported</code> or <code>imported</code></p>
+<hr />
+<h2 id="category-lifecycle-cumulative">🔄 Category: Lifecycle (Cumulative)</h2>
+<p>Multiple lifecycle flags can be <strong>active simultaneously</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Badge</th>
+<th>Color</th>
+<th>Description</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rotated</code></td>
+<td>🔄 ROTATED</td>
+<td>Cyan</td>
+<td>CA has been renewed/rotated</td>
+<td>CA rotation performed</td>
+</tr>
+<tr>
+<td><code>cross_signed</code></td>
+<td>⚡ CROSS-SIGNED</td>
+<td>Yellow</td>
+<td>Cross-signed with another CA</td>
+<td>Cross-signing established</td>
+</tr>
+<tr>
+<td><code>retired</code></td>
+<td>💤 RETIRED</td>
+<td>Gray</td>
+<td>CA retired (not revoked)</td>
+<td>Manual retirement or end-of-life</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong>
+- A CA can be both <code>rotated</code> AND <code>cross_signed</code>
+- A CA can be <code>retired</code> but still valid for verification</p>
+<hr />
+<h2 id="category-operational-cumulative-future">⚙️ Category: Operational (Cumulative) - FUTURE</h2>
+<p>Proposed for future implementation:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Badge</th>
+<th>Description</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hsm_backed</code></td>
+<td>🔒 HSM</td>
+<td>Private key in Hardware Security Module</td>
+<td>NitroKey/HSM integration</td>
+</tr>
+<tr>
+<td><code>air_gapped</code></td>
+<td>🌐 AIR-GAPPED</td>
+<td>Offline root CA (no recent signing)</td>
+<td>No certificate signed in 30+ days</td>
+</tr>
+<tr>
+<td><code>high_volume</code></td>
+<td>📈 HIGH-VOLUME</td>
+<td>High certificate issuance volume</td>
+<td>&gt; 1000 certificates issued</td>
+</tr>
+<tr>
+<td><code>auto_renewal</code></td>
+<td>🔁 AUTO-RENEW</td>
+<td>Auto-renewal enabled</td>
+<td><code>auto_renewal_enabled=true</code></td>
+</tr>
+<tr>
+<td><code>manual_approval</code></td>
+<td>✋ APPROVAL</td>
+<td>Requires manual approval</td>
+<td><code>approval_mode=manual</code></td>
+</tr>
+<tr>
+<td><code>acme_enabled</code></td>
+<td>🤖 ACME</td>
+<td>ACME server enabled</td>
+<td><code>acme_public_enabled=true</code></td>
+</tr>
+<tr>
+<td><code>mfa_required</code></td>
+<td>🛡️ MFA</td>
+<td>Multi-factor auth required</td>
+<td>MFA policy enabled</td>
+</tr>
+<tr>
+<td><code>offline_root</code></td>
+<td>🔐 OFFLINE</td>
+<td>Offline root CA (never online)</td>
+<td>Root CA + never signed anything</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="category-compliance-cumulative-future">🎯 Category: Compliance (Cumulative) - FUTURE</h2>
+<p>Proposed for compliance tracking:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Badge</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>audited</code></td>
+<td>✅ AUDITED</td>
+<td>Recent external audit passed</td>
+</tr>
+<tr>
+<td><code>gdpr_compliant</code></td>
+<td>📜 GDPR</td>
+<td>GDPR compliance verified</td>
+</tr>
+<tr>
+<td><code>soc2_compliant</code></td>
+<td>📋 SOC2</td>
+<td>SOC2 Type II certified</td>
+</tr>
+<tr>
+<td><code>hipaa_compliant</code></td>
+<td>🏥 HIPAA</td>
+<td>HIPAA compliance verified</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="database-schema">💾 Database Schema</h2>
+<h3 id="certificateauthorities-table-new-columns">CertificateAuthorities Table - New Columns</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Security flags (mutually exclusive)</span>
+<span class="n">trust_security_level</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;secure&#39;</span>
+<span class="w">    </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">trust_security_level</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;very_secure&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;secure&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;compromised&#39;</span><span class="p">))</span>
+
+<span class="c1">-- Origin flags (mutually exclusive)</span>
+<span class="n">trust_origin</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;internal&#39;</span>
+<span class="w">    </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">trust_origin</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;internal&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;imported&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;exported&#39;</span><span class="p">))</span>
+
+<span class="c1">-- Lifecycle flags (cumulative - JSON array)</span>
+<span class="n">trust_lifecycle_flags</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;[]&#39;</span>
+<span class="w">    </span><span class="c1">-- Example: [&quot;rotated&quot;, &quot;cross_signed&quot;]</span>
+
+<span class="c1">-- Operational flags (cumulative - JSON array) - FUTURE</span>
+<span class="n">trust_operational_flags</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;[]&#39;</span>
+
+<span class="c1">-- Compliance flags (cumulative - JSON array) - FUTURE</span>
+<span class="n">trust_compliance_flags</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;[]&#39;</span>
+
+<span class="c1">-- Metadata</span>
+<span class="n">trust_flags_last_updated_at</span><span class="w"> </span><span class="k">TIMESTAMP</span>
+<span class="n">trust_flags_audit_log</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;[]&#39;</span>
+<span class="w">    </span><span class="c1">-- Track who changed what flag when</span>
+</code></pre></div>
+
+<hr />
+<h2 id="uiux-guidelines">🎨 UI/UX Guidelines</h2>
+<h3 id="dashboard-ca-list">Dashboard CA List</h3>
+<div class="codehilite"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────┐
+│ Root CA - RDEM Systems SAS                                      │
+│ 🟢 VERY SECURE  🏠 INTERNAL  💤 RETIRED                        │
+│ Expires: 2034-10-02  │  3 certificates  │  Status: Retired     │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Intermediate CA - Web Servers                                   │
+│ 🟡 SECURE  📤 EXPORTED  🔄 ROTATED  ⚡ CROSS-SIGNED           │
+│ Expires: 2027-10-02  │  1,247 certificates  │  Status: Active  │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Test CA - Development                                           │
+│ 🔴 COMPROMISED  🏠 INTERNAL                                     │
+│ Expires: 2025-12-01  │  23 certificates  │  Status: ⚠️ ACTION │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="ca-details-page">CA Details Page</h3>
+<p><strong>Trust &amp; Security Status</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">Security</span><span class="w"> </span><span class="n">Level</span><span class="p">:</span><span class="w">     </span><span class="err">🟢</span><span class="w"> </span><span class="n">VERY</span><span class="w"> </span><span class="n">SECURE</span>
+<span class="w">                    </span><span class="n">Password</span><span class="o">-</span><span class="n">protected</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">creation</span>
+<span class="w">                    </span><span class="n">Never</span><span class="w"> </span><span class="n">downgraded</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">secure</span><span class="w"> </span><span class="n">mode</span>
+
+<span class="n">Origin</span><span class="p">:</span><span class="w">             </span><span class="err">🏠</span><span class="w"> </span><span class="n">INTERNAL</span>
+<span class="w">                    </span><span class="n">Generated</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">PKIaaS</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="mi">2024</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">15</span>
+<span class="w">                    </span><span class="n">Private</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">never</span><span class="w"> </span><span class="n">exported</span>
+
+<span class="n">Lifecycle</span><span class="p">:</span><span class="w">          </span><span class="err">🔄</span><span class="w"> </span><span class="n">ROTATED</span><span class="w">  </span><span class="err">⚡</span><span class="w"> </span><span class="n">CROSS</span><span class="o">-</span><span class="n">SIGNED</span>
+<span class="w">                    </span><span class="o">-</span><span class="w"> </span><span class="n">Rotated</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">10</span>
+<span class="w">                    </span><span class="o">-</span><span class="w"> </span><span class="n">Cross</span><span class="o">-</span><span class="n">signed</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="s2">&quot;Old Root CA&quot;</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">10</span>
+
+<span class="n">Last</span><span class="w"> </span><span class="n">Updated</span><span class="p">:</span><span class="w">       </span><span class="mi">2025</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">02</span><span class="w"> </span><span class="mi">08</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">admin</span><span class="err">@</span><span class="n">example</span><span class="o">.</span><span class="n">com</span>
+</code></pre></div>
+
+<h3 id="badge-color-scheme">Badge Color Scheme</h3>
+<p><strong>Security:</strong>
+- 🟢 Green → <code>very_secure</code> (best)
+- 🟡 Yellow → <code>secure</code> (standard)
+- 🔴 Red → <code>compromised</code> (critical)</p>
+<p><strong>Origin:</strong>
+- 🏠 Blue → <code>internal</code> (most trusted)
+- 📥 Purple → <code>imported</code> (medium trust)
+- 📤 Orange → <code>exported</code> (lower trust)</p>
+<p><strong>Lifecycle:</strong>
+- 🔄 Cyan → <code>rotated</code>
+- ⚡ Yellow → <code>cross_signed</code>
+- 💤 Gray → <code>retired</code></p>
+<hr />
+<h2 id="auto-detection-logic">🔄 Auto-Detection Logic</h2>
+<h3 id="on-ca-creation">On CA Creation</h3>
+<div class="codehilite"><pre><span></span><code><span class="x">$ca-&gt;trust_security_level = $password ? &#39;very_secure&#39; : &#39;secure&#39;;</span>
+<span class="x">$ca-&gt;trust_origin = &#39;internal&#39;;</span>
+<span class="x">$ca-&gt;trust_lifecycle_flags = [];</span>
+</code></pre></div>
+
+<h3 id="on-password-set">On Password Set</h3>
+<div class="codehilite"><pre><span></span><code><span class="x">// If CA was created without password, it stays &#39;secure&#39;</span>
+<span class="x">if ($ca-&gt;trust_security_level === &#39;secure&#39;) {</span>
+<span class="x">    // Do NOT upgrade to very_secure</span>
+<span class="x">    // Just enable password protection</span>
+<span class="x">    $ca-&gt;password_protected_encryption = true;</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h3 id="on-private-key-export">On Private Key Export</h3>
+<div class="codehilite"><pre><span></span><code><span class="x">$ca-&gt;trust_origin = &#39;exported&#39;;</span>
+<span class="x">$ca-&gt;logTrustFlagChange(&#39;origin&#39;, &#39;internal&#39;, &#39;exported&#39;, &#39;Private key exported to PKCS#12&#39;);</span>
+</code></pre></div>
+
+<h3 id="on-ca-rotation">On CA Rotation</h3>
+<div class="codehilite"><pre><span></span><code><span class="x">$ca-&gt;addLifecycleFlag(&#39;rotated&#39;);</span>
+<span class="x">$ca-&gt;addLifecycleFlag(&#39;cross_signed&#39;); // If cross-signing performed</span>
+</code></pre></div>
+
+<h3 id="on-compromise-detection">On Compromise Detection</h3>
+<div class="codehilite"><pre><span></span><code><span class="x">$ca-&gt;trust_security_level = &#39;compromised&#39;;</span>
+<span class="x">$ca-&gt;logSecurityIncident(&#39;CA marked as compromised: &#39; . $reason);</span>
+<span class="x">// Trigger alert to admins</span>
+</code></pre></div>
+
+<hr />
+<h2 id="audit-trail">📊 Audit Trail</h2>
+<p>Every trust flag change is logged:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-10-02T08:15:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;user_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;user_email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admin@example.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;flag_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;security&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;old_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;very_secure&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;new_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secure&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;reason&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Password protection removed by admin&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;ip_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.1.100&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="implementation-phases">🚀 Implementation Phases</h2>
+<h3 id="phase-1-core-flags-this-sprint">Phase 1: Core Flags (THIS SPRINT) ✅</h3>
+<ul>
+<li>Security flags: <code>very_secure</code>, <code>secure</code>, <code>compromised</code></li>
+<li>Origin flags: <code>internal</code>, <code>imported</code>, <code>exported</code></li>
+<li>Lifecycle flags: <code>rotated</code>, <code>cross_signed</code>, <code>retired</code></li>
+<li>Dashboard badges display</li>
+<li>Auto-detection on creation/export</li>
+</ul>
+<h3 id="phase-2-operational-flags">Phase 2: Operational Flags</h3>
+<ul>
+<li>HSM integration detection</li>
+<li>Air-gapped detection</li>
+<li>High-volume detection</li>
+<li>ACME/auto-renewal badges</li>
+</ul>
+<h3 id="phase-3-compliance-advanced">Phase 3: Compliance &amp; Advanced</h3>
+<ul>
+<li>Compliance flags (GDPR, SOC2, HIPAA)</li>
+<li>MFA requirements</li>
+<li>Advanced audit reporting</li>
+</ul>
+<hr />
+<h2 id="security-considerations">🔒 Security Considerations</h2>
+<ol>
+<li><strong>Immutable Downgrades</strong>: Once <code>exported</code> or <code>imported</code>, can't go back to <code>internal</code></li>
+<li><strong>No Upgrades</strong>: <code>secure</code> can never become <code>very_secure</code> (prevents false sense of security)</li>
+<li><strong>Compromise Flag</strong>: Irreversible once set (requires CA replacement)</li>
+<li><strong>Audit Log</strong>: All flag changes tracked with user/timestamp/reason</li>
+</ol>
+<hr />
+<h2 id="references">📚 References</h2>
+<ul>
+<li>RFC 5280: X.509 Certificate and CRL Profile</li>
+<li>CA/Browser Forum Baseline Requirements</li>
+<li>NIST SP 800-57: Key Management Guidelines</li>
+<li>WebTrust Principles and Criteria for CAs</li>
+</ul>
+<hr />
+<p><strong>Document Owner</strong>: PKIaaS Development Team
+<strong>Last Updated</strong>: 2025-10-02
+<strong>Status</strong>: Ready for implementation Phase 1</p>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2025-10-04</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>
