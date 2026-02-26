@@ -55,6 +55,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <!-- Prism.js for syntax highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
 
+    <!-- Funnel Tracking -->
+    <script async src="https://funnel.rdem-systems.com/tracker.js"
+            data-site="pkios"></script>
+
     <style>
         body {{ font-family: 'Inter', sans-serif; }}
         h1, h2, h3, h4 {{ font-family: 'Poppins', sans-serif; }}

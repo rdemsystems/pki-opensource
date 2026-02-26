@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission System - Certificate Request & Signing Separation - PKI Documentation</title>
+    <meta name="description" content="The PKI-as-a-Service application implements a granular permission system that enforces **separation of duties** between certificate requesters and cer">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <!-- Funnel Tracking -->
+    <script async src="https://funnel.rdem-systems.com/tracker.js"
+            data-site="pkios"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKI</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>
+<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>
+<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>
+<a href="/docs/LICENSE.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">License</a>
+<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>
+<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>
+<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>
+<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>
+<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>
+<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>
+<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>
+<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>
+<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>
+<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>
+<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>
+<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>
+<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>
+<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>
+<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>
+<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>
+<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>
+<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/key-storage/storage-backends.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Storage Backends</a>
+<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>
+<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>
+<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>
+<a href="/docs/features/user-access-management/permissions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Permissions</a>
+<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>
+<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>
+<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>
+<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>
+<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>
+<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>
+<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>
+<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>
+<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>
+<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>
+<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>
+<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>
+<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>
+</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="permission-system-certificate-request-signing-separation">Permission System - Certificate Request &amp; Signing Separation</h1>
+<h2 id="overview">Overview</h2>
+<p>The PKI-as-a-Service application implements a granular permission system that enforces <strong>separation of duties</strong> between certificate requesters and certificate approvers. This prevents users from self-approving their own certificate requests, a critical security requirement for enterprise PKI deployments.</p>
+<h2 id="permission-architecture">Permission Architecture</h2>
+<h3 id="two-layer-permission-model">Two-Layer Permission Model</h3>
+<p>The system uses two complementary permission layers:</p>
+<ol>
+<li><strong>Spatie Laravel Permission (Global)</strong>: Application-wide permissions managed through roles</li>
+<li><strong>CA Group Permissions (Per-CA)</strong>: Fine-grained permissions specific to individual Certificate Authorities</li>
+</ol>
+<h3 id="key-principles">Key Principles</h3>
+<ul>
+<li><strong>Separation of Duties</strong>: Requesters cannot approve their own certificates</li>
+<li><strong>Least Privilege</strong>: Users receive only the minimum permissions required for their role</li>
+<li><strong>Audit Trail</strong>: All permission changes and usage are logged for compliance</li>
+</ul>
+<hr />
+<h2 id="certificate-permissions-new-model">Certificate Permissions (New Model)</h2>
+<h3 id="request-certificates"><code>request-certificates</code></h3>
+<p><strong>Purpose</strong>: Submit certificate signing requests (CSR) to a Certificate Authority</p>
+<p><strong>Allows</strong>:
+- Submit new certificate requests via web UI or API
+- Upload CSR files for processing
+- Request certificates through ACME protocol
+- View status of own certificate requests</p>
+<p><strong>Does NOT Allow</strong>:
+- Approve or sign certificate requests
+- Issue certificates without approval (unless CA policy allows automatic approval)</p>
+<p><strong>Typical Roles</strong>:
+- <code>acme-client</code> (ACME automated requests)
+- Requesters in approval-based workflows</p>
+<hr />
+<h3 id="sign-certificates"><code>sign-certificates</code></h3>
+<p><strong>Purpose</strong>: Validate, approve, and sign certificate requests</p>
+<p><strong>Allows</strong>:
+- Review pending certificate requests
+- Approve or reject certificate requests
+- Sign CSRs to issue certificates
+- Configure CA approval policies</p>
+<p><strong>Does NOT Allow</strong>:
+- Submit certificate requests (must have <code>request-certificates</code> separately)</p>
+<p><strong>Typical Roles</strong>:
+- <code>pki-manager</code> (PKI administrators)
+- <code>certificate-operator</code> (Certificate validators)</p>
+<hr />
+<h3 id="combined-permissions">Combined Permissions</h3>
+<p>Some roles require <strong>both</strong> permissions to operate normally:</p>
+<p><strong>Example: PKI Manager</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="x">// Has BOTH permissions</span>
+<span class="x">&#39;request-certificates&#39;  // Can submit requests</span>
+<span class="x">&#39;sign-certificates&#39;     // Can approve and sign</span>
+</code></pre></div>
+
+<p>This enables PKI managers to perform all certificate operations while still maintaining separation when strict approval workflows are required.</p>
+<hr />
+<h2 id="protocol-specific-permissions-openvpn-windows-8021x">Protocol-Specific Permissions (OpenVPN, Windows 802.1x)</h2>
+<h3 id="create-openvpn-certificates"><code>create-openvpn-certificates</code></h3>
+<p><strong>Purpose</strong>: Generate OpenVPN client certificates for a specific Certificate Authority</p>
+<p><strong>Allows</strong>:
+- Generate OpenVPN client certificates with .ovpn configuration files
+- Access OpenVPN template editor for the CA
+- Download .ovpn profiles for existing certificates
+- Configure OpenVPN-specific certificate extensions (clientAuth)</p>
+<p><strong>Does NOT Allow</strong>:
+- Generate certificates for other CAs without explicit permission
+- Create OpenVPN server certificates (requires <code>sign-certificates</code>)
+- Modify CA settings or templates without additional permissions</p>
+<p><strong>Security Model</strong>:
+- <strong>CA-specific</strong>: Permission is granted per Certificate Authority via CA Groups
+- <strong>Defense in depth</strong>: Multi-tenant isolation prevents cross-CA access even without permission
+- <strong>Audit trail</strong>: All OpenVPN certificate generation is logged with user ID and IP</p>
+<p><strong>Typical Use Case</strong>: VPN administrators who need to issue client certificates for their organization's VPN infrastructure without full PKI management rights.</p>
+<p><strong>Example Configuration</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// CA Group: &quot;Company VPN Team&quot;</span>
+<span class="x">// Permission: &#39;create-openvpn-certificates&#39;</span>
+<span class="x">// Members: vpn-admin@company.com</span>
+
+<span class="x">// This user can ONLY generate OpenVPN certificates for THIS CA</span>
+<span class="x">// They cannot access other CAs or perform other certificate operations</span>
+</code></pre></div>
+
+<hr />
+<h3 id="create-windows-certificates"><code>create-windows-certificates</code></h3>
+<p><strong>Purpose</strong>: Generate Windows 802.1x EAP-TLS certificates for network authentication</p>
+<p><strong>Allows</strong>:
+- Generate EAP-TLS client certificates for Windows workstations
+- Export certificates in PKCS#12 format with password protection
+- Generate WiFi XML profiles for automatic deployment
+- Create mobile configuration profiles for iOS/macOS</p>
+<p><strong>Does NOT Allow</strong>:
+- Generate certificates for other CAs without explicit permission
+- Modify certificate templates or CA settings</p>
+<p><strong>Security Model</strong>:
+- <strong>CA-specific</strong>: Permission is granted per Certificate Authority via CA Groups
+- <strong>Enterprise isolation</strong>: Ensures IT teams can only manage their own organization's devices
+- <strong>Compliance</strong>: Supports BYOD policies with proper access segregation</p>
+<p><strong>Typical Use Case</strong>: Enterprise IT administrators managing network authentication certificates for corporate devices.</p>
+<hr />
+<h3 id="multi-tenant-openvpn-scenario">Multi-Tenant OpenVPN Scenario</h3>
+<p><strong>Problem</strong>: Multiple companies share the PKI infrastructure, each needs isolated VPN certificate management.</p>
+<p><strong>Solution</strong>: CA Groups with protocol-specific permissions</p>
+<table>
+<thead>
+<tr>
+<th>CA</th>
+<th>Organization</th>
+<th>CA Group</th>
+<th>Permission</th>
+<th>Users</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CA-VPN-A</strong></td>
+<td>Company A</td>
+<td>"VPN Team A"</td>
+<td><code>create-openvpn-certificates</code></td>
+<td>alice@companya.com</td>
+</tr>
+<tr>
+<td><strong>CA-VPN-B</strong></td>
+<td>Company B</td>
+<td>"VPN Team B"</td>
+<td><code>create-openvpn-certificates</code></td>
+<td>bob@companyb.com</td>
+</tr>
+<tr>
+<td><strong>CA-WEB</strong></td>
+<td>Shared</td>
+<td>"Web Admins"</td>
+<td><code>request-certificates</code> only</td>
+<td>charlie@shared.com</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Result</strong>:
+- ✅ Alice can generate OpenVPN certificates <strong>only</strong> for CA-VPN-A
+- ✅ Bob can generate OpenVPN certificates <strong>only</strong> for CA-VPN-B
+- ❌ Charlie <strong>cannot</strong> generate OpenVPN certificates (wrong permission)
+- ✅ <strong>Complete isolation</strong> between organizations (defense in depth)</p>
+<p><strong>Code Implementation</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// OpenVpnController::storeClient() - Line 63-71</span>
+<span class="x">$user = auth()-&gt;user();</span>
+<span class="x">$caGroup = $ca-&gt;groups()</span>
+<span class="x">    -&gt;whereHas(&#39;users&#39;, fn($q) =&gt; $q-&gt;where(&#39;user_id&#39;, $user-&gt;id))</span>
+<span class="x">    -&gt;first();</span>
+
+<span class="x">if (!$caGroup || !$caGroup-&gt;hasPermission(&#39;create-openvpn-certificates&#39;)) {</span>
+<span class="x">    abort(403, &#39;You do not have permission to create OpenVPN certificates for this CA&#39;);</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="migration-from-legacy-create-certificates-permission">Migration from Legacy <code>create-certificates</code> Permission</h2>
+<h3 id="what-changed">What Changed?</h3>
+<p><strong>Before (v0.1)</strong>:
+- Single permission: <code>create-certificates</code>
+- No separation of duties
+- Users could approve their own certificates</p>
+<p><strong>After (v0.2-alpha)</strong>:
+- Two permissions: <code>request-certificates</code> + <code>sign-certificates</code>
+- Enforced separation of duties
+- Approval workflows properly segregated</p>
+<h3 id="automatic-migration">Automatic Migration</h3>
+<p>When upgrading to v0.2-alpha, the migration automatically:</p>
+<ol>
+<li><strong>Creates new permissions</strong>: <code>request-certificates</code> and <code>sign-certificates</code></li>
+<li><strong>Updates existing roles</strong>: Users with <code>create-certificates</code> receive <strong>BOTH</strong> new permissions</li>
+<li><strong>Updates CA Groups</strong>: Replaces <code>create-certificates</code> with both new permissions</li>
+<li><strong>Preserves access</strong>: No users lose access during migration</li>
+</ol>
+<p><strong>Migration SQL Logic</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Users with create-certificates get BOTH new permissions</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">user_permissions</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">permissions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;request-certificates&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;sign-certificates&#39;</span><span class="p">]</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">permissions</span><span class="w"> </span><span class="k">CONTAINS</span><span class="w"> </span><span class="s1">&#39;create-certificates&#39;</span><span class="p">;</span>
+</code></pre></div>
+
+<h3 id="rollback-support">Rollback Support</h3>
+<p>The migration is fully reversible:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Rollback to legacy permission model</span>
+php<span class="w"> </span>artisan<span class="w"> </span>migrate:rollback
+</code></pre></div>
+
+<p>This restores <code>create-certificates</code> and removes the split permissions.</p>
+<hr />
+<h2 id="permission-matrix">Permission Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Permission</th>
+<th>Requester</th>
+<th>Validator</th>
+<th>VPN Admin</th>
+<th>PKI Manager</th>
+<th>Admin</th>
+<th>ACME Client</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>request-certificates</code></td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>sign-certificates</code></td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>create-openvpn-certificates</code></td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>create-windows-certificates</code></td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>view-certificates</code></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>revoke-certificates</code></td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>download-certificates</code></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ca-group-permissions-per-ca-granularity">CA Group Permissions (Per-CA Granularity)</h2>
+<p>CA Groups allow even finer control by restricting permissions to specific Certificate Authorities.</p>
+<h3 id="available-ca-group-permissions">Available CA Group Permissions</h3>
+<div class="codehilite"><pre><span></span><code><span class="x">&#39;view-ca&#39; =&gt; &#39;View CA details&#39;</span>
+<span class="x">&#39;view-certificates&#39; =&gt; &#39;View certificates from this CA&#39;</span>
+<span class="x">&#39;request-certificates&#39; =&gt; &#39;Submit certificate requests (CSR)&#39;</span>
+<span class="x">&#39;sign-certificates&#39; =&gt; &#39;Validate and sign certificates&#39;</span>
+<span class="x">&#39;create-openvpn-certificates&#39; =&gt; &#39;Generate OpenVPN client certificates&#39;</span>
+<span class="x">&#39;create-windows-certificates&#39; =&gt; &#39;Generate Windows 802.1x certificates&#39;</span>
+<span class="x">&#39;revoke-certificates&#39; =&gt; &#39;Revoke certificates from this CA&#39;</span>
+<span class="x">&#39;download-certificates&#39; =&gt; &#39;Download certificates from this CA&#39;</span>
+<span class="x">&#39;view-crl&#39; =&gt; &#39;View and download CRLs from this CA&#39;</span>
+<span class="x">&#39;manage-ca-settings&#39; =&gt; &#39;Modify CA settings&#39;</span>
+</code></pre></div>
+
+<h3 id="example-multi-tenant-scenario">Example: Multi-Tenant Scenario</h3>
+<p><strong>Company A - Internal CA</strong>:
+- Group: "Company A Requesters"
+  - Permission: <code>request-certificates</code>
+  - Members: Company A employees</p>
+<ul>
+<li>Group: "Company A Validators"</li>
+<li>Permission: <code>sign-certificates</code></li>
+<li>Members: Company A security team</li>
+</ul>
+<p><strong>Company B - External CA</strong>:
+- Group: "Company B Partners"
+  - Permission: <code>request-certificates</code> only
+  - Members: External partners
+  - Approval: Manual approval required</p>
+<hr />
+<h2 id="approval-workflows">Approval Workflows</h2>
+<h3 id="automatic-approval">Automatic Approval</h3>
+<ul>
+<li>Requires: <code>request-certificates</code> permission</li>
+<li>CA Policy: <code>approval_mode=automatic</code></li>
+<li>Use Case: ACME automated issuance, low-risk certificates</li>
+</ul>
+<h3 id="manual-approval">Manual Approval</h3>
+<ul>
+<li>Requester: <code>request-certificates</code> permission</li>
+<li>Approver: <code>sign-certificates</code> permission</li>
+<li>CA Policy: <code>approval_mode=manual</code></li>
+<li>Use Case: High-security certificates, external partners</li>
+</ul>
+<h3 id="policy-based-approval">Policy-Based Approval</h3>
+<ul>
+<li>Requester: <code>request-certificates</code> permission</li>
+<li>System: Evaluates CA Access Policies</li>
+<li>Approver: <code>sign-certificates</code> permission (if required)</li>
+<li>CA Policy: <code>approval_mode=policy</code></li>
+<li>Use Case: Complex rules (IP restrictions, OAuth groups, time-based)</li>
+</ul>
+<hr />
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="permission-checks-in-controllers">Permission Checks in Controllers</h3>
+<p><strong>Certificate Request Submission</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// Check permission before accepting CSR</span>
+<span class="x">if (! $user-&gt;can(&#39;request-certificates&#39;)) {</span>
+<span class="x">    abort(403, &#39;You do not have permission to request certificates&#39;);</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<p><strong>Certificate Signing</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// Check permission before signing</span>
+<span class="x">if (! $user-&gt;can(&#39;sign-certificates&#39;)) {</span>
+<span class="x">    abort(403, &#39;You do not have permission to sign certificates&#39;);</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<p><strong>CA Group Permission Check</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// Check CA-specific permission</span>
+<span class="x">$caGroup = $ca-&gt;groups()-&gt;whereHas(&#39;users&#39;, fn($q) =&gt; $q-&gt;where(&#39;user_id&#39;, $user-&gt;id))-&gt;first();</span>
+
+<span class="x">if (! $caGroup || ! $caGroup-&gt;hasPermission(&#39;sign-certificates&#39;)) {</span>
+<span class="x">    abort(403, &#39;You do not have sign permission for this CA&#39;);</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="audit-logging">Audit Logging</h2>
+<p>All permission-related events are logged:</p>
+<ul>
+<li>Permission grant/revoke</li>
+<li>Certificate request submissions</li>
+<li>Certificate approvals/rejections</li>
+<li>Permission check failures (403 errors)</li>
+</ul>
+<p><strong>Example Audit Log</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;certificate.requested&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;user_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;ca_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;permission_used&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;request-certificates&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;approval_required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;ip_address&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;192.168.1.100&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-10-15T08:00:00Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-separate-roles-for-separation-of-duties">1. Separate Roles for Separation of Duties</h3>
+<p>❌ <strong>Avoid</strong>: Giving both <code>request</code> and <code>sign</code> to all users
+✅ <strong>Recommended</strong>: Create separate "Requester" and "Validator" roles</p>
+<h3 id="2-use-ca-groups-for-multi-tenant-isolation">2. Use CA Groups for Multi-Tenant Isolation</h3>
+<p>❌ <strong>Avoid</strong>: Global <code>sign-certificates</code> permission for all CAs
+✅ <strong>Recommended</strong>: CA Group permissions per tenant/department</p>
+<h3 id="3-automatic-approval-for-low-risk-scenarios-only">3. Automatic Approval for Low-Risk Scenarios Only</h3>
+<p>❌ <strong>Avoid</strong>: Automatic approval for high-security CAs
+✅ <strong>Recommended</strong>: Manual or policy-based approval for sensitive certificates</p>
+<h3 id="4-regular-permission-audits">4. Regular Permission Audits</h3>
+<p>✅ <strong>Recommended</strong>: Quarterly review of user permissions
+✅ <strong>Recommended</strong>: Automated alerts for permission changes
+✅ <strong>Recommended</strong>: Compliance reports for separation of duties</p>
+<hr />
+<h2 id="compliance-standards">Compliance &amp; Standards</h2>
+<p>This permission model aligns with:</p>
+<ul>
+<li><strong>SOC 2 Type II</strong>: Separation of duties controls</li>
+<li><strong>ISO 27001</strong>: Access control requirements (A.9)</li>
+<li><strong>NIST 800-53</strong>: AC-5 (Separation of Duties)</li>
+<li><strong>PCI DSS</strong>: Requirement 7.1 (Least Privilege)</li>
+<li><strong>WebTrust for CAs</strong>: Baseline Requirements Section 5.2</li>
+</ul>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="permission-denied-when-submitting-certificate-request">"Permission Denied" When Submitting Certificate Request</h3>
+<p><strong>Cause</strong>: User lacks <code>request-certificates</code> permission</p>
+<p><strong>Solution</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check user permissions</span>
+php<span class="w"> </span>artisan<span class="w"> </span>permission:show<span class="w"> </span><span class="o">{</span>user_email<span class="o">}</span>
+
+<span class="c1"># Grant permission via role</span>
+php<span class="w"> </span>artisan<span class="w"> </span>permission:assign<span class="w"> </span><span class="o">{</span>user_email<span class="o">}</span><span class="w"> </span>request-certificates
+</code></pre></div>
+
+<h3 id="cannot-approve-own-certificate-request">"Cannot Approve Own Certificate Request"</h3>
+<p><strong>Expected Behavior</strong>: Separation of duties prevents self-approval</p>
+<p><strong>Solution</strong>: Assign a different user with <code>sign-certificates</code> to approve</p>
+<h3 id="migration-issues">Migration Issues</h3>
+<p><strong>Problem</strong>: Permissions not migrated correctly</p>
+<p><strong>Diagnosis</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check migration status</span>
+php<span class="w"> </span>artisan<span class="w"> </span>migrate:status
+
+<span class="c1"># Verify permissions in database</span>
+SELECT<span class="w"> </span>*<span class="w"> </span>FROM<span class="w"> </span>permissions<span class="w"> </span>WHERE<span class="w"> </span>name<span class="w"> </span>IN<span class="w"> </span><span class="o">(</span><span class="s1">&#39;request-certificates&#39;</span>,<span class="w"> </span><span class="s1">&#39;sign-certificates&#39;</span><span class="o">)</span><span class="p">;</span>
+</code></pre></div>
+
+<p><strong>Fix</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Re-run migration</span>
+php<span class="w"> </span>artisan<span class="w"> </span>migrate:refresh<span class="w"> </span>--path<span class="o">=</span>database/migrations/2025_10_15_074114_split_create_certificates_permission.php
+</code></pre></div>
+
+<hr />
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="./ca-access-policies.html">CA Access Policies</a> - IP/domain/OAuth-based access control</li>
+<li><a href="../certificate-management/csr-issuance.html">CSR Issuance Workflow</a> - Certificate request process</li>
+<li><a href="./user-management.html">User Management</a> - Role assignment and user administration</li>
+<li><a href="../../security/audit-logging.html">Audit Logging</a> - Compliance logging and reporting</li>
+</ul>
+<hr />
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v0.2-alpha</td>
+<td>2025-10-15</td>
+<td>Introduced <code>request-certificates</code> + <code>sign-certificates</code> split<br>Added protocol-specific permissions: <code>create-openvpn-certificates</code>, <code>create-windows-certificates</code><br>Implemented CA-specific permission enforcement for OpenVPN</td>
+</tr>
+<tr>
+<td>v0.1</td>
+<td>2025-09-28</td>
+<td>Legacy <code>create-certificates</code> permission</td>
+</tr>
+</tbody>
+</table>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2026-02-26</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

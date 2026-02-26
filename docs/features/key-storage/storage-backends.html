@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Backend Abstraction for CA Private Keys - PKI Documentation</title>
+    <meta name="description" content="> **Version**: v0.2-alpha">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            200: '#C7D2FE',
+                            300: '#A5B4FC',
+                            400: '#818CF8',
+                            500: '#1E3A8A',
+                            600: '#1E40AF',
+                            700: '#1E3A8A',
+                            800: '#1E3A8A',
+                            900: '#1E3A8A'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <!-- Funnel Tracking -->
+    <script async src="https://funnel.rdem-systems.com/tracker.js"
+            data-site="pkios"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+
+        .prose h1 { @apply text-4xl font-bold text-gray-900 mb-6 mt-8; }
+        .prose h2 { @apply text-3xl font-bold text-gray-900 mb-4 mt-6; }
+        .prose h3 { @apply text-2xl font-bold text-gray-900 mb-3 mt-5; }
+        .prose h4 { @apply text-xl font-semibold text-gray-900 mb-2 mt-4; }
+        .prose p { @apply text-gray-700 mb-4 leading-relaxed; }
+        .prose ul { @apply list-disc list-inside mb-4 text-gray-700; }
+        .prose ol { @apply list-decimal list-inside mb-4 text-gray-700; }
+        .prose li { @apply mb-2; }
+        .prose a { @apply text-primary-700 hover:text-primary-900 underline; }
+        .prose code { @apply bg-gray-100 px-2 py-1 rounded text-sm text-gray-800; }
+        .prose pre { @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4; }
+        .prose pre code { @apply bg-transparent px-0 py-0 text-gray-100; }
+        .prose blockquote { @apply border-l-4 border-primary-500 pl-4 italic text-gray-700 mb-4; }
+        .prose table { @apply w-full border-collapse mb-4; }
+        .prose th { @apply bg-primary-100 text-primary-900 font-semibold p-2 border border-gray-300; }
+        .prose td { @apply p-2 border border-gray-300; }
+
+        /* Sidebar active link */
+        .nav-link.active { @apply bg-primary-100 text-primary-900 font-semibold; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <a href="/index.html" class="flex items-center space-x-3">
+                        <svg class="h-8 w-8 text-primary-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-primary-700">PKI</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/index.html" class="text-gray-700 hover:text-primary-700">Home</a>
+                    <a href="/docs/README.html" class="text-gray-700 hover:text-primary-700">Documentation</a>
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-gray-700 hover:text-primary-700">GitHub</a>
+                    <a href="https://www.rdem-systems.com/contact" class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800">Support</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-lg min-h-screen sticky top-16 overflow-y-auto">
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Documentation</h3>
+                <nav class="space-y-1">
+                    <div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">General</h4>
+<a href="/docs/architecture-comparison-unified-vs-distributed.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Comparison Unified Vs Distributed</a>
+<a href="/docs/COMMUNITY_BENEFITS.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Community Benefits</a>
+<a href="/docs/LICENSE.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">License</a>
+<a href="/docs/ci-parallelization-strategy.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ci Parallelization Strategy</a>
+<a href="/docs/standards-compliance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Standards Compliance</a>
+<a href="/docs/README.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Readme</a>
+<a href="/docs/architecture-overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Architecture Overview</a>
+<a href="/docs/gitlab-branch-protection.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Branch Protection</a>
+<a href="/docs/automatic-certificate-issuance-protocols.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Automatic Certificate Issuance Protocols</a>
+<a href="/docs/features-matrix.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Features Matrix</a>
+<a href="/docs/gitlab-deployment-instructions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Gitlab Deployment Instructions</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">business</h4>
+<a href="/docs/business/commercial-arguments.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Commercial Arguments</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">integrations</h4>
+<a href="/docs/integrations/entra-id.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Entra Id</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">protocols</h4>
+<a href="/docs/protocols/scep.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Scep</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">features</h4>
+<a href="/docs/features/entra-id-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/user-requests/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/certificate-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/certificate-management/auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Auto Renewal</a>
+<a href="/docs/features/certificate-management/csr-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Csr Issuance</a>
+<a href="/docs/features/certificate-management/api-auto-renewal.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Auto Renewal</a>
+<a href="/docs/features/certificate-management/api-certificate-issuance.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Certificate Issuance</a>
+<a href="/docs/features/certificate-management/acme-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Integration</a>
+<a href="/docs/features/certificate-management/api-crl-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Crl Management</a>
+<a href="/docs/features/authentication/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/ocsp-responder/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/key-storage/storage-backends.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Storage Backends</a>
+<a href="/docs/features/approval-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/dashboard-monitoring/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/dashboard-monitoring/api-system-health.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api System Health</a>
+<a href="/docs/features/user-access-management/user-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Management</a>
+<a href="/docs/features/user-access-management/ca-access-policies.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Access Policies</a>
+<a href="/docs/features/user-access-management/permissions.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Permissions</a>
+<a href="/docs/features/user-access-management/user-profile.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">User Profile</a>
+<a href="/docs/features/ca-management/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/ca-management/ca-groups.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Groups</a>
+<a href="/docs/features/ca-management/api-ca-management-crud.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management Crud</a>
+<a href="/docs/features/ca-management/api-ca-password-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Password Management</a>
+<a href="/docs/features/ca-management/api-ca-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Management</a>
+<a href="/docs/features/ca-management/ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Ca Rotation</a>
+<a href="/docs/features/ca-management/api-ca-rotation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Api Ca Rotation</a>
+<a href="/docs/features/auditing/security-audits.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Security Audits</a>
+<a href="/docs/features/auditing/audit-logs.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Audit Logs</a>
+<a href="/docs/features/scep-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/est-protocol-integration/overview.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Overview</a>
+<a href="/docs/features/integrations/acme-server-implementation.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Acme Server Implementation</a>
+<a href="/docs/features/integrations/windows-8021x-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Windows 8021X Integration</a>
+<a href="/docs/features/integrations/openvpn-integration.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Openvpn Integration</a>
+</div>
+<div class="mb-4">
+<h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">architecture</h4>
+<a href="/docs/architecture/pki-url-management.html" class="nav-link block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 ">Pki Url Management</a>
+</div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 max-w-4xl">
+            <div class="prose">
+                <h1 id="storage-backend-abstraction-for-ca-private-keys">Storage Backend Abstraction for CA Private Keys</h1>
+<blockquote>
+<p><strong>Version</strong>: v0.2-alpha
+<strong>Status</strong>: Phase 2 Complete (Database + Vaultwarden backends)
+<strong>Next</strong>: Phase 3 (Migration tools + Configuration UI)</p>
+</blockquote>
+<h2 id="overview">Overview</h2>
+<p>The PKI system implements a pluggable storage architecture for CA private keys, enabling enterprise organizations to choose their preferred storage backend based on security requirements, compliance needs, and existing infrastructure.</p>
+<h3 id="supported-backends">Supported Backends</h3>
+<table>
+<thead>
+<tr>
+<th>Backend</th>
+<th>Status</th>
+<th>Description</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Database</strong></td>
+<td>✅ Production</td>
+<td>Direct table storage with libsodium encryption</td>
+<td>Baseline, self-contained deployments</td>
+</tr>
+<tr>
+<td><strong>Vaultwarden</strong></td>
+<td>✅ Phase 2</td>
+<td>Self-hosted Password Manager API</td>
+<td>On-premise deployments</td>
+</tr>
+<tr>
+<td><strong>Bitwarden Secrets Manager</strong></td>
+<td>🔜 Future</td>
+<td>Official PHP SDK integration</td>
+<td>Enterprise secret management</td>
+</tr>
+<tr>
+<td><strong>Shamir Secret Sharing</strong></td>
+<td>🔜 Phase 3</td>
+<td>n-of-m threshold cryptography</td>
+<td>Distributed trust, high security</td>
+</tr>
+<tr>
+<td><strong>Hardware Security Module</strong></td>
+<td>🔜 Phase 4</td>
+<td>YubiKey/NitroKey PKCS#11</td>
+<td>Maximum security, compliance</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture">Architecture</h2>
+<h3 id="interface-contract">Interface Contract</h3>
+<p>All storage backends implement the <code>SecureKeyStorageInterface</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">interface SecureKeyStorageInterface</span>
+<span class="x">{</span>
+<span class="x">    // Store encrypted CA private key</span>
+<span class="x">    public function storePrivateKey(string $caId, string $encryptedKey, array $metadata = []): string;</span>
+
+<span class="x">    // Retrieve encrypted CA private key</span>
+<span class="x">    public function retrievePrivateKey(string $caId): string;</span>
+
+<span class="x">    // Delete CA private key from storage</span>
+<span class="x">    public function deletePrivateKey(string $caId): bool;</span>
+
+<span class="x">    // Check if CA private key exists</span>
+<span class="x">    public function keyExists(string $caId): bool;</span>
+
+<span class="x">    // Migrate key to another backend</span>
+<span class="x">    public function migrateKey(string $caId, SecureKeyStorageInterface $newBackend): bool;</span>
+
+<span class="x">    // Get backend name identifier</span>
+<span class="x">    public function getBackendName(): string;</span>
+
+<span class="x">    // Health check for backend availability</span>
+<span class="x">    public function healthCheck(): array;</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h3 id="database-schema">Database Schema</h3>
+<p>Three new columns in <code>certificate_authorities</code> table:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Storage backend identifier</span>
+<span class="n">key_storage_backend</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;database&#39;</span>
+<span class="w">  </span><span class="k">COMMENT</span><span class="w"> </span><span class="s1">&#39;database|bitwarden|vaultwarden|shamir_sss|hsm&#39;</span>
+
+<span class="c1">-- External storage reference</span>
+<span class="n">key_storage_reference</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">NULL</span>
+<span class="w">  </span><span class="k">COMMENT</span><span class="w"> </span><span class="s1">&#39;Bitwarden secret ID, HSM slot ID, etc.&#39;</span>
+
+<span class="c1">-- Backend-specific metadata</span>
+<span class="n">key_storage_metadata</span><span class="w"> </span><span class="n">JSON</span><span class="w"> </span><span class="k">NULL</span>
+<span class="w">  </span><span class="k">COMMENT</span><span class="w"> </span><span class="s1">&#39;project_id, hsm_config, etc.&#39;</span>
+</code></pre></div>
+
+<h2 id="phase-1-database-backend">Phase 1: Database Backend</h2>
+<h3 id="implementation">Implementation</h3>
+<p>The <code>DatabaseKeyStorage</code> class wraps the existing <code>SecureKeyStorageService</code> to provide baseline storage functionality.</p>
+<p><strong>Location</strong>: <code>app/Services/Storage/DatabaseKeyStorage.php</code></p>
+<p><strong>Key Features</strong>:
+- Direct storage in <code>certificate_authorities</code> table
+- Libsodium secretbox encryption (AEAD)
+- Password-protected key support
+- Health monitoring (latency, key count)
+- Full interface compliance</p>
+<p><strong>Security</strong>:
+- Keys encrypted with APP_KEY + unique salt per CA
+- Password-protected keys use APP_KEY + password hybrid derivation
+- Argon2id key derivation for resistance against brute force
+- Automatic corruption detection and flagging</p>
+<h3 id="usage-example">Usage Example</h3>
+<div class="codehilite"><pre><span></span><code><span class="x">use App\Services\Storage\DatabaseKeyStorage;</span>
+<span class="x">use App\Services\SecureKeyStorageService;</span>
+
+<span class="x">$secureKeyStorage = app(SecureKeyStorageService::class);</span>
+<span class="x">$storage = new DatabaseKeyStorage($secureKeyStorage);</span>
+
+<span class="x">// Store key</span>
+<span class="x">$reference = $storage-&gt;storePrivateKey($caId, $encryptedKey, [</span>
+<span class="x">    &#39;salt&#39; =&gt; $salt,</span>
+<span class="x">    &#39;algorithm&#39; =&gt; &#39;sodium_secretbox&#39;,</span>
+<span class="x">    &#39;password_protected&#39; =&gt; false,</span>
+<span class="x">]);</span>
+
+<span class="x">// Retrieve key</span>
+<span class="x">$encryptedKey = $storage-&gt;retrievePrivateKey($caId);</span>
+
+<span class="x">// Health check</span>
+<span class="x">$health = $storage-&gt;healthCheck();</span>
+<span class="x">// [&#39;available&#39; =&gt; true, &#39;latency_ms&#39; =&gt; 2, &#39;keys_stored&#39; =&gt; 15]</span>
+</code></pre></div>
+
+<h2 id="phase-2-vaultwardenbitwarden-integration">Phase 2: Vaultwarden/Bitwarden Integration</h2>
+<h3 id="implementation-decision">Implementation Decision</h3>
+<p><strong>Chosen Approach</strong>: Vaultwarden <strong>Password Manager API</strong> (not Secrets Manager)</p>
+<p><strong>Rationale</strong>:
+- Vaultwarden only implements Password Manager API, not Secrets Manager
+- <code>bitwarden/sdk</code> PHP package only supports Secrets Manager (incompatible with Vaultwarden)
+- Direct REST API integration provides maximum compatibility
+- Supports both personal vaults and organization shared vaults</p>
+<h3 id="vaultwarden-architecture">Vaultwarden Architecture</h3>
+<p><strong>Components</strong>:
+- <code>VaultwardenClient</code>: HTTP REST API wrapper
+- <code>VaultwardenKeyStorage</code>: SecureKeyStorageInterface implementation</p>
+<p><strong>Data Flow</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">PKI</span><span class="w"> </span><span class="n">App</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">VaultwardenClient</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">Vaultwarden</span><span class="w"> </span><span class="n">REST</span><span class="w"> </span><span class="n">API</span>
+<span class="w">              </span><span class="err">↓</span>
+<span class="w">       </span><span class="p">[</span><span class="n">Cipher</span><span class="w"> </span><span class="n">Creation</span><span class="p">]</span>
+<span class="w">              </span><span class="err">↓</span>
+<span class="w">       </span><span class="p">[</span><span class="n">Attachment</span><span class="w"> </span><span class="n">Upload</span><span class="o">:</span><span class="w"> </span><span class="n">encrypted_key</span><span class="p">.</span><span class="n">enc</span><span class="p">]</span>
+<span class="w">              </span><span class="err">↓</span>
+<span class="w">       </span><span class="p">[</span><span class="n">Returns</span><span class="w"> </span><span class="n">cipher</span><span class="w"> </span><span class="n">UUID</span><span class="p">]</span>
+</code></pre></div>
+
+<p><strong>Storage Mechanism</strong>:
+1. Create <strong>Secure Note</strong> cipher (type 2)
+2. Upload encrypted CA key as <strong>attachment</strong>
+3. Store cipher UUID in <code>certificate_authorities.key_storage_reference</code></p>
+<h3 id="vaultwardenclient-features">VaultwardenClient Features</h3>
+<p><strong>Location</strong>: <code>app/Services/Vaultwarden/VaultwardenClient.php</code></p>
+<p><strong>Capabilities</strong>:
+- <strong>Authentication</strong>: PBKDF2-SHA256 master password hashing + OAuth2 token
+- <strong>Cipher Management</strong>: Create, retrieve, delete secure notes
+- <strong>Attachments</strong>: Upload/download encrypted files
+- <strong>Organizations</strong>: Support for shared vaults (organizationId + collectionIds)
+- <strong>Health Check</strong>: API connectivity and authentication status</p>
+<p><strong>Authentication Flow</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// 1. Prelogin to get KDF iterations</span>
+<span class="x">POST /accounts/prelogin</span>
+<span class="x">{ &quot;email&quot;: &quot;user@example.com&quot; }</span>
+<span class="x">→ { &quot;KdfIterations&quot;: 600000 }</span>
+
+<span class="x">// 2. Derive master password hash (PBKDF2)</span>
+<span class="x">$masterPasswordHash = hash_pbkdf2(&#39;sha256&#39;, $password, $email, $iterations, 32);</span>
+
+<span class="x">// 3. Request access token</span>
+<span class="x">POST /identity/connect/token</span>
+<span class="x">grant_type=password&amp;username=...&amp;password=$masterPasswordHash</span>
+<span class="x">→ { &quot;access_token&quot;: &quot;...&quot;, &quot;expires_in&quot;: 3600 }</span>
+</code></pre></div>
+
+<h3 id="vaultwardenkeystorage-implementation">VaultwardenKeyStorage Implementation</h3>
+<p><strong>Location</strong>: <code>app/Services/Storage/VaultwardenKeyStorage.php</code></p>
+<p><strong>Key Methods</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">class VaultwardenKeyStorage implements SecureKeyStorageInterface</span>
+<span class="x">{</span>
+<span class="x">    // Store: Create cipher → Upload attachment → Return cipher UUID</span>
+<span class="x">    public function storePrivateKey(string $caId, string $encryptedKey, array $metadata = []): string;</span>
+
+<span class="x">    // Retrieve: Get cipher → Find attachment → Download content</span>
+<span class="x">    public function retrievePrivateKey(string $caId): string;</span>
+
+<span class="x">    // Delete: Delete cipher (removes attachments automatically) + Update CA record</span>
+<span class="x">    public function deletePrivateKey(string $caId): bool;</span>
+
+<span class="x">    // Check: Verify cipher exists with attachments</span>
+<span class="x">    public function keyExists(string $caId): bool;</span>
+
+<span class="x">    // Migrate: Retrieve → Decrypt → Re-encrypt → Store in new backend → Delete old</span>
+<span class="x">    public function migrateKey(string $caId, SecureKeyStorageInterface $newBackend): bool;</span>
+
+<span class="x">    // Identity: Returns &#39;vaultwarden&#39;</span>
+<span class="x">    public function getBackendName(): string;</span>
+
+<span class="x">    // Monitoring: Delegate to VaultwardenClient::healthCheck()</span>
+<span class="x">    public function healthCheck(): array;</span>
+<span class="x">}</span>
+</code></pre></div>
+
+<h3 id="configuration">Configuration</h3>
+<p><strong>Environment Variables</strong> (<code>.env</code>):</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Vaultwarden API endpoint</span>
+<span class="nv">VAULTWARDEN_API_URL</span><span class="o">=</span>http://your-vaultwarden-server.com
+
+<span class="c1"># Master account credentials</span>
+<span class="nv">VAULTWARDEN_EMAIL</span><span class="o">=</span>vault-account@example.com
+<span class="nv">VAULTWARDEN_PASSWORD</span><span class="o">=</span>your-master-password
+
+<span class="c1"># Optional: Organization shared vaults</span>
+<span class="nv">VAULTWARDEN_ORGANIZATION_ID</span><span class="o">=</span>organization-uuid
+<span class="nv">VAULTWARDEN_COLLECTION_IDS</span><span class="o">=</span>collection-uuid-1,collection-uuid-2
+
+<span class="c1"># Health check settings</span>
+<span class="nv">VAULTWARDEN_HEALTH_CHECK_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">VAULTWARDEN_HEALTH_CHECK_INTERVAL</span><span class="o">=</span><span class="m">300</span>
+</code></pre></div>
+
+<h3 id="usage-example_1">Usage Example</h3>
+<div class="codehilite"><pre><span></span><code><span class="x">use App\Services\Vaultwarden\VaultwardenClient;</span>
+<span class="x">use App\Services\Storage\VaultwardenKeyStorage;</span>
+<span class="x">use App\Services\SecureKeyStorageService;</span>
+
+<span class="x">// Initialize client</span>
+<span class="x">$client = new VaultwardenClient(</span>
+<span class="x">    apiUrl: config(&#39;vaultwarden.api_url&#39;),</span>
+<span class="x">    email: config(&#39;vaultwarden.email&#39;),</span>
+<span class="x">    password: config(&#39;vaultwarden.password&#39;),</span>
+<span class="x">    organizationId: config(&#39;vaultwarden.organization_id&#39;),</span>
+<span class="x">    collectionIds: config(&#39;vaultwarden.collection_ids&#39;)</span>
+<span class="x">);</span>
+
+<span class="x">// Create storage backend</span>
+<span class="x">$storage = new VaultwardenKeyStorage(</span>
+<span class="x">    app(SecureKeyStorageService::class),</span>
+<span class="x">    $client</span>
+<span class="x">);</span>
+
+<span class="x">// Store CA private key</span>
+<span class="x">$cipherUuid = $storage-&gt;storePrivateKey($ca-&gt;id, $encryptedKey, [</span>
+<span class="x">    &#39;salt&#39; =&gt; $salt,</span>
+<span class="x">    &#39;algorithm&#39; =&gt; &#39;sodium_secretbox&#39;,</span>
+<span class="x">    &#39;password_protected&#39; =&gt; false,</span>
+<span class="x">    &#39;ca_name&#39; =&gt; &#39;Root CA - Production&#39;,</span>
+<span class="x">]);</span>
+
+<span class="x">// Retrieve key</span>
+<span class="x">$encryptedKey = $storage-&gt;retrievePrivateKey($ca-&gt;id);</span>
+
+<span class="x">// Health check</span>
+<span class="x">$health = $storage-&gt;healthCheck();</span>
+<span class="x">// [&#39;available&#39; =&gt; true, &#39;latency_ms&#39; =&gt; 150, &#39;authenticated&#39; =&gt; true]</span>
+</code></pre></div>
+
+<h3 id="cipher-metadata-structure">Cipher Metadata Structure</h3>
+<p>Each Vaultwarden cipher includes metadata in Notes field:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;ca_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;ca_common_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Root CA - Example Corp&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;encryption_algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sodium_secretbox&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;password_protected&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stored_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-10-14T12:34:56Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;pkiaas_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.2-alpha&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="security-features">Security Features</h3>
+<p><strong>Multi-Layer Encryption</strong>:
+1. <strong>PKI Layer</strong>: Libsodium secretbox (pre-Vaultwarden)
+2. <strong>Transport Layer</strong>: HTTPS for API calls
+3. <strong>Vaultwarden Layer</strong>: Master password encryption (vault encryption)</p>
+<p><strong>Organization Support</strong>:
+- <strong>Personal Vault</strong>: Single-user access
+- <strong>Shared Vault</strong>: Multi-user access via collections
+- <strong>Access Control</strong>: Vaultwarden handles user permissions</p>
+<h3 id="migration">Migration</h3>
+<p><strong>Database → Vaultwarden</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">$databaseStorage = new DatabaseKeyStorage($secureKeyStorage);</span>
+<span class="x">$vaultwardenStorage = new VaultwardenKeyStorage($secureKeyStorage, $client);</span>
+
+<span class="x">// Automatic migration (decrypts + re-encrypts + transfers)</span>
+<span class="x">$databaseStorage-&gt;migrateKey($caId, $vaultwardenStorage);</span>
+
+<span class="x">// Update CA record</span>
+<span class="x">$ca-&gt;update([</span>
+<span class="x">    &#39;key_storage_backend&#39; =&gt; &#39;vaultwarden&#39;,</span>
+<span class="x">    &#39;key_storage_reference&#39; =&gt; $cipherUuid,  // Set by migrateKey()</span>
+<span class="x">]);</span>
+</code></pre></div>
+
+<p><strong>Migration Command</strong> (planned):</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Interactive wizard</span>
+php<span class="w"> </span>artisan<span class="w"> </span>pki:migrate-storage
+
+<span class="c1"># Batch migration to Vaultwarden</span>
+php<span class="w"> </span>artisan<span class="w"> </span>pki:migrate-storage<span class="w"> </span>--from<span class="o">=</span>database<span class="w"> </span>--to<span class="o">=</span>vaultwarden<span class="w"> </span>--all
+
+<span class="c1"># Specific CA</span>
+php<span class="w"> </span>artisan<span class="w"> </span>pki:migrate-storage<span class="w"> </span>--ca<span class="o">=</span><span class="m">1</span><span class="w"> </span>--to<span class="o">=</span>vaultwarden
+</code></pre></div>
+
+<h3 id="testing">Testing</h3>
+<p><strong>Location</strong>: <code>tests/Unit/VaultwardenKeyStorageTest.php</code></p>
+<p><strong>Coverage</strong>: 21 test cases
+- Interface implementation
+- Backend name
+- Store with cipher creation + attachment upload
+- Retrieve with cipher fetch + attachment download
+- Delete with cipher removal + CA cleanup
+- Key existence checks (with API failure handling)
+- Health monitoring (success + failure scenarios)
+- Error handling (missing references, failed uploads, cleanup on error)
+- Migration prerequisites (password-protected, missing keys)</p>
+<p><strong>Mocking Strategy</strong>:
+- VaultwardenClient fully mocked (no real API calls)
+- Mockery for method expectations
+- Tests run without external dependencies</p>
+<h2 id="phase-3-shamir-secret-sharing-planned">Phase 3: Shamir Secret Sharing (Planned)</h2>
+<h3 id="concept">Concept</h3>
+<p>Split CA private key into N shares, requiring M shares to reconstruct:
+- <strong>Example</strong>: 5-of-7 scheme (7 shares, any 5 can reconstruct)
+- <strong>Use case</strong>: Distributed trust, no single point of compromise</p>
+<h3 id="storage-options">Storage Options</h3>
+<ol>
+<li><strong>Distributed Database</strong>: Each share in different DB instance</li>
+<li><strong>Hardware Tokens</strong>: YubiKey, NitroKey for physical distribution</li>
+<li><strong>Geographic Distribution</strong>: Shares across multiple data centers</li>
+</ol>
+<h3 id="implementation_1">Implementation</h3>
+<p><strong>Library</strong>: <code>php-shamir-secret-sharing</code> or custom implementation</p>
+<p><strong>Metadata Example</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scheme&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5-of-7&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;shares&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;db-us-east&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;db-eu-west&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="err">...</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="phase-4-hardware-security-module-planned">Phase 4: Hardware Security Module (Planned)</h2>
+<h3 id="supported-hsms">Supported HSMs</h3>
+<ul>
+<li><strong>YubiKey</strong> (USB-A, USB-C, NFC)</li>
+<li><strong>NitroKey</strong> (Open-source alternative)</li>
+<li><strong>PKCS#11 Standard</strong>: Generic HSM support</li>
+</ul>
+<h3 id="benefits">Benefits</h3>
+<ul>
+<li>Private key never leaves hardware device</li>
+<li>Tamper-resistant</li>
+<li>FIPS 140-2 compliance</li>
+<li>Suitable for root CAs</li>
+</ul>
+<h3 id="implementation_2">Implementation</h3>
+<p><strong>Library</strong>: <code>pkcs11-php</code> extension</p>
+<p><strong>Metadata Example</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;hsm_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;yubikey&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;slot_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;pin_protected&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;serial_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;12345678&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="migration-between-backends">Migration Between Backends</h2>
+<h3 id="automated-migration">Automated Migration</h3>
+<p>The <code>migrateKey()</code> interface method enables seamless backend migration:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">// Migrate from Database to Bitwarden</span>
+<span class="x">$databaseStorage = new DatabaseKeyStorage($secureKeyStorage);</span>
+<span class="x">$bitwardenStorage = new BitwardenKeyStorage($bitwardenClient);</span>
+
+<span class="x">$databaseStorage-&gt;migrateKey($caId, $bitwardenStorage);</span>
+</code></pre></div>
+
+<p><strong>Migration Process</strong>:
+1. Retrieve encrypted key from source backend
+2. Decrypt with password (if required)
+3. Re-encrypt for target backend
+4. Store in target backend
+5. Delete from source backend
+6. Update <code>key_storage_backend</code> in database</p>
+<h3 id="manual-migration-command">Manual Migration Command</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Interactive wizard</span>
+php<span class="w"> </span>artisan<span class="w"> </span>pki:migrate-storage
+
+<span class="c1"># Batch migration</span>
+php<span class="w"> </span>artisan<span class="w"> </span>pki:migrate-storage<span class="w"> </span>--from<span class="o">=</span>database<span class="w"> </span>--to<span class="o">=</span>bitwarden<span class="w"> </span>--all
+
+<span class="c1"># Specific CA</span>
+php<span class="w"> </span>artisan<span class="w"> </span>pki:migrate-storage<span class="w"> </span>--ca<span class="o">=</span><span class="m">1</span><span class="w"> </span>--to<span class="o">=</span>shamir_sss
+</code></pre></div>
+
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="encryption-layers">Encryption Layers</h3>
+<ol>
+<li><strong>Application Layer</strong>: Libsodium secretbox encryption</li>
+<li><strong>Transport Layer</strong>: TLS for API calls</li>
+<li><strong>Storage Layer</strong>: Backend-specific encryption (Bitwarden, HSM)</li>
+</ol>
+<h3 id="password-protected-keys">Password-Protected Keys</h3>
+<p>Password-protected CAs require password during migration:</p>
+<div class="codehilite"><pre><span></span><code>php<span class="w"> </span>artisan<span class="w"> </span>pki:migrate-storage<span class="w"> </span>--ca<span class="o">=</span><span class="m">1</span><span class="w"> </span>--to<span class="o">=</span>bitwarden<span class="w"> </span>--password
+<span class="c1"># Prompt: Enter CA private key password: ****</span>
+</code></pre></div>
+
+<h3 id="audit-logging">Audit Logging</h3>
+<p>All storage operations logged to <code>pki-compliance</code> channel:
+- Key storage/retrieval/deletion
+- Backend migration
+- Health check failures
+- Access attempts</p>
+<h2 id="health-monitoring">Health Monitoring</h2>
+<p>Each backend implements health checks:</p>
+<div class="codehilite"><pre><span></span><code><span class="x">$health = $storage-&gt;healthCheck();</span>
+
+<span class="x">[</span>
+<span class="x">    &#39;available&#39; =&gt; true,          // Backend reachable</span>
+<span class="x">    &#39;latency_ms&#39; =&gt; 15,           // Response time</span>
+<span class="x">    &#39;error&#39; =&gt; null,              // Error message (if unavailable)</span>
+<span class="x">    &#39;backend&#39; =&gt; &#39;database&#39;,      // Backend identifier</span>
+<span class="x">    &#39;keys_stored&#39; =&gt; 42,          // Total keys (database only)</span>
+<span class="x">]</span>
+</code></pre></div>
+
+<p><strong>Monitoring Integration</strong>:
+- Prometheus metrics export
+- Dashboard widgets
+- Alert triggers (latency &gt; 1000ms)</p>
+<h2 id="testing_1">Testing</h2>
+<h3 id="unit-tests">Unit Tests</h3>
+<h4 id="databasekeystorage">DatabaseKeyStorage</h4>
+<p><strong>Location</strong>: <code>tests/Unit/DatabaseKeyStorageTest.php</code></p>
+<p><strong>Coverage</strong>: 11 test cases
+- Interface implementation
+- Backend name
+- Store/retrieve/delete operations
+- Key existence checks
+- Health monitoring
+- Error handling (missing metadata, nonexistent keys)</p>
+<h4 id="vaultwardenkeystorage">VaultwardenKeyStorage</h4>
+<p><strong>Location</strong>: <code>tests/Unit/VaultwardenKeyStorageTest.php</code></p>
+<p><strong>Coverage</strong>: 21 test cases
+- Interface implementation
+- Backend name
+- Store with cipher creation + attachment upload
+- Retrieve with cipher fetch + attachment download
+- Delete with cipher removal + CA cleanup
+- Key existence checks (with API failure handling)
+- Health monitoring (success + failure scenarios)
+- Error handling (missing references, failed uploads, cleanup on error)
+- Migration prerequisites (password-protected, missing keys)</p>
+<p><strong>Mocking Strategy</strong>: VaultwardenClient fully mocked (Mockery)</p>
+<h3 id="integration-tests">Integration Tests</h3>
+<p><strong>Planned for Phase 3</strong>:
+- Cross-backend migration (Database ↔ Vaultwarden)
+- Password-protected key migration with password prompt
+- Real Vaultwarden instance integration
+- Health check reliability under load</p>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="backend-selection-guidelines">Backend Selection Guidelines</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Recommended Backend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple deployment</td>
+<td>Database</td>
+</tr>
+<tr>
+<td>Enterprise secret management</td>
+<td>Bitwarden Secrets Manager</td>
+</tr>
+<tr>
+<td>Self-hosted</td>
+<td>Vaultwarden</td>
+</tr>
+<tr>
+<td>Maximum security</td>
+<td>HSM (YubiKey)</td>
+</tr>
+<tr>
+<td>Distributed trust</td>
+<td>Shamir SSS</td>
+</tr>
+<tr>
+<td>Compliance (FIPS 140-2)</td>
+<td>HSM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="migration-strategy">Migration Strategy</h3>
+<ol>
+<li><strong>Test Environment First</strong>: Validate migration with test CAs</li>
+<li><strong>Backup Before Migration</strong>: Export CA certificates and metadata</li>
+<li><strong>Gradual Rollout</strong>: Migrate non-critical CAs first</li>
+<li><strong>Monitor Health</strong>: Check backend availability post-migration</li>
+<li><strong>Document Recovery</strong>: Maintain rollback procedures</li>
+</ol>
+<h2 id="roadmap">Roadmap</h2>
+<h3 id="v02-alpha-current-completed">v0.2-alpha (Current - Completed)</h3>
+<ul>
+<li>✅ Phase 1.1: Interface contract (SecureKeyStorageInterface)</li>
+<li>✅ Phase 1.2: Database backend (DatabaseKeyStorage)</li>
+<li>✅ Phase 1.3: Database migration (3 new columns)</li>
+<li>✅ Phase 1.4: Unit tests (11 test cases)</li>
+<li>✅ Phase 2.1: Vaultwarden client (REST API wrapper)</li>
+<li>✅ Phase 2.2: Vaultwarden backend (VaultwardenKeyStorage)</li>
+<li>✅ Phase 2.3: Configuration (.env + .env.example)</li>
+<li>✅ Phase 2.4: Unit tests (21 test cases)</li>
+<li>✅ Phase 2.5: Documentation update</li>
+</ul>
+<h3 id="v03-alpha-q1-2026">v0.3-alpha (Q1 2026)</h3>
+<ul>
+<li>🔜 Phase 2.6: Configuration UI (backend selection in CA creation)</li>
+<li>🔜 Phase 2.7: Migration command (<code>php artisan pki:migrate-storage</code>)</li>
+<li>🔜 Integration tests (cross-backend migration)</li>
+<li>🔜 Bitwarden Secrets Manager support (optional)</li>
+</ul>
+<h3 id="v04-alpha-q2-2026">v0.4-alpha (Q2 2026)</h3>
+<ul>
+<li>🔜 Phase 3: Shamir Secret Sharing (n-of-m)</li>
+<li>🔜 Phase 4: HSM support (YubiKey/NitroKey)</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="../../AUDIT/VAULTWARDEN_BITWARDEN_STUDY.html">Vaultwarden/Bitwarden Study</a> - Comprehensive analysis</li>
+<li><a href="../security/architecture.html">Security Architecture</a> - Overall security design</li>
+<li><a href="../api/certificate-authorities.html">API Documentation</a> - CA management APIs</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://bitwarden.com/help/secrets-manager-sdk/">Bitwarden SDK Documentation</a></li>
+<li><a href="https://github.com/dani-garcia/vaultwarden">Vaultwarden GitHub</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing">Shamir's Secret Sharing</a></li>
+<li><a href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=pkcs11">PKCS#11 Standard</a></li>
+<li><a href="https://doc.libsodium.org/">Libsodium Documentation</a></li>
+</ul>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-600">
+                <p>Last updated: 2026-02-26</p>
+                <p class="mt-2">
+                    <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>
