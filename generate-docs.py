@@ -138,8 +138,24 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <p class="mt-2">
                     <a href="https://github.com/rdemsystems/pki" target="_blank" class="text-primary-700 hover:text-primary-900">Edit this page on GitHub</a>
                     <span class="mx-2">|</span>
-                    <a href="https://pkiaas.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-primary-700 hover:text-primary-900 font-semibold">PKI As A Service</a>
+                    <a href="https://pki.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-primary-700 hover:text-primary-900 font-semibold">Notre logiciel PKI</a>
+                    <span class="mx-2">|</span>
+                    <a href="https://pkiaas.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-primary-700 hover:text-primary-900 font-semibold">Notre PKI manag\u00e9e</a>
                 </p>
+                <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-4 text-xs">
+                    <a href="https://www.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Qui sommes nous?</a>
+                    <a href="https://managed-services.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Infog\u00e9rance serveur 24/7</a>
+                    <a href="https://proxmox.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Virtualisation Proxmox infog\u00e9r\u00e9e</a>
+                    <a href="https://nimbus.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Sauvegarde Proxmox NimbusBackup</a>
+                    <a href="https://as206014.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">R\u00e9seau BGP AS206014</a>
+                    <a href="https://mariadb.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">MariaDB</a>
+                    <a href="https://ntp.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors" title="Synchronisation temporelle Stratum 1">Infrastructure NTP Stratum 1</a>
+                    <a href="https://pki.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Notre logiciel PKI</a>
+                    <a href="https://pkiaas.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Notre PKI manag\u00e9e</a>
+                    <a href="https://ivvq.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Tests et validations</a>
+                    <a href="https://use-cases.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Cas d'usage</a>
+                    <a href="https://referral.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Apporteurs d'affaires</a>
+                </div>
             </footer>
         </main>
     </div>
