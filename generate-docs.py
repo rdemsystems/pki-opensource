@@ -156,6 +156,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                     <a href="https://use-cases.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Cas d'usage</a>
                     <a href="https://referral.rdem-systems.com" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Apporteurs d'affaires</a>
                 </div>
+                <div class="flex justify-center gap-4 mt-3 text-xs">
+                    <a href="https://www.rdem-systems.com/mentions-legales/" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Mentions l\u00e9gales</a>
+                    <span class="text-gray-400">|</span>
+                    <a href="https://www.rdem-systems.com/cgv/" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">CGV</a>
+                    <span class="text-gray-400">|</span>
+                    <a href="https://www.rdem-systems.com/privacy" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-primary-700 transition-colors">Politique de confidentialit\u00e9</a>
+                    <span class="text-gray-400">|</span>
+                    <a href="#" onclick="resetCookieConsent();return false;" class="text-gray-500 hover:text-primary-700 transition-colors">G\u00e9rer les cookies</a>
+                </div>
             </footer>
         </main>
     </div>
@@ -167,6 +176,70 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#1e293b;color:#e2e8f0;padding:1rem;z-index:9999;">
+        <div style="max-width:800px;margin:0 auto;">
+            <p style="margin:0 0 0.75rem 0;">
+                Ce site et les autres services RDEM Systems utilisent des cookies
+                pour mesurer l'audience et qualifier nos campagnes publicitaires.
+                <a href="https://www.rdem-systems.com/privacy" style="color:#60a5fa;">En savoir plus</a>
+            </p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.75rem;">
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                    <input type="checkbox" id="consent-rdem" checked>
+                    Suivi d'audience RDEM Systems (cookie de suivi cross-visite)
+                </label>
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                    <input type="checkbox" id="consent-ga4">
+                    Google Analytics (mesure d'audience avanc\u00e9e)
+                </label>
+                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                    <input type="checkbox" id="consent-meta">
+                    Meta Pixel (qualification d'audience publicitaire)
+                </label>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <button onclick="setConsents(0,0,0);document.getElementById('cookie-banner').remove();"
+                        style="padding:0.5rem 1rem;background:transparent;border:1px solid #94a3b8;color:#e2e8f0;border-radius:6px;cursor:pointer;">
+                    Tout refuser
+                </button>
+                <button onclick="setConsents(
+                            document.getElementById('consent-rdem').checked?1:0,
+                            document.getElementById('consent-ga4').checked?1:0,
+                            document.getElementById('consent-meta').checked?1:0
+                        );document.getElementById('cookie-banner').remove();"
+                        style="padding:0.5rem 1rem;background:#475569;border:none;color:white;border-radius:6px;cursor:pointer;">
+                    Accepter la s\u00e9lection
+                </button>
+                <button onclick="setConsents(1,1,1);document.getElementById('cookie-banner').remove();"
+                        style="padding:0.5rem 1rem;background:#3b82f6;border:none;color:white;border-radius:6px;cursor:pointer;">
+                    Tout accepter
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function setConsents(funnel, ga, meta) {{
+            var opts = '; Path=/; Max-Age=34560000; Secure; SameSite=Lax; Domain=.rdem-systems.com';
+            document.cookie = 'funnel_consent=' + funnel + opts;
+            document.cookie = 'ga_consent=' + ga + opts;
+            document.cookie = 'meta_consent=' + meta + opts;
+        }}
+        function resetCookieConsent() {{
+            var del = '; Path=/; Max-Age=0; Secure; SameSite=Lax; Domain=.rdem-systems.com';
+            document.cookie = 'funnel_consent=0' + del;
+            document.cookie = 'ga_consent=0' + del;
+            document.cookie = 'meta_consent=0' + del;
+            location.reload();
+        }}
+        if (document.cookie.indexOf('funnel_consent=') !== -1 &&
+            document.cookie.indexOf('ga_consent=') !== -1 &&
+            document.cookie.indexOf('meta_consent=') !== -1) {{
+            var b = document.getElementById('cookie-banner');
+            if (b) b.remove();
+        }}
+    </script>
 </body>
 </html>
 """
