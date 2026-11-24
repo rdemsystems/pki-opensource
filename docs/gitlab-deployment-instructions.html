@@ -419,8 +419,8 @@ glab<span class="w"> </span>api<span class="w"> </span>projects/:id/protected_br
             </p>
             <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.75rem;">
                 <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
-                    <input type="checkbox" id="consent-rdem" checked>
-                    Suivi d'audience RDEM Systems (cookie de suivi cross-visite)
+                    <input type="checkbox" id="consent-rdem">
+                    Suivi de vos visites dans la durée (cookie RDEM Systems, 13 mois)
                 </label>
                 <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
                     <input type="checkbox" id="consent-ga4">
@@ -455,6 +455,7 @@ glab<span class="w"> </span>api<span class="w"> </span>projects/:id/protected_br
         function setConsents(funnel, ga, meta) {
             var opts = '; Path=/; Max-Age=34560000; Secure; SameSite=Lax; Domain=.rdem-systems.com';
             document.cookie = 'funnel_consent=' + funnel + opts;
+            document.cookie = 'funnel_consent_v=2' + opts;
             document.cookie = 'ga_consent=' + ga + opts;
             document.cookie = 'meta_consent=' + meta + opts;
         }
@@ -466,6 +467,7 @@ glab<span class="w"> </span>api<span class="w"> </span>projects/:id/protected_br
             location.reload();
         }
         if (document.cookie.indexOf('funnel_consent=') !== -1 &&
+    document.cookie.indexOf('funnel_consent_v=2') !== -1 &&
             document.cookie.indexOf('ga_consent=') !== -1 &&
             document.cookie.indexOf('meta_consent=') !== -1) {
             var b = document.getElementById('cookie-banner');
